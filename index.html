@@ -8,80 +8,41 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
         rel="stylesheet">
-    <script src="script.js"></script>
     <link rel="stylesheet" href="style/style.css">
     <title>MVSIQVA</title>
     <link rel="icon" href="media/LogoWhite.png" type="image/jpeg">
 </head>
 
 <body>
-    <header>
-        <nav>
-            <a href="index.html">
-                <img class="LOGO" src="media/LogoWhite.png">
+    <!-- HEADER ET NAVBAR - Flottent au-dessus -->
+    <header id="mainHeader">
+        <nav id="mainNav">
+            <a href="#" id="logoLink">
+                <img class="LOGO" src="media/LogoWhite.png" alt="Logo MVSIQVA">
             </a>
+            <div class="nav-indicator"></div>
             <ul>
-                <li><a href="######">World</a></li>
-                <li><a href="######">News</a></li>
-                <li><a href="######">Social</a></li>
-                <li><a href="######">About</a></li>
-                <li><a href="######">Search</a></li>
+                <li><a href="#world" class="nav-link">World</a></li>
+                <li><a href="#news" class="nav-link">News</a></li>
+                <li><a href="#social" class="nav-link">Social</a></li>
+                <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="#search" class="nav-link">Search</a></li>
             </ul>
-            <a href="######">
-                <img class="ProfilePicture" src="#">
+            <a href="#profile">
+                <img class="ProfilePicture" src="media/DefaultProfilePicture.png" alt="Profile">
             </a>
         </nav>
     </header>
 
-    <video autoplay muted preload="auto" loop class="video">
-        <source src="media/5983038-uhd_3840_2160_24fps.mp4" type="video/mp4">
-    </video>
-
-
-
-    <p class="p0">MVSIQVA</p>
-    <p class="p1">_</p>
-    <p class="p01">Your new best free music website</p>
-
-    <!-- Music player -->
-    <div class="music-player">
+    <!-- MUSIC PLAYER - Flotte au-dessus -->
+    <div class="music-player" id="musicPlayer">
         <!-- Pochette d'album -->
         <div class="album-cover">
-            <img src="media/album-cover.jpg" alt="Album Cover" id="albumCover">
+            <img src="media/cover/" alt="Album Cover" id="albumCover">
         </div>
 
-        <!-- Infos et contrôles -->
+        <!-- Contenu du player -->
         <div class="player-content">
-            <!-- Titre et artiste -->
-            <div class="track-info">
-                <div class="track-title">INCENDIE</div>
-                <div class="track-artist">Wallace Cleaver</div>
-            </div>
-
-            <!-- Contrôles play/pause/skip -->
-            <div class="player-controls">
-                <button class="control-btn" id="prevBtn">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
-                        <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z" />  <!-- Previous button -->
-                    </svg>
-                </button>
-
-                <button class="control-btn play-btn" id="playPauseBtn">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="white" id="playIcon">
-                        <path d="M8 5v14l11-7z" /> <!-- Play button -->
-                    </svg>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="white" id="pauseIcon" style="display: none;">
-                        <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" /> <!-- Pause button -->
-                    </svg>
-                </button>
-
-                <button class="control-btn" id="nextBtn">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
-                        <path d="M6 6v12l8.5-6z M16 6h2v12h-2z" /> <!-- Next button -->
-                    </svg>
-                </button>
-            </div>
-
             <!-- Barre de progression -->
             <div class="progress-container">
                 <span class="time-current">0:00</span>
@@ -91,14 +52,72 @@
                 </div>
                 <span class="time-total">0:00</span>
             </div>
+
+            <!-- Titre et artiste -->
+            <div class="track-info">
+                <div class="track-title">Sundance</div>
+                <div class="track-artist">Népal</div>
+            </div>
+
+            <!-- Contrôles -->
+            <div class="player-controls">
+                <button class="control-btn" id="prevBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+                        <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z" />
+                    </svg>
+                </button>
+
+                <button class="control-btn play-btn" id="playPauseBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="white" id="playIcon">
+                        <path d="M8 5v14l11-7z" />
+                    </svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="white" id="pauseIcon" style="display: none;">
+                        <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
+                    </svg>
+                </button>
+
+                <button class="control-btn" id="nextBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+                        <path d="M6 6v12l8.5-6L6 6z M16 6h2v12h-2z" />
+                    </svg>
+                </button>
+            </div>
         </div>
 
-        <!-- Audio réel -->
+        <!-- Audio -->
         <audio id="audioPlayer">
             <source src="media/music/INCENDIE - Wallace Cleaver.mp3" type="audio/mp3">
         </audio>
     </div>
 
+    <!-- PAGE HOME - Section d'accueil -->
+    <section id="homePage" class="page active">
+        <video autoplay muted preload="auto" loop class="video">
+            <source src="media/5983038-uhd_3840_2160_24fps.mp4" type="video/mp4">
+        </video>
+
+        <div class="home-content">
+            <p class="p0">MVSIQVA</p>
+            <p class="p1">_</p>
+            <p class="p01">Your new favorite music website</p>
+        </div>
+    </section>
+
+    <!-- PAGE WORLD - Section qui slide depuis le bas -->
+    <section id="worldPage" class="page secondary-page">
+        <div class="page-content">
+            <h1 class="page-title">WORLD</h1>
+            <div class="page-text">
+                <p>Lorem ipsum</p>
+                
+                <p>Duis aute irure</p>
+                
+                <p>Sed ut perspiciatis</p>
+                
+                <p>Nemo enim ipsam</p>
+            </div>
+        </div>
+    </section>  
 
     <script src="script.js"></script>
 </body>

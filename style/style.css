@@ -2,23 +2,45 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    /* Nouvelle police */
     font-family: "DM Sans", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 500;
-    font-style: normal;
 }
 
 body {
     width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.page {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    transition: transform 0.8s cubic-bezier(0.4, 0.0, 0.2, 1);
+    z-index: 1;
+}
+
+#homePage {
+    transform: translateY(0);
+}
+
+
+/*------------------------------ PAGE WORLD -----------------------------*/
+
+.secondary-page {
+    transform: translateY(100vh);
+    background: rgb(0,0,0);
+    overflow-y: auto;
+}
+
+.secondary-page.active {
+    transform: translateY(0);
+    z-index: 2;
 }
 
 .video {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     width: 100vw;
@@ -28,11 +50,13 @@ body {
 }
 
 header {
-    position: relative;
-    z-index: 10;
+    position: fixed;
+    top: 0;
+    z-index: 100;
     display: flex;
     justify-content: center;
-    padding: 1.5vw;
+    margin-top: 1.5vw;
+    width: 100%;
 }
 
 nav {
@@ -40,19 +64,12 @@ nav {
     justify-content: space-between;
     align-items: center;
     padding: 0vw 2.5vw;
-    width: auto;
-
-    /* Effet Liquid Glass */
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-
-    /* Bordure subtile */
     border: 1px solid rgba(255, 255, 255, 0.18);
     border-radius: 2.5vw;
-
-    /* Ombre douce */
     box-shadow: 0 8px 2.2vw 0 rgba(0, 0, 0, 0.2);
+    position: relative;
 }
 
 nav ul {
@@ -65,35 +82,33 @@ nav ul {
 nav ul li a {
     color: white;
     text-decoration: none;
-    font-family: 'DM Sans', sans-serif;
     font-size: 1.8vw;
     font-weight: 500;
+    margin-top: 0.1vw;
     position: relative;
     padding: 0.8vw 2vw;
     transition: color 0.3s ease;
     display: inline-block;
 }
 
-nav ul li a:hover {
-    color: rgba(255, 255, 255, 1);
+nav ul li a:hover { color: white; }
+
+nav ul li a.active {
+    color: rgb(168, 150, 31);
+    font-weight: bold;
 }
 
-/* Effet goutte d'eau - fond */
+
 nav ul li a::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    top: 0; left: 0; right: 0; bottom: 0;
     background: rgba(255, 255, 255, 0.15);
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 2vw;
     opacity: 0;
     transform: scale(0.8);
     transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
     z-index: -1;
 }
 
@@ -102,91 +117,62 @@ nav ul li a:hover::before {
     transform: scale(1);
 }
 
-/* Effet d'ondulation au départ de la souris */
-nav ul li a::after {
-    content: '';
+/* MOVING INDICATOR */
+.nav-indicator {
     position: absolute;
     top: 50%;
-    left: 50%;
+    left: 0;
+    height: 3.6vw;
     width: 0;
-    height: 0;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 2vw;
+    transform: translateY(-50%);
     opacity: 0;
     pointer-events: none;
-    transition: width 0.6s ease-out, height 0.6s ease-out, opacity 0.6s ease-out;
+    transition:
+        left 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+        width 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+        opacity 0.2s ease;
 }
 
-nav ul li a:not(:hover)::after {
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    animation: rippleOut 0.6s ease-out;
-}
 
-@keyframes rippleOut {
-    0% {
-        width: 20px;
-        height: 20px;
-        opacity: 0.5;
-    }
-
-    100% {
-        width: 120%;
-        height: 200%;
-        opacity: 0;
-    }
-}
 
 .LOGO {
     height: 4vw;
-    width: auto;
+    cursor: pointer;
     transition: transform 0.3s ease;
 }
 
-.LOGO:hover {
-    transform: scale(1.15);
-}
+.LOGO:hover { transform: scale(1.15); }
 
 .ProfilePicture {
-    height: 35px;
-    width: 35px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    transition: all 0.3s ease;
+    height: 4vw; width: 4vw;
+    margin-top: 0.2vw;
+    border-radius: 70%;
+    transition: transform 0.3s ease;
 }
 
-.ProfilePicture:hover {
-    border-color: rgba(255, 255, 255, 0.6);
-    transform: scale(1.05);
-}
+.ProfilePicture:hover { transform: scale(1.15); }
 
-/* Textes par-dessus la vidéo */
-body {
-    position: relative;
-}
-
-p {
-    position: relative;
-    z-index: 5;
-    color: white;
-}
+.home-content { position: relative; z-index: 5; }
+p { position: relative; color: white; }
 
 .p0 {
     font-family: "Playfair Display", serif;
+    position: fixed;
     font-size: 4vw;
     left: 74vw;
-    margin-top: 30vw;
-    color: rgb(168, 150, 31);
+    bottom: 10vw;
+    color: rgb(230, 201, 19);
 }
 
 .p1 {
     font-family: "Playfair Display", serif;
     font-size: 4vw;
+    position: fixed;
     margin-left: 81vw;
-    margin-top: -3.5vw;
+    bottom: 8.7vw;
     color: rgba(103, 103, 103, 0.7);
 }
 
@@ -194,46 +180,131 @@ p {
     margin-left: 74vw;
     margin-top: 1vw;
     color: rgba(106, 106, 106, 0.7);
+    font-size: 1.15vw;
+    position: fixed;
+    bottom: 6.5vw;
 }
 
+.page-content {
+    padding: 12vw 8vw 4vw;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.page-title {
+    font-family: "Playfair Display", serif;
+    font-size: 6vw;
+    color: rgb(168, 150, 31);
+    margin-bottom: 3vw;
+    text-align: center;
+}
+
+.page-text {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.2vw;
+    line-height: 1.8;
+}
+
+.page-text p { margin-bottom: 1.5vw; position: static; }
 
 
 
 
 
 
+/* ========== MUSIC PLAYER ========== */
 
-/* PLAYER MUSIQUE - Style Spotify Vertical */
 .music-player {
     position: fixed;
-    bottom: 2vw;
+    /* On l'ancre en haut dès le début */
+    top: 1.5vw; 
     left: 2vw;
-    z-index: 20;
-
+    z-index: 150;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 1vw;
     padding: 1.2vw;
     width: 18vw;
-
-    /* Même style liquid glass que la navbar */
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-
     border: 1px solid rgba(255, 255, 255, 0.18);
     border-radius: 1.5vw;
-    box-shadow: 0 8px 2.2vw rgba(0, 0, 0, 0.3);
+    transform: translateY(calc(100vh - 30vw)); 
+    transform-origin: top;
+    transition: transform 0.8s cubic-bezier(0.4, 0.0, 0.2, 1), 
+                width 0.4s ease, 
+                height 0.4s ease;
 }
 
-/* Pochette d'album - EN HAUT */
+/* Mode compact sur la page World */
+body.page-open .music-player {
+    transform: translateY(0);
+    width: 13vw;
+    height: 4.5vw;
+    padding: 0.5vw;
+    left: 1.5vw;
+    border-radius: 1vw;
+    flex-direction: row;
+    overflow: hidden;
+}
+
+/* Mode agrandi au clic sur la page World */
+body.page-open .music-player.expanded {
+    transform: translateY(0);
+    height: 21.5vw;
+    width: 13vw;
+    flex-direction: column;
+    padding: 1.2vw;
+}
+
+
+
+
+/* Vagues */
+body.page-open .music-player.playing::before,
+body.page-open .music-player.playing::after {
+    content: '';
+    position: absolute;
+    top: -2px; left: -2px; right: -2px; bottom: -2px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 1vw;
+    opacity: 0;
+    pointer-events: none;
+}
+
+body.page-open .music-player.playing::before {
+    animation: wave-pulse 2.5s ease-out infinite;
+}
+
+body.page-open .music-player.playing::after {
+    animation: wave-pulse 2.5s ease-out infinite 1.25s;
+}
+
+@keyframes wave-pulse {
+    0% { transform: scale(1); opacity: 0.6; }
+    100% { transform: scale(1.15); opacity: 0; }
+}
+
 .album-cover {
     width: 100%;
     aspect-ratio: 1;
     border-radius: 1vw;
     overflow: hidden;
     box-shadow: 0 4px 1.5vw rgba(0, 0, 0, 0.4);
+    flex-shrink: 0;
+}
+
+body.page-open .album-cover {
+    width: 3.5vw;
+    height: 3.5vw;
+    border-radius: 0.5vw;
+    order: 1;
+}
+
+body.page-open .music-player.expanded .album-cover {
+    width: 100%;
+    height: auto;
 }
 
 .album-cover img {
@@ -242,7 +313,6 @@ p {
     object-fit: cover;
 }
 
-/* Contenu du player (barre + infos + contrôles) */
 .player-content {
     width: 100%;
     display: flex;
@@ -250,88 +320,34 @@ p {
     gap: 0.8vw;
 }
 
-/* Barre de progression - APRÈS LA COVER */
-.progress-container {
-    display: flex;
-    align-items: center;
-    gap: 0.6vw;
-    order: 1;
-}
-
-.time-current,
-.time-total {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 0.7vw;
-    min-width: 2.5vw;
-    text-align: center;
-}
-
-.progress-bar {
+body.page-open .player-content {
+    width: auto;
     flex: 1;
-    height: 0.4vw;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 0.2vw;
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-}
-
-.progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.6));
-    border-radius: 0.2vw;
-    width: 0%;
-    transition: width 0.1s linear;
-    pointer-events: none;
-}
-
-.progress-slider {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    cursor: pointer;
-}
-
-.progress-bar:hover .progress-fill {
-    background: linear-gradient(90deg, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.8));
-}
-
-/* Titre et artiste - APRÈS LA BARRE */
-.track-info {
-    display: flex;
-    flex-direction: column;
-    gap: 0.2vw;
-    text-align: center;
+    flex-direction: row;
     order: 2;
 }
 
-.track-title {
-    color: white;
-    font-size: 1.1vw;
-    font-weight: 600;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+body.page-open .music-player.expanded .player-content {
+    width: 100%;
+    flex-direction: column;
 }
 
-.track-artist {
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 0.9vw;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-/* Contrôles play/pause/skip - EN BAS */
 .player-controls {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.8vw;
     order: 3;
+}
+
+body.page-open .player-controls {
+    order: 1;
+    gap: 0.4vw;
+}
+
+body.page-open .music-player.expanded .player-controls {
+    order: 3;
+    gap: 0.6vw;
 }
 
 .control-btn {
@@ -348,10 +364,9 @@ p {
     transition: all 0.3s ease;
 }
 
-.control-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: scale(1.1);
-}
+body.page-open .control-btn { width: 1.8vw; height: 1.8vw; }
+body.page-open .music-player.expanded .control-btn { width: 2.2vw; height: 2.2vw; }
+.control-btn:hover { background: rgba(255, 255, 255, 0.2); transform: scale(1.1); }
 
 .play-btn {
     width: 3.2vw;
@@ -359,6 +374,109 @@ p {
     background: rgba(255, 255, 255, 0.2);
 }
 
-.play-btn:hover {
-    background: rgba(255, 255, 255, 0.3);
+body.page-open .play-btn { width: 2.2vw; height: 2.2vw; }
+body.page-open .music-player.expanded .play-btn { width: 2.8vw; height: 2.8vw; }
+.play-btn:hover { background: rgba(255, 255, 255, 0.3); }
+
+body.page-open .control-btn svg { width: 10px; height: 10px; }
+body.page-open .play-btn svg { width: 12px; height: 12px; }
+body.page-open .music-player.expanded .control-btn svg { width: 12px; height: 12px; }
+body.page-open .music-player.expanded .play-btn svg { width: 15px; height: 15px; }
+
+.progress-container {
+    display: flex;
+    align-items: center;
+    gap: 0.6vw;
+    order: 1;
+    width: 100%;
+}
+
+body.page-open .progress-container {
+    order: 3;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    gap: 0;
+}
+
+body.page-open .music-player.expanded .progress-container {
+    position: static;
+    order: 2;
+    gap: 0.6vw;
+    width: 100%;
+}
+
+.time-current, .time-total {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.7vw;
+    min-width: 2.5vw;
+    text-align: center;
+}
+
+body.page-open .time-current, body.page-open .time-total { display: none; }
+body.page-open .music-player.expanded .time-current,
+body.page-open .music-player.expanded .time-total { display: block; font-size: 0.65vw; }
+
+.progress-bar {
+    flex: 1;
+    height: 0.4vw;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 0.2vw;
+    position: relative;
+    cursor: pointer;
+}
+
+body.page-open .progress-bar { height: 0.3vw; }
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, rgba(241, 225, 8, 0.8), rgba(255, 255, 255, 0.6));
+    border-radius: 0.2vw;
+    width: 0%;
+    transition: width 0.1s linear;
+    pointer-events: none;
+}
+
+.progress-slider {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.progress-bar:hover .progress-fill {
+    background: linear-gradient(90deg, rgba(241, 225, 8, 1), rgba(255, 255, 255, 0.8));
+}
+
+.track-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2vw;
+    text-align: center;
+    order: 2;
+    width: 100%;
+}
+
+body.page-open .track-info { display: none; }
+body.page-open .music-player.expanded .track-info { display: flex; order: 3; }
+
+
+.track-title {
+    color: white;
+    font-size: 1.1vw;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.track-artist {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9vw;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
