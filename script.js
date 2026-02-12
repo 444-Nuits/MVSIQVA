@@ -16,6 +16,12 @@ document.addEventListener('DOMContentLoaded', function () {
             cover: "media/cover/INCENDIE.jpg"
         },
         {
+            title: "Mr Ledger 2",
+            artist: "FEMTOGO",
+            file: "media/music/FEMTOGO - MrLedger2.mp3",
+            cover: "media/cover/BabyHayabusa.jpg"
+        },
+        {
             title: "BARA",
             artist: "Yvnnis",
             file: "media/music/Yvnnis - BARA.mp3",
@@ -58,6 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const navLinks = document.querySelectorAll('.nav-link');
     const homePage = document.getElementById('homePage');
     const worldPage = document.getElementById('worldPage');
+    const newsPage = document.getElementById('newsPage');
 
     let isPlaying = false;
     let currentPage = 'home'; // 'home' ou 'world'
@@ -239,15 +246,35 @@ logoLink.addEventListener('click', () => {
             // Ajouter la classe pour repositionner le player et la navbar
             document.body.classList.add('page-open');
 
+            // Désactiver NEWS si active
+            if (newsPage) newsPage.classList.remove('active');
+
             // Activer la page World (slide up)
             worldPage.classList.add('active');
+
+        } else if (pageName === 'news') {
+            // Ajouter la classe pour repositionner le player et la navbar
+            document.body.classList.add('page-open');
+
+            // Désactiver WORLD si active
+            worldPage.classList.remove('active');
+
+            // Activer la page News (slide up)
+            if (newsPage) {
+                newsPage.classList.add('active');
+                // Initialiser le système de cards après l'animation
+                setTimeout(() => {
+                    initNewsPage();
+                }, 100);
+            }
 
         } else if (pageName === 'home') {
             // Retirer la classe
             document.body.classList.remove('page-open');
 
-            // Désactiver la page World (slide down)
+            // Désactiver toutes les pages
             worldPage.classList.remove('active');
+            if (newsPage) newsPage.classList.remove('active');
         }
     }
 
@@ -259,8 +286,9 @@ logoLink.addEventListener('click', () => {
 
             if (target === 'world') {
                 openPage('world');
+            } else if (target === 'news') {
+                openPage('news');
             }
-            // Pour l'instant, seule la page World est implémentée
             // Les autres pages pourront être ajoutées plus tard
         });
     });
@@ -296,3 +324,99 @@ logoLink.addEventListener('click', () => {
     // ==================== INITIALISATION ====================
     loadTrack(currentTrackIndex);
 });
+
+// ==================== NEWS PAGE - CARD STACK SYSTEM ====================
+
+let currentCardIndex = 0;
+let isScrolling = false;
+
+function initNewsPage() {
+    const newsStack = document.getElementById('newsStack');
+    const timelineDates = document.getElementById('timelineDates');
+    
+    if (!newsStack || !timelineDates) return;
+    
+    const cards = document.querySelectorAll('.news-stack-card');
+    
+    // Réinitialiser la timeline
+    timelineDates.innerHTML = '';
+    
+    // Générer les dates de la timeline
+    cards.forEach((card, index) => {
+        const dateText = card.getAttribute('data-date');
+        const dateItem = document.createElement('div');
+        dateItem.className = 'timeline-date-item';
+        if (index === 0) dateItem.classList.add('active');
+        dateItem.innerHTML = `<div class="timeline-date-text">${dateText}</div>`;
+        dateItem.addEventListener('click', () => jumpToCard(index));
+        timelineDates.appendChild(dateItem);
+    });
+    
+    // Réinitialiser l'index
+    currentCardIndex = 0;
+    
+    // Scroll handler
+    newsStack.removeEventListener('wheel', handleNewsScroll);
+    newsStack.addEventListener('wheel', handleNewsScroll, { passive: false });
+}
+
+function handleNewsScroll(e) {
+    if (isScrolling) return;
+    
+    const cards = document.querySelectorAll('.news-stack-card');
+    const totalCards = cards.length;
+    
+    // Scroll vers le bas (card monte)
+    if (e.deltaY > 0 && currentCardIndex < totalCards - 1) {
+        e.preventDefault();
+        isScrolling = true;
+        currentCardIndex++;
+        updateCardPositions();
+        setTimeout(() => isScrolling = false, 600);
+    }
+    // Scroll vers le haut (card descend)
+    else if (e.deltaY < 0 && currentCardIndex > 0) {
+        e.preventDefault();
+        isScrolling = true;
+        currentCardIndex--;
+        updateCardPositions();
+        setTimeout(() => isScrolling = false, 600);
+    }
+}
+
+function updateCardPositions() {
+    const cards = document.querySelectorAll('.news-stack-card');
+    const dateItems = document.querySelectorAll('.timeline-date-item');
+    
+    cards.forEach((card, index) => {
+        const relativeIndex = index - currentCardIndex;
+        
+        // Cards passées (scrolled up)
+        if (relativeIndex < 0) {
+            card.classList.add('scrolled-up');
+            card.setAttribute('data-index', relativeIndex);
+        }
+        // Cards visibles dans la pile
+        else {
+            card.classList.remove('scrolled-up');
+            card.setAttribute('data-index', relativeIndex);
+        }
+    });
+    
+    // Update timeline
+    dateItems.forEach((item, index) => {
+        if (index === currentCardIndex) {
+            item.classList.add('active');
+        } else {
+            item.classList.remove('active');
+        }
+    });
+}
+
+function jumpToCard(index) {
+    if (isScrolling) return;
+    isScrolling = true;
+    currentCardIndex = index;
+    updateCardPositions();
+    setTimeout(() => isScrolling = false, 600);
+}
