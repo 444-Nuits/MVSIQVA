@@ -16,12 +16,6 @@ document.addEventListener('DOMContentLoaded', function () {
             cover: "media/cover/INCENDIE.jpg"
         },
         {
-            title: "Mr Ledger 2",
-            artist: "FEMTOGO",
-            file: "media/music/FEMTOGO - MrLedger2.mp3",
-            cover: "media/cover/BabyHayabusa.jpg"
-        },
-        {
             title: "BARA",
             artist: "Yvnnis",
             file: "media/music/Yvnnis - BARA.mp3",
