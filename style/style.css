@@ -1274,6 +1274,440 @@ body.page-open .music-player.expanded .track-info { display: flex; order: 3; }
 }
 
 
+/*--------------------------------------------------------PAGE ABOUT -----------------------------------------------------------*/
+
+/* ============================================================
+   FOND VIDÉO + VOILE
+   ============================================================ */
+
+#aboutPage {
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: #000;
+    position: relative;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(230,201,19,0.3) transparent;
+}
+
+/* Conteneur du fond — fixe derrière tout */
+.about-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* Vidéo identique à .video de l'accueil */
+.about-bg-video {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    object-fit: cover;
+}
+
+/* Voile noir à 95% d'opacité — laisse 5% de la vidéo transparaître */
+.about-bg-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.95);
+}
+
+/* Contenu par-dessus le fond */
+.about-wrapper {
+    position: relative;
+    z-index: 1;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+
+.about-hero {
+    position: relative;
+    height: 35vh;
+    display: flex;
+    align-items: flex-end;
+    padding: 0 4vw 3vw;
+    flex-shrink: 0;
+}
+
+.about-hero-content { position: relative; z-index: 2; }
+
+.about-eyebrow {
+    font-size: clamp(0.7rem, 0.85vw, 0.95rem);
+    color: rgba(230,201,19,0.7);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 0.5em;
+    position: static;
+}
+
+.about-title {
+    font-family: "Playfair Display", serif;
+    font-size: clamp(2.5rem, 6vw, 7rem);
+    font-weight: 900;
+    color: white;
+    line-height: 1;
+    margin-bottom: 0.2em;
+}
+
+.about-subtitle {
+    font-size: clamp(0.85rem, 1.1vw, 1.3rem);
+    color: rgba(255,255,255,0.4);
+    font-style: italic;
+    position: static;
+}
+
+/* Vinyle décoratif dans le hero */
+.about-vinyl {
+    position: absolute;
+    right: 6vw; top: 50%;
+    transform: translateY(-50%);
+    width: 22vw; height: 22vw;
+    opacity: 0.15;
+    animation: vinyl-spin 20s linear infinite;
+    pointer-events: none;
+}
+.av-ring {
+    position: absolute; border-radius: 50%;
+    border: 1px solid rgba(230,201,19,0.8);
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+}
+.av-ring.r1 { width:100%; height:100%; }
+.av-ring.r2 { width:68%;  height:68%; }
+.av-ring.r3 { width:38%;  height:38%; }
+.av-center {
+    position: absolute; top:50%; left:50%;
+    transform: translate(-50%,-50%);
+    width:10%; height:10%;
+    background: rgb(230,201,19); border-radius:50%;
+}
+
+/* ============================================================
+   3 CARTES — STYLE MAGAZINE
+   ============================================================ */
+
+.about-section {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;                          /* pas d'espace, séparés par la bordure */
+    padding: 0 4vw;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    margin: 0 0 3vw;
+}
+
+.about-card {
+    padding: 3vw 2.5vw;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2vw;
+    border-right: 1px solid rgba(255,255,255,0.08);
+    transition: background 0.4s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Pas de bordure à droite sur la dernière carte */
+.about-card:last-child { border-right: none; }
+
+/* Reflet doré très subtil au survol */
+.about-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgb(230,201,19), transparent);
+    transform: scaleX(0);
+    transition: transform 0.4s ease;
+}
+
+.about-card:hover::before { transform: scaleX(1); }
+.about-card:hover { background: rgba(230,201,19,0.03); }
+
+/* Numéro — style éditorial */
+.about-card-number {
+    font-family: "Playfair Display", serif;
+    font-size: clamp(2.5rem, 5vw, 6rem);
+    font-weight: 900;
+    color: rgba(230,201,19,0.12);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    transition: color 0.4s ease;
+}
+
+.about-card:hover .about-card-number {
+    color: rgba(230,201,19,0.25);
+}
+
+/* Titre — Playfair Display grand */
+.about-card-title {
+    font-family: "Playfair Display", serif;
+    font-size: clamp(1.1rem, 1.6vw, 2rem);
+    font-weight: 700;
+    color: white;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+}
+
+/* Ligne de séparation dorée */
+.about-card-divider {
+    width: 2.5vw;
+    height: 2px;
+    background: rgb(230,201,19);
+    min-width: 30px;
+    transition: width 0.4s ease;
+}
+
+.about-card:hover .about-card-divider { width: 4vw; }
+
+/* Texte */
+.about-card-text {
+    font-size: clamp(0.78rem, 0.88vw, 1rem);
+    color: rgba(255,255,255,0.5);
+    line-height: 1.8;
+    position: static;
+}
+
+/* ============================================================
+   SECTION ÉQUIPE
+   ============================================================ */
+
+.about-contact-section { padding: 0 4vw 3vw; }
+
+.about-section-title {
+    font-family: "Playfair Display", serif;
+    font-size: clamp(0.75rem, 1vw, 1.1rem);
+    font-weight: 700;
+    color: rgba(230,201,19,0.8);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 1.5vw;
+    margin-bottom: 1.5vw;
+}
+
+.about-title-line {
+    flex: 1; height: 1px;
+    background: linear-gradient(to right, transparent, rgba(230,201,19,0.3), transparent);
+}
+
+.about-contact-intro {
+    font-size: clamp(0.8rem, 1vw, 1.1rem);
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 2vw;
+    position: static;
+}
+
+.about-team {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2vw;
+    max-width: 50vw;
+    margin: 0 auto;
+}
+
+.about-team-card {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 1.2vw;
+    padding: 2vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8vw;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.about-team-card:hover {
+    border-color: rgba(230,201,19,0.4);
+    background: rgba(230,201,19,0.05);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(230,201,19,0.1);
+}
+
+.about-team-avatar {
+    width: 4vw; height: 4vw;
+    min-width: 50px; min-height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #e6c913, #c8a800);
+    color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Playfair Display", serif;
+    font-size: clamp(1rem, 1.5vw, 1.8rem);
+    font-weight: 900;
+    box-shadow: 0 0 20px rgba(230,201,19,0.3);
+    transition: transform 0.3s ease;
+}
+
+.about-team-card:hover .about-team-avatar { transform: scale(1.1); }
+
+.about-team-name {
+    font-family: "Playfair Display", serif;
+    font-size: clamp(0.85rem, 1.1vw, 1.3rem);
+    font-weight: 700;
+    color: white;
+    position: static;
+}
+
+.about-team-email {
+    font-size: clamp(0.65rem, 0.75vw, 0.85rem);
+    color: rgba(230,201,19,0.6);
+}
+
+.about-team-cta {
+    font-size: clamp(0.62rem, 0.7vw, 0.8rem);
+    color: rgba(255,255,255,0.25);
+    margin-top: 0.3vw;
+    transition: color 0.2s;
+}
+
+.about-team-card:hover .about-team-cta { color: rgba(230,201,19,0.5); }
+
+/* ============================================================
+                                FOOTER
+   ============================================================ */
+
+.about-footer-zone {
+    margin-top: auto;
+    left: 0%; width: 100%;
+    position: relative; z-index: 9;
+    background-color: rgba(0,0,0,0.85);
+    border-top: 1px solid rgba(255,255,255,0.07);
+    height: 20vw;
+    font-size: larger;
+    text-decoration: none;
+    flex-shrink: 0;
+}
+
+.about-LOGOfooter {
+    position: absolute;
+    left: 4vw; top: 2.2vh;
+    height: 6.5vh; width: auto;
+    margin-left: 4%;
+}
+
+.about-titrefooter {
+    font-family: "Playfair Display", serif;
+    text-align: left;
+    position: absolute;
+    top: 7%; margin-left: 12%;
+    font-size: 4vh;
+    color: rgb(230, 201, 19);
+}
+
+.about-footer-content a {
+    position: absolute;
+    display: inline-block;
+    margin: 1.5% 4.25%;
+    text-decoration: none;
+    color: rgba(220,220,220,0.8);
+    left: 30vw; top: 0px;
+    font-size: 2.9vh;
+    transition: color 0.2s;
+}
+.about-footer-content a:hover { color: rgb(230,201,19); }
+.about-fc2 { left: 45.6vw !important; }
+
+.about-footer-content p {
+    width: 31vw;
+    position: absolute;
+    margin-top: 10vh;
+    font-size: 2.1vh;
+    text-align: center;
+    color: rgba(175,175,175,0.6);
+}
+
+.about-footer-content-l1 {
+    position: absolute;
+    margin: 1.5% 4.25%;
+    left: 31%;
+    font-size: 2.35vh;
+    color: #000;
+}
+
+.about-footer-c1 {
+    position: absolute;
+    display: flex; flex-direction: column;
+    margin-top: 4.5vh;
+    text-decoration: none;
+    color: rgba(175,175,175,0.8);
+    padding-right: 4.25%;
+    width: 20vw;
+    transition: color 0.2s;
+}
+.about-footer-c1:hover { color: rgb(230,201,19); }
+
+.about-footer-c2 {
+    position: absolute;
+    left: 15vw; margin-top: 4.5vh;
+    width: 15vw;
+    text-decoration: none;
+    color: rgba(175,175,175,0.8);
+    transition: color 0.2s;
+}
+.about-footer-c2:hover { color: rgb(230,201,19); }
+
+.about-newsletter-card {
+    position: relative;
+    margin-left: 65.5vw; width: 30vw;
+    top: 3vh; padding: 1.1%;
+    display: flex; flex-direction: column;
+    background: #111;
+    border-radius: 20px;
+    border: 1px solid rgb(230, 201, 19);
+}
+
+.about-newsletter-header { text-align: center; margin-bottom: 3vh; }
+
+.about-newsletter-title {
+    position: relative;
+    font-family: "Playfair Display", serif;
+    font-size: 3.3vh; font-weight: 900;
+    color: rgb(230, 201, 19);
+    z-index: 5; display: block;
+}
+
+.about-newsletter-desc {
+    font-size: 1.65vh; line-height: 2.2vh;
+    color: rgb(175, 175, 175);
+    position: static;
+}
+
+.about-newsletter-form { display: flex; gap: 0.5vw; }
+
+.about-newsletter-input {
+    flex: 1; padding: 0.6vw;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.05);
+    color: white; font-family: inherit;
+    font-size: clamp(0.75rem, 0.85vw, 0.95rem);
+    outline: none; transition: border-color 0.2s;
+}
+.about-newsletter-input:focus { border-color: rgba(230,201,19,0.5); }
+.about-newsletter-input::placeholder { color: rgba(255,255,255,0.25); }
+
+.about-newsletter-btn {
+    border: 0;
+    background: rgb(230, 201, 19); color: #000;
+    padding: 0.68vw 1vh; border-radius: 14px;
+    font-weight: bold;
+    font-family: "Playfair Display", serif;
+    cursor: pointer; transition: opacity 0.2s;
+    white-space: nowrap;
+}
+.about-newsletter-btn:hover { opacity: 0.85; }
 
 
 

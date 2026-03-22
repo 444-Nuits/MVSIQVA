@@ -265,6 +265,139 @@
     </section>
 
 
+    <section id="aboutPage" class="page secondary-page">
+
+        <!-- Vidéo de fond (même que l'accueil) + voile noir 95% -->
+        <div class="about-bg">
+            <video autoplay muted loop preload="auto" class="about-bg-video">
+                <source src="media/5983038-uhd_3840_2160_24fps.mp4" type="video/mp4">
+            </video>
+            <div class="about-bg-overlay"></div>
+        </div>
+
+        <div class="about-wrapper">
+
+            <!-- HERO -->
+            <div class="about-hero">
+                <div class="about-hero-content">
+                    <p class="about-eyebrow">À propos</p>
+                    <h1 class="about-title">MVSIQVA</h1>
+                    <p class="about-subtitle">Votre nouveau site musical favori</p>
+                </div>
+                <div class="about-vinyl">
+                    <div class="av-ring r1"></div>
+                    <div class="av-ring r2"></div>
+                    <div class="av-ring r3"></div>
+                    <div class="av-center"></div>
+                </div>
+            </div>
+
+            <!-- 3 CARTES STYLE MAGAZINE -->
+            <div class="about-section">
+
+                <div class="about-card">
+                    <span class="about-card-number">01</span>
+                    <h2 class="about-card-title">Qui sommes‑nous ?</h2>
+                    <div class="about-card-divider"></div>
+                    <p class="about-card-text">
+                        Nous sommes 2 étudiants passionnés de musique. MVSIQVA est notre projet
+                        de fin d'année — un site musical pensé pour découvrir, écouter et
+                        s'informer sur l'actualité musicale.
+                    </p>
+                </div>
+
+                <div class="about-card">
+                    <span class="about-card-number">02</span>
+                    <h2 class="about-card-title">Ce qu'on fait</h2>
+                    <div class="about-card-divider"></div>
+                    <p class="about-card-text">
+                        MVSIQVA propose un lecteur musical intégré, un classement des titres du moment,
+                        les dernières actualités de l'industrie musicale et un espace profil personnalisable,
+                        le tout dans une interface sombre et élégante.
+                    </p>
+                </div>
+
+                <div class="about-card">
+                    <span class="about-card-number">03</span>
+                    <h2 class="about-card-title">Technologies</h2>
+                    <div class="about-card-divider"></div>
+                    <p class="about-card-text">
+                        HTML5, CSS3 et JavaScript vanilla, sans framework.
+                        Les données sont gérées via localStorage et des appels à des APIs publiques.
+                        Le projet est hébergé sur GitHub Pages et versionné sur GitHub.
+                    </p>
+                </div>
+
+            </div>
+
+            <!-- ÉQUIPE -->
+            <div class="about-contact-section">
+                <h2 class="about-section-title">
+                    <span class="about-title-line"></span>
+                    Nous contacter
+                    <span class="about-title-line"></span>
+                </h2>
+                <p class="about-contact-intro">Des suggestions, des questions ? On sera ravis de vous répondre.</p>
+                <div class="about-team">
+
+                    <a href="mailto:victor.bosshard@etu.estia.fr" class="about-team-card">
+                        <div class="about-team-avatar">V</div>
+                        <p class="about-team-name">Victor Bosshard</p>
+                        <span class="about-team-email">victor.bosshard@etu.estia.fr</span>
+                        <span class="about-team-cta">Envoyer un mail →</span>
+                    </a>
+
+                    <a href="mailto:jules.duplantier@etu.estia.fr" class="about-team-card">
+                        <div class="about-team-avatar">J</div>
+                        <p class="about-team-name">Jules Duplantier</p>
+                        <span class="about-team-email">jules.duplantier@etu.estia.fr</span>
+                        <span class="about-team-cta">Envoyer un mail →</span>
+                    </a>
+
+                </div>
+            </div>
+
+            <!-- FOOTER -->
+            <footer class="about-footer-zone">
+                <div>
+                    <img class="about-LOGOfooter" src="media/LogoWhite.png" alt="Logo MVSIQVA">
+                    <div class="about-titrefooter">MVSIQVA</div>
+                    <div class="about-footer-content">
+                        <a href="#world">Navigation</a>
+                        <a class="about-fc2" href="#about">Contact</a>
+                        <p>Ce site a été créé par Victor Bosshard<br>et Jules Duplantier.<br>
+                            --------------------------<br>MVSIQVA® ©All rights reserved<br>--------------------------
+                        </p>
+                    </div>
+                    <div class="about-footer-content-l1">
+                        <a class="about-footer-c1" href="#world">World</a><br>
+                        <a class="about-footer-c1" href="#news">News</a><br>
+                        <a class="about-footer-c1" href="#social">Social</a><br>
+                        <a class="about-footer-c1" href="#about">About</a><br>
+                        <a class="about-footer-c1" href="#profile">Profile</a><br>
+                    </div>
+                    <div class="about-footer-content-l1">
+                        <a class="about-footer-c2" href="#about">Contactez-nous</a><br>
+                        <a class="about-footer-c2" href="#about">Qui sommes nous ?</a><br>
+                    </div>
+                </div>
+                <div>
+                    <div class="about-newsletter-card">
+                        <div class="about-newsletter-header">
+                            <span class="about-newsletter-title">Abonnez-vous !</span>
+                            <p class="about-newsletter-desc">Restez au courant des dernières sorties de vos artistes
+                                préférés et ne loupez aucune nouveauté, en vous abonnant à notre Newsletter !</p>
+                        </div>
+                        <div class="about-newsletter-form">
+                            <input id="newsletterEmail" placeholder="Votre Email" type="email"
+                                class="about-newsletter-input">
+                            <button class="about-newsletter-btn" id="newsletterBtn">S'inscrire</button>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </section>
 
 
     <!-- --------------------------------------------------- SECTION PROFILE ------------------------------------------------- -->
@@ -636,6 +769,7 @@
     <script src="news.js"></script>
     <script src="auth.js"></script>
     <script src="profile.js"></script>
+    <script src="about.js"></script>
 </body>
 
 </html>

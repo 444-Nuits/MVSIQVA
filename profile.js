@@ -84,17 +84,33 @@
         if (!session) return;
         loadProfileUI(session.email);
         populateSettingsFields(session.email);
-        document.body.classList.add('page-open');
+
+        // Fermer toutes les pages
         document.getElementById('worldPage').classList.remove('active');
         document.getElementById('newsPage').classList.remove('active');
+        const aboutPage = document.getElementById('aboutPage');
+        if (aboutPage) aboutPage.classList.remove('active');
+
+        document.body.classList.add('page-open');
         profilePage.classList.add('active');
+
+        // Mettre à jour currentPage dans player.js
+        if (typeof window.setCurrentPage === 'function') window.setCurrentPage('profile');
+
         // Remettre le premier onglet actif
         document.querySelectorAll('.settings-tab').forEach((t, i)     => t.classList.toggle('active', i === 0));
         document.querySelectorAll('.settings-content').forEach((c, i) => c.classList.toggle('active', i === 0));
+
+        // Allumer le cercle doré sur le badge
+        const badge = document.getElementById('profileBadge');
+        if (window.setCurrentPage('profile')) badge.style.boxShadow = '0 0 0 2.5px rgb(230,201,19), 0 0 12px rgba(230,201,19,0.4)';
+        else badge.style.boxShadow = '';
     };
 
     function closeProfilePage() {
         profilePage.classList.remove('active');
+        document.body.classList.remove('page-open');
+        if (typeof window.setCurrentPage === 'function') window.setCurrentPage('home');
     }
 
     document.getElementById('logoLink').addEventListener('click', closeProfilePage);
@@ -282,8 +298,7 @@
         logoutBtn.addEventListener('click', function () {
             localStorage.removeItem('mvsiqva_session');
             closeProfilePage();
-            document.body.classList.remove('page-open');
-            // Remettre la photo de profil par défaut
+            if (typeof window.setCurrentPage === 'function') window.setCurrentPage('home');
             const pic = document.querySelector('.ProfilePicture');
             if (pic) {
                 pic.src                = 'media/DefaultProfilePicture.png';

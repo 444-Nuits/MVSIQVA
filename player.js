@@ -7,14 +7,15 @@ document.addEventListener('DOMContentLoaded', function () {
     // ==================== PLAYLIST ====================
 
     const playlist = [
-        { title: "Sundance",                      artist: "Népal",                    file: "media/music/Népal - Sundance.mp3",                                        cover: "media/cover/AdiosBahamas.jpg" },
-        { title: "INCENDIE",                       artist: "Wallace Cleaver",           file: "media/music/INCENDIE - Wallace Cleaver.mp3",                              cover: "media/cover/INCENDIE.jpg" },
-        { title: "BARA",                           artist: "Yvnnis",                    file: "media/music/Yvnnis - BARA.mp3",                                           cover: "media/cover/DND.jpg" },
-        { title: "GIVE ME LA PRISE CONNECTÉE (remix)", artist: "Freeze Corleone",      file: "media/music/GIVE ME LA PRISE CONNECTÉE - Freeze Corleone (remix).mp3",    cover: "media/cover/GiveMe.jpg" },
-        { title: "ÇA VA ENSEMBLE (remix)",         artist: "Alpa Wann, Nujabes",        file: "media/music/ÇA VA ENSEMBLE - Alpha Wann x Nujabes (remix).mp3",           cover: "media/cover/UMLA.jpg" },
-        { title: "Mr Ledger 2",                    artist: "FEMTOGO",                   file: "media/music/FEMTOGO - MrLedger2.mp3",                                     cover: "media/cover/UMLA.jpg" },
-        { title: "En boucle",                      artist: "Adèle Castillon, Zamdane",  file: "media/music/En boucle - Adèle Castillon, Zamdane.mp3",                    cover: "media/cover/UMLA.jpg" },
-        { title: "PEUR DE LA MORT (remix)",        artist: "BU$HI, Veridis Project",    file: "media/music/Bushi - Peur de la mort.mp3",                                 cover: "media/cover/UMLA.jpg" }
+        { title: "Sundance", artist: "Népal", file: "media/music/Népal - Sundance.mp3", cover: "media/cover/AdiosBahamas.jpg" },
+        { title: "INCENDIE", artist: "Wallace Cleaver", file: "media/music/INCENDIE - Wallace Cleaver.mp3", cover: "media/cover/INCENDIE.jpg" },
+        { title: "BARA", artist: "Yvnnis", file: "media/music/Yvnnis - BARA.mp3", cover: "media/cover/DND.jpg" },
+        { title: "GIVE ME LA PRISE CONNECTÉE (remix)", artist: "Freeze Corleone", file: "media/music/GIVE ME LA PRISE CONNECTÉE - Freeze Corleone (remix).mp3", cover: "media/cover/GiveMe.jpg" },
+        { title: "ÇA VA ENSEMBLE (remix)", artist: "Alpa Wann, Nujabes", file: "media/music/ÇA VA ENSEMBLE - Alpha Wann x Nujabes (remix).mp3", cover: "media/cover/UMLA.jpg" },
+        { title: "Mr Ledger 2", artist: "FEMTOGO", file: "media/music/FEMTOGO - MrLedger2.mp3", cover: "media/cover/BabyHayabusa.jpg" },
+        { title: "En boucle", artist: "Adèle Castillon, Zamdane", file: "media/music/En boucle - Adèle Castillon, Zamdane.mp3", cover: "media/cover/EnBoucle.jpg" },
+        { title: "PEUR DE LA MORT (remix)", artist: "BU$HI, Veridis Project", file: "media/music/Bushi - Peur de la mort.mp3", cover: "media/cover/Peurdelamort.png" },
+        { title: "Babydoll", artist: "Dominic Flike", file: "media/music/Flike - Babydoll.mp3", cover: "media/cover/Flike.jpg" },
     ];
 
     let currentTrackIndex = 0;
@@ -23,39 +24,39 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ==================== ÉLÉMENTS DOM ====================
 
-    const audio        = document.getElementById('audioPlayer');
+    const audio = document.getElementById('audioPlayer');
     const playPauseBtn = document.getElementById('playPauseBtn');
-    const prevBtn      = document.getElementById('prevBtn');
-    const nextBtn      = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
     const progressSlider = document.getElementById('progressSlider');
-    const progressFill   = document.getElementById('progressFill');
-    const progressBar    = document.querySelector('.progress-bar');
-    const timeCurrent    = document.querySelector('.time-current');
-    const timeTotal      = document.querySelector('.time-total');
-    const playIcon       = document.getElementById('playIcon');
-    const pauseIcon      = document.getElementById('pauseIcon');
-    const trackTitle     = document.querySelector('.track-title');
-    const trackArtist    = document.querySelector('.track-artist');
-    const albumCover     = document.getElementById('albumCover');
-    const musicPlayer    = document.getElementById('musicPlayer');
+    const progressFill = document.getElementById('progressFill');
+    const progressBar = document.querySelector('.progress-bar');
+    const timeCurrent = document.querySelector('.time-current');
+    const timeTotal = document.querySelector('.time-total');
+    const playIcon = document.getElementById('playIcon');
+    const pauseIcon = document.getElementById('pauseIcon');
+    const trackTitle = document.querySelector('.track-title');
+    const trackArtist = document.querySelector('.track-artist');
+    const albumCover = document.getElementById('albumCover');
+    const musicPlayer = document.getElementById('musicPlayer');
 
-    const logoLink  = document.getElementById('logoLink');
-    const navLinks  = document.querySelectorAll('.nav-link');
+    const logoLink = document.getElementById('logoLink');
+    const navLinks = document.querySelectorAll('.nav-link');
     const worldPage = document.getElementById('worldPage');
-    const newsPage  = document.getElementById('newsPage');
+    const newsPage = document.getElementById('newsPage');
 
     // ==================== NAVBAR INDICATOR ====================
 
-    const nav       = document.querySelector('nav');
+    const nav = document.querySelector('nav');
     const indicator = document.querySelector('.nav-indicator');
 
     function moveIndicatorToActive() {
         const activeLink = document.querySelector('nav ul li a.active');
         if (!activeLink) return;
-        const rect    = activeLink.getBoundingClientRect();
+        const rect = activeLink.getBoundingClientRect();
         const navRect = nav.getBoundingClientRect();
-        indicator.style.left    = (rect.left - navRect.left) + 'px';
-        indicator.style.width   = rect.width + 'px';
+        indicator.style.left = (rect.left - navRect.left) + 'px';
+        indicator.style.width = rect.width + 'px';
         indicator.style.opacity = '1';
     }
 
@@ -69,10 +70,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     window.addEventListener('resize', moveIndicatorToActive);
 
-    logoLink.addEventListener('click', () => {
-        navLinks.forEach(l => l.classList.remove('active'));
-        indicator.style.opacity = '0';
-    });
+    
 
     // ==================== FONCTIONS LECTEUR ====================
 
@@ -85,13 +83,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function loadTrack(index) {
         const track = playlist[index];
-        audio.src              = track.file;
+        audio.src = track.file;
         trackTitle.textContent = track.title;
         trackArtist.textContent = track.artist;
-        albumCover.src         = track.cover;
-        progressFill.style.width  = '0%';
-        progressSlider.value      = 0;
-        timeCurrent.textContent   = '0:00';
+        albumCover.src = track.cover;
+        progressFill.style.width = '0%';
+        progressSlider.value = 0;
+        timeCurrent.textContent = '0:00';
         audio.load();
     }
 
@@ -99,12 +97,12 @@ document.addEventListener('DOMContentLoaded', function () {
     playPauseBtn.addEventListener('click', function () {
         if (isPlaying) {
             audio.pause();
-            playIcon.style.display  = 'block';
+            playIcon.style.display = 'block';
             pauseIcon.style.display = 'none';
             musicPlayer.classList.remove('playing');
         } else {
             audio.play();
-            playIcon.style.display  = 'none';
+            playIcon.style.display = 'none';
             pauseIcon.style.display = 'block';
             musicPlayer.classList.add('playing');
         }
@@ -133,30 +131,30 @@ document.addEventListener('DOMContentLoaded', function () {
     audio.addEventListener('timeupdate', function () {
         if (!audio.duration) return;
         const progress = (audio.currentTime / audio.duration) * 100;
-        progressFill.style.width    = progress + '%';
-        progressSlider.value        = progress;
-        timeCurrent.textContent     = formatTime(audio.currentTime);
+        progressFill.style.width = progress + '%';
+        progressSlider.value = progress;
+        timeCurrent.textContent = formatTime(audio.currentTime);
     });
 
     // Durée totale
     audio.addEventListener('loadedmetadata', function () {
         timeTotal.textContent = formatTime(audio.duration);
-        progressSlider.max    = 100;
+        progressSlider.max = 100;
     });
 
     // Slider de progression
     progressSlider.addEventListener('input', function () {
         const time = (progressSlider.value / 100) * audio.duration;
-        audio.currentTime        = time;
+        audio.currentTime = time;
         progressFill.style.width = progressSlider.value + '%';
     });
 
     // Clic sur la barre de progression
     progressBar.addEventListener('click', function (e) {
-        const rect       = progressBar.getBoundingClientRect();
+        const rect = progressBar.getBoundingClientRect();
         const percentage = ((e.clientX - rect.left) / rect.width) * 100;
-        progressSlider.value     = percentage;
-        audio.currentTime        = (percentage / 100) * audio.duration;
+        progressSlider.value = percentage;
+        audio.currentTime = (percentage / 100) * audio.duration;
         progressFill.style.width = percentage + '%';
     });
 
@@ -165,7 +163,7 @@ document.addEventListener('DOMContentLoaded', function () {
         currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
         loadTrack(currentTrackIndex);
         if (currentTrackIndex === 0) {
-            playIcon.style.display  = 'block';
+            playIcon.style.display = 'block';
             pauseIcon.style.display = 'none';
             isPlaying = false;
             musicPlayer.classList.remove('playing');
@@ -183,38 +181,48 @@ document.addEventListener('DOMContentLoaded', function () {
         this.classList.toggle('expanded');
     });
 
-    logoLink.addEventListener('click', () => {
-        musicPlayer.classList.remove('expanded');
-    });
+    logoLink.addEventListener('click', function (e) {
+    e.preventDefault();
+    navLinks.forEach(l => l.classList.remove('active'));
+    indicator.style.opacity = '0';
+    musicPlayer.classList.remove('expanded');
+    openPage('home');
+});
 
     // ==================== NAVIGATION ENTRE PAGES ====================
 
     function openPage(pageName) {
-        if (currentPage === pageName) return;
-        currentPage = pageName;
+    if (currentPage === pageName) return;
+    currentPage = pageName;
 
-        if (pageName === 'world') {
-            document.body.classList.add('page-open');
-            if (newsPage) newsPage.classList.remove('active');
-            worldPage.classList.add('active');
+    // Fermer toutes les pages d'abord
+    worldPage.classList.remove('active');
+    if (newsPage) newsPage.classList.remove('active');
+    const profilePage = document.getElementById('profilePage');
+    if (profilePage) profilePage.classList.remove('active');
+    const aboutPage = document.getElementById('aboutPage');
+    if (aboutPage) aboutPage.classList.remove('active');
 
-        } else if (pageName === 'news') {
-            document.body.classList.add('page-open');
-            worldPage.classList.remove('active');
-            if (newsPage) {
-                newsPage.classList.add('active');
-                setTimeout(() => initNewsPage(), 100);
-            }
+    if (pageName === 'world') {
+        document.body.classList.add('page-open');
+        worldPage.classList.add('active');
 
-        } else if (pageName === 'home') {
-            document.body.classList.remove('page-open');
-            worldPage.classList.remove('active');
-            if (newsPage) newsPage.classList.remove('active');
-            // Fermer aussi la page profil si ouverte
-            const profilePage = document.getElementById('profilePage');
-            if (profilePage) profilePage.classList.remove('active');
+    } else if (pageName === 'news') {
+        document.body.classList.add('page-open');
+        if (newsPage) {
+            newsPage.classList.add('active');
+            setTimeout(() => initNewsPage(), 100);
         }
+
+    } else if (pageName === 'about') {
+        document.body.classList.add('page-open');
+        if (aboutPage) aboutPage.classList.add('active');
+
+    } else if (pageName === 'home') {
+        document.body.classList.remove('page-open');
+        currentPage = 'home';
     }
+}
 
     navLinks.forEach(link => {
         link.addEventListener('click', function (e) {
@@ -222,13 +230,16 @@ document.addEventListener('DOMContentLoaded', function () {
             const target = this.getAttribute('href').substring(1);
             if (target === 'world') openPage('world');
             else if (target === 'news') openPage('news');
+            else if (target === 'about') openPage('about');
         });
     });
 
-    logoLink.addEventListener('click', function (e) {
-        e.preventDefault();
-        openPage('home');
-    });
+    
+
+    // ==================== EXPOSITION GLOBALE ====================
+    // Permet à profile.js, about.js etc. d'appeler openPage et setCurrentPage
+    window.openPage = openPage;
+    window.setCurrentPage = function(name) { currentPage = name; };
 
     // ==================== INIT ====================
     loadTrack(currentTrackIndex);
