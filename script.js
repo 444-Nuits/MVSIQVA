@@ -29,10 +29,28 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         {
             title: "ÇA VA ENSEMBLE (remix)",
-            artist: "Alpa Wann x Nujabes",
+            artist: "Alpa Wann, Nujabes",
             file: "media/music/ÇA VA ENSEMBLE - Alpha Wann x Nujabes (remix).mp3",
             cover: "media/cover/UMLA.jpg"
         },
+        {
+            title: "Mr Ledger 2",
+            artist: "FEMTOGO",
+            file: "media/music/FEMTOGO - MrLedger2.mp3",
+            cover: "media/cover/UMLA.jpg"
+        },
+        {
+            title: "En boucle",
+            artist: "Adèle Castillon, Zamdane",
+            file: "media/music/En boucle - Adèle Castillon, Zamdane.mp3",
+            cover: "media/cover/UMLA.jpg"
+        },
+        {
+            title: "PEUR DE LA MORT (remix)",
+            artist: "BU$HI, Veridis Project",
+            file: "media/music/Bushi - Peur de la mort.mp3",
+            cover: "media/cover/UMLA.jpg"
+        }
     ];
 
     let currentTrackIndex = 0;
@@ -414,3 +432,757 @@ function jumpToCard(index) {
     updateCardPositions();
     setTimeout(() => isScrolling = false, 600);
 }
+
+
+
+
+// ==================== AUTH MODAL ====================
+
+(function () {
+
+    // ============================================================
+    // BASE DE DONNÉES — localStorage
+    // Clé : 'mvsiqva_users' → tableau de { email, password, createdAt }
+    // Clé : 'mvsiqva_session' → { email } si connecté
+    // ============================================================
+
+    const DB_KEY      = 'mvsiqva_users';
+    const SESSION_KEY = 'mvsiqva_session';
+
+    function getUsers() {
+        try { return JSON.parse(localStorage.getItem(DB_KEY)) || []; }
+        catch { return []; }
+    }
+
+    function saveUsers(users) {
+        localStorage.setItem(DB_KEY, JSON.stringify(users));
+    }
+
+    function getSession() {
+        try { return JSON.parse(localStorage.getItem(SESSION_KEY)); }
+        catch { return null; }
+    }
+
+    function saveSession(email) {
+        localStorage.setItem(SESSION_KEY, JSON.stringify({ email, loginAt: new Date().toISOString() }));
+    }
+
+    function clearSession() {
+        localStorage.removeItem(SESSION_KEY);
+    }
+
+    function userExists(email) {
+        return getUsers().some(u => u.email.toLowerCase() === email.toLowerCase());
+    }
+
+    function registerUser(email, password) {
+        const users = getUsers();
+        users.push({ email, password, createdAt: new Date().toISOString() });
+        saveUsers(users);
+    }
+
+    function loginUser(email, password) {
+        return getUsers().some(
+            u => u.email.toLowerCase() === email.toLowerCase() && u.password === password
+        );
+    }
+
+    // ============================================================
+    // ÉLÉMENTS DOM
+    // ============================================================
+
+    const overlay      = document.getElementById('authOverlay');
+    const backdrop     = document.getElementById('authBackdrop');
+    const closeBtn     = document.getElementById('authClose');
+    const profilePic   = document.querySelector('.ProfilePicture');
+    const viewLogin    = document.getElementById('viewLogin');
+    const viewRegister = document.getElementById('viewRegister');
+    const goToRegister = document.getElementById('goToRegister');
+    const goToLogin    = document.getElementById('goToLogin');
+
+    // Champs connexion
+    const loginEmail   = viewLogin.querySelector('input[type="email"]');
+    const loginPass    = viewLogin.querySelector('input[type="password"]');
+    const loginBtn     = viewLogin.querySelector('.auth-submit');
+
+    // Champs inscription
+    const regEmail1    = document.getElementById('regEmail1');
+    const regEmail2    = document.getElementById('regEmail2');
+    const regPass1     = document.getElementById('regPass1');
+    const regPass2     = document.getElementById('regPass2');
+    const emailError   = document.getElementById('emailError');
+    const passError    = document.getElementById('passError');
+    const registerBtn  = viewRegister.querySelector('.auth-submit');
+
+    // Indicateur force MDP
+    const strengthFill  = document.getElementById('strengthFill');
+    const strengthLabel = document.getElementById('strengthLabel');
+
+    // ============================================================
+    // FEEDBACK — toast discret en bas de la modale
+    // ============================================================
+
+    function showToast(message, type = 'success') {
+        let toast = document.getElementById('authToast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'authToast';
+            toast.style.cssText = `
+                position: absolute;
+                bottom: 1.5vw; left: 50%; transform: translateX(-50%);
+                padding: 0.7vw 1.8vw;
+                border-radius: 3vw;
+                font-size: clamp(0.7rem, 0.8vw, 0.9rem);
+                font-weight: 600;
+                pointer-events: none;
+                z-index: 20;
+                white-space: nowrap;
+                transition: opacity 0.3s ease;
+            `;
+            document.getElementById('authModal').appendChild(toast);
+        }
+
+        toast.textContent = message;
+        toast.style.background   = type === 'success' ? 'rgba(230,201,19,0.15)' : 'rgba(255,80,80,0.15)';
+        toast.style.color        = type === 'success' ? 'rgb(230,201,19)' : 'rgba(255,100,100,0.9)';
+        toast.style.border       = `1px solid ${type === 'success' ? 'rgba(230,201,19,0.4)' : 'rgba(255,80,80,0.4)'}`;
+        toast.style.opacity      = '1';
+
+        clearTimeout(toast._timer);
+        toast._timer = setTimeout(() => { toast.style.opacity = '0'; }, 3000);
+    }
+
+    // ============================================================
+    // ÉTAT CONNECTÉ — mise à jour de la photo de profil
+    // ============================================================
+
+    function updateProfileUI() {
+        const session = getSession();
+        if (session) {
+            // Initiale de l'email comme avatar texte
+            const initiale = session.email.charAt(0).toUpperCase();
+            profilePic.style.background = 'linear-gradient(135deg, #e6c913, #c8a800)';
+            profilePic.style.color      = '#000';
+            profilePic.style.display    = 'flex';
+            profilePic.style.alignItems = 'center';
+            profilePic.style.justifyContent = 'center';
+            profilePic.style.fontWeight = '700';
+            profilePic.style.fontSize   = '1.4vw';
+            profilePic.style.fontFamily = '"Playfair Display", serif';
+            profilePic.alt              = initiale;
+            // Masquer l'img et afficher un span à la place
+            profilePic.src = '';
+            profilePic.style.visibility = 'hidden';
+            // Utiliser un pseudo-élément via un wrapper
+            let badge = document.getElementById('profileBadge');
+            if (!badge) {
+                badge = document.createElement('div');
+                badge.id = 'profileBadge';
+                badge.style.cssText = `
+                    height: 4vw; width: 4vw;
+                    border-radius: 50%;
+                    background: linear-gradient(135deg, #e6c913, #c8a800);
+                    color: #000;
+                    display: flex; align-items: center; justify-content: center;
+                    font-weight: 700;
+                    font-size: 1.4vw;
+                    font-family: "Playfair Display", serif;
+                    cursor: pointer;
+                    transition: transform 0.3s ease;
+                    margin-top: 0.2vw;
+                    box-shadow: 0 0 12px rgba(230,201,19,0.4);
+                `;
+                badge.addEventListener('mouseover', () => badge.style.transform = 'scale(1.15)');
+                badge.addEventListener('mouseout',  () => badge.style.transform = 'scale(1)');
+                badge.addEventListener('click', openModal);
+                profilePic.parentElement.insertBefore(badge, profilePic);
+                profilePic.style.display = 'none';
+            }
+            const profiles = JSON.parse(localStorage.getItem('mvsiqva_profiles') || '{}');
+            const userProfile = profiles[session.email.toLowerCase()] || {};
+            if (userProfile.avatar) {
+                badge.style.background      = 'none';
+                badge.style.backgroundImage = `url('${userProfile.avatar}')`;
+                badge.style.backgroundSize  = 'cover';
+                badge.style.backgroundPosition = 'center';
+                badge.textContent           = '';
+            } else {
+                badge.style.backgroundImage = '';
+                badge.style.background      = 'linear-gradient(135deg, #e6c913, #c8a800)';
+                badge.textContent           = initiale;
+            }
+} else {
+            profilePic.src     = 'media/DefaultProfilePicture.png';
+            profilePic.style.display = '';
+            profilePic.style.visibility = '';
+            const badge = document.getElementById('profileBadge');
+            if (badge) badge.remove();
+        }
+    }
+
+    // ============================================================
+    // OUVERTURE / FERMETURE
+    // ============================================================
+
+    function openModal() {
+        // Si déjà connecté, ouvrir la page profil
+        const session = getSession();
+        if (session) {
+            if (typeof window.openProfilePage === 'function') {
+                window.openProfilePage();
+            }
+            return;
+        }
+        overlay.classList.add('open');
+        // Réinitialiser sur la vue connexion
+        viewLogin.classList.remove('hidden');
+        viewRegister.classList.add('hidden');
+        clearErrors();
+    }
+
+    profilePic.addEventListener('click', function (e) {
+        e.preventDefault();
+        openModal();
+    });
+
+    function closeModal() {
+        overlay.classList.remove('open');
+        clearErrors();
+    }
+
+    backdrop.addEventListener('click', closeModal);
+    closeBtn.addEventListener('click', closeModal);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+    // Switch vues
+    goToRegister.addEventListener('click', function () {
+        viewLogin.classList.add('hidden');
+        viewRegister.classList.remove('hidden');
+        clearErrors();
+    });
+
+    goToLogin.addEventListener('click', function () {
+        viewRegister.classList.add('hidden');
+        viewLogin.classList.remove('hidden');
+        clearErrors();
+    });
+
+    function clearErrors() {
+        if (emailError) emailError.textContent = '';
+        if (passError)  passError.textContent  = '';
+        document.querySelectorAll('.field-input.error').forEach(el => el.classList.remove('error'));
+    }
+
+    // ============================================================
+    // AFFICHER / MASQUER MOT DE PASSE
+    // ============================================================
+
+    document.querySelectorAll('.field-eye').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const inp = this.closest('.field-wrap').querySelector('.field-input');
+            if (inp) inp.type = inp.type === 'password' ? 'text' : 'password';
+        });
+    });
+
+    // ============================================================
+    // FORCE DU MOT DE PASSE
+    // ============================================================
+
+    if (regPass1) {
+        regPass1.addEventListener('input', function () {
+            const v = this.value;
+            let score = 0;
+            if (v.length >= 8)           score++;
+            if (/[A-Z]/.test(v))         score++;
+            if (/[0-9]/.test(v))         score++;
+            if (/[^A-Za-z0-9]/.test(v))  score++;
+
+            const levels = [
+                { pct: 0,   color: 'transparent',        label: '' },
+                { pct: 25,  color: '#e05252',             label: 'Faible' },
+                { pct: 50,  color: '#e09c52',             label: 'Moyen' },
+                { pct: 75,  color: '#c8d452',             label: 'Fort' },
+                { pct: 100, color: 'rgb(230, 201, 19)',   label: 'Excellent' },
+            ];
+
+            const lvl = levels[score] || levels[0];
+            strengthFill.style.width      = lvl.pct + '%';
+            strengthFill.style.background = lvl.color;
+            strengthLabel.textContent     = lvl.label;
+            strengthLabel.style.color     = lvl.color;
+        });
+    }
+
+    // ============================================================
+    // VALIDATION EN TEMPS RÉEL — inscription
+    // ============================================================
+
+    if (regEmail2) {
+        regEmail2.addEventListener('input', function () {
+            const match = this.value === regEmail1.value;
+            emailError.textContent = (this.value && !match) ? 'Les adresses e-mail ne correspondent pas.' : '';
+            this.classList.toggle('error', !!emailError.textContent);
+        });
+    }
+
+    if (regPass2) {
+        regPass2.addEventListener('input', function () {
+            const match = this.value === regPass1.value;
+            passError.textContent = (this.value && !match) ? 'Les mots de passe ne correspondent pas.' : '';
+            this.classList.toggle('error', !!passError.textContent);
+        });
+    }
+
+    // ============================================================
+    // CONNEXION
+    // ============================================================
+
+    loginBtn.addEventListener('click', function () {
+        const email = loginEmail.value.trim();
+        const pass  = loginPass.value;
+
+        if (!email || !pass) {
+            showToast('Veuillez remplir tous les champs.', 'error');
+            return;
+        }
+
+        if (!userExists(email)) {
+            showToast('Aucun compte trouvé pour cet e-mail.', 'error');
+            loginEmail.classList.add('error');
+            return;
+        }
+
+        if (!loginUser(email, pass)) {
+            showToast('Mot de passe incorrect.', 'error');
+            loginPass.classList.add('error');
+            return;
+        }
+
+        // Succès
+        saveSession(email);
+        updateProfileUI();
+        closeModal();
+        showToastGlobal(`Bienvenue, ${email.split('@')[0]} !`);
+    });
+
+    // ============================================================
+    // INSCRIPTION
+    // ============================================================
+
+    registerBtn.addEventListener('click', function () {
+        const email  = regEmail1.value.trim();
+        const email2 = regEmail2.value.trim();
+        const pass   = regPass1.value;
+        const pass2  = regPass2.value;
+
+        // Validations
+        if (!email || !email2 || !pass || !pass2) {
+            showToast('Veuillez remplir tous les champs.', 'error');
+            return;
+        }
+
+        if (email !== email2) {
+            emailError.textContent = 'Les adresses e-mail ne correspondent pas.';
+            regEmail2.classList.add('error');
+            return;
+        }
+
+        if (pass !== pass2) {
+            passError.textContent = 'Les mots de passe ne correspondent pas.';
+            regPass2.classList.add('error');
+            return;
+        }
+
+        if (pass.length < 6) {
+            showToast('Le mot de passe doit faire au moins 6 caractères.', 'error');
+            regPass1.classList.add('error');
+            return;
+        }
+
+        if (userExists(email)) {
+            showToast('Un compte existe déjà avec cet e-mail.', 'error');
+            regEmail1.classList.add('error');
+            return;
+        }
+
+        // Enregistrement
+        registerUser(email, pass);
+        saveSession(email);
+        updateProfileUI();
+        closeModal();
+        showToastGlobal(`Compte créé ! Bienvenue, ${email.split('@')[0]} !`);
+    });
+
+    // ============================================================
+    // TOAST GLOBAL (hors modale, sur la page)
+    // ============================================================
+
+    function showToastGlobal(message) {
+        let toast = document.getElementById('globalToast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'globalToast';
+            toast.style.cssText = `
+                position: fixed;
+                top: 6vw; left: 50%; transform: translateX(-50%);
+                padding: 0.8vw 2.5vw;
+                background: rgba(230,201,19,0.12);
+                border: 1px solid rgba(230,201,19,0.45);
+                color: rgb(230,201,19);
+                border-radius: 3vw;
+                font-size: clamp(0.75rem, 0.9vw, 1rem);
+                font-weight: 600;
+                z-index: 9999;
+                pointer-events: none;
+                backdrop-filter: blur(10px);
+                transition: opacity 0.4s ease;
+                white-space: nowrap;
+            `;
+            document.body.appendChild(toast);
+        }
+        toast.textContent = message;
+        toast.style.opacity = '1';
+        clearTimeout(toast._timer);
+        toast._timer = setTimeout(() => { toast.style.opacity = '0'; }, 3500);
+    }
+
+    // ============================================================
+    // INIT — restaurer la session au chargement
+    // ============================================================
+
+    updateProfileUI();
+
+    (function () {
+
+    const PROFILE_KEY = 'mvsiqva_profiles';
+
+    function getSession()  { try { return JSON.parse(localStorage.getItem('mvsiqva_session')); } catch { return null; } }
+    function getUsers()    { try { return JSON.parse(localStorage.getItem('mvsiqva_users')) || []; } catch { return []; } }
+    function saveUsers(u)  { localStorage.setItem('mvsiqva_users', JSON.stringify(u)); }
+    function getProfiles() { try { return JSON.parse(localStorage.getItem(PROFILE_KEY)) || {}; } catch { return {}; } }
+    function saveProfiles(p) { localStorage.setItem(PROFILE_KEY, JSON.stringify(p)); }
+
+    function getProfileForEmail(email) { return getProfiles()[email.toLowerCase()] || {}; }
+    function saveProfileForEmail(email, data) {
+        const p = getProfiles();
+        p[email.toLowerCase()] = { ...(p[email.toLowerCase()] || {}), ...data };
+        saveProfiles(p);
+    }
+
+    // Stats fictives déterministes (toujours les mêmes pour un email donné)
+    const STATS_POOL = [
+        { minutes: '312', tracks: '87',  fav: 'Sundance',        artist: 'Népal' },
+        { minutes: '184', tracks: '52',  fav: 'INCENDIE',         artist: 'Wallace Cleaver' },
+        { minutes: '561', tracks: '143', fav: 'BARA',             artist: 'Yvnnis' },
+        { minutes: '98',  tracks: '31',  fav: 'Mr Ledger 2',      artist: 'FEMTOGO' },
+        { minutes: '427', tracks: '109', fav: 'En boucle',        artist: 'Adèle Castillon' },
+    ];
+
+    function getStatsForEmail(email) {
+        let h = 0;
+        for (let c of email) h = (h * 31 + c.charCodeAt(0)) & 0xffff;
+        return STATS_POOL[h % STATS_POOL.length];
+    }
+
+    // Éléments
+    const profilePage     = document.getElementById('profilePage');
+    const profileBannerBg = document.getElementById('profileBannerBg');
+    const profileAvatarEl = document.getElementById('profileAvatarDisplay');
+    const profileUsername = document.getElementById('profileUsername');
+    const profileBioEl    = document.getElementById('profileBioDisplay');
+    const profileEmailEl  = document.getElementById('profileEmailDisplay');
+    const statMinutes = document.getElementById('statMinutes');
+    const statTracks  = document.getElementById('statTracks');
+    const statFav     = document.getElementById('statFav');
+    const statArtist  = document.getElementById('statArtist');
+
+    const setPseudo    = document.getElementById('setPseudo');
+    const setBio       = document.getElementById('setBio');
+    const setAvatar    = document.getElementById('setAvatar');
+    const setBanner    = document.getElementById('setBanner');
+    const saveProfileBtn = document.getElementById('saveProfileBtn');
+
+    const setEmail       = document.getElementById('setEmail');
+    const setPass1       = document.getElementById('setPass1');
+    const setPass2       = document.getElementById('setPass2');
+    const setCurrentPass = document.getElementById('setCurrentPass');
+    const saveAccountBtn = document.getElementById('saveAccountBtn');
+    const emailChangeError = document.getElementById('emailChangeError');
+    const passChangeError  = document.getElementById('passChangeError');
+    const currentPassError = document.getElementById('currentPassError');
+    const deleteConfirmEmail = document.getElementById('deleteConfirmEmail');
+    const deleteAccountBtn   = document.getElementById('deleteAccountBtn');
+
+    // ---- Navigation ----
+
+    function openProfilePage() {
+        const session = getSession();
+        if (!session) return;
+        loadProfileUI(session.email);
+        populateSettingsFields(session.email);
+        document.body.classList.add('page-open');
+        document.getElementById('worldPage').classList.remove('active');
+        document.getElementById('newsPage').classList.remove('active');
+        profilePage.classList.add('active');
+        // Réinitialiser sur le 1er onglet
+        document.querySelectorAll('.settings-tab').forEach((t,i) => t.classList.toggle('active', i===0));
+        document.querySelectorAll('.settings-content').forEach((c,i) => c.classList.toggle('active', i===0));
+    }
+
+    function closeProfilePage() {
+        profilePage.classList.remove('active');
+    }
+
+    document.getElementById('logoLink').addEventListener('click', closeProfilePage);
+    document.querySelectorAll('.nav-link').forEach(l => l.addEventListener('click', closeProfilePage));
+
+    // ---- Charger l'affichage ----
+
+    function loadProfileUI(email) {
+        const profile = getProfileForEmail(email);
+        const stats   = getStatsForEmail(email);
+        const pseudo  = profile.pseudo || email.split('@')[0];
+
+        const connectedEmail = document.getElementById('connectedEmailDisplay');
+        if (connectedEmail) connectedEmail.textContent = email;
+
+        profileBannerBg.style.backgroundImage = profile.banner ? `url('${profile.banner}')` : '';
+
+        if (profile.avatar) {
+            profileAvatarEl.style.backgroundImage = `url('${profile.avatar}')`;
+            profileAvatarEl.textContent = '';
+        } else {
+            profileAvatarEl.style.backgroundImage = '';
+            profileAvatarEl.textContent = email.charAt(0).toUpperCase();
+        }
+
+        profileUsername.textContent = pseudo;
+        profileBioEl.textContent    = profile.bio || '';
+        profileBioEl.style.display  = profile.bio ? 'block' : 'none';
+        profileEmailEl.textContent  = email;
+
+        statMinutes.textContent = stats.minutes;
+        statTracks.textContent  = stats.tracks;
+        statFav.textContent     = stats.fav;
+        statArtist.textContent  = stats.artist;
+    }
+
+    function populateSettingsFields(email) {
+        const p = getProfileForEmail(email);
+        setPseudo.value = p.pseudo || '';
+        setBio.value    = p.bio    || '';
+        setAvatar.value = p.avatar || '';
+        setBanner.value = p.banner || '';
+        setEmail.value = setPass1.value = setPass2.value = setCurrentPass.value = '';
+        clearErrors();
+    }
+
+    function clearErrors() {
+        [emailChangeError, passChangeError, currentPassError].forEach(e => e.textContent = '');
+        document.querySelectorAll('.setting-input.error').forEach(e => e.classList.remove('error'));
+    }
+
+    // ---- Onglets ----
+
+    document.querySelectorAll('.settings-tab').forEach(tab => {
+        tab.addEventListener('click', function () {
+            document.querySelectorAll('.settings-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.settings-content').forEach(c => c.classList.remove('active'));
+            this.classList.add('active');
+            const id = 'tab' + this.dataset.tab.charAt(0).toUpperCase() + this.dataset.tab.slice(1);
+            document.getElementById(id).classList.add('active');
+            clearErrors();
+        });
+    });
+
+    // ---- Sauvegarder le profil ----
+
+    saveProfileBtn.addEventListener('click', function () {
+        const session = getSession();
+        if (!session) return;
+        saveProfileForEmail(session.email, {
+            pseudo: setPseudo.value.trim(),
+            bio:    setBio.value.trim(),
+            avatar: setAvatar.value.trim(),
+            banner: setBanner.value.trim(),
+        });
+        loadProfileUI(session.email);
+        // Mettre à jour le badge dans la nav (photo OU initiale)
+        const badge = document.getElementById('profileBadge');
+        if (badge) {
+            const p = getProfileForEmail(session.email);
+            if (p.avatar) {
+                badge.style.background         = 'none';
+                badge.style.backgroundImage    = `url('${p.avatar}')`;
+                badge.style.backgroundSize     = 'cover';
+                badge.style.backgroundPosition = 'center';
+                badge.textContent              = '';
+            } else {
+                badge.style.backgroundImage = '';
+                badge.style.background      = 'linear-gradient(135deg, #e6c913, #c8a800)';
+                badge.textContent           = (p.pseudo || session.email.split('@')[0]).charAt(0).toUpperCase();
+            }
+        }
+        showProfileToast('Profil mis à jour !');
+    });
+
+    // ---- Mettre à jour le compte ----
+
+    saveAccountBtn.addEventListener('click', function () {
+        const session = getSession();
+        if (!session) return;
+        clearErrors();
+        let err = false;
+
+        const newEmail  = setEmail.value.trim();
+        const newPass1  = setPass1.value;
+        const newPass2  = setPass2.value;
+        const curPass   = setCurrentPass.value;
+
+        const users = getUsers();
+        const user  = users.find(u => u.email.toLowerCase() === session.email.toLowerCase());
+
+        if (!user || user.password !== curPass) {
+            currentPassError.textContent = 'Mot de passe actuel incorrect.';
+            setCurrentPass.classList.add('error');
+            err = true;
+        }
+
+        if (newEmail) {
+            if (!newEmail.includes('@')) {
+                emailChangeError.textContent = "L'adresse e-mail doit contenir un @.";
+                setEmail.classList.add('error');
+                err = true;
+            } else if (users.some(u => u.email.toLowerCase() === newEmail.toLowerCase() && u.email.toLowerCase() !== session.email.toLowerCase())) {
+                emailChangeError.textContent = 'Cet e-mail est déjà utilisé.';
+                setEmail.classList.add('error');
+                err = true;
+            }
+        }
+
+        if (newPass1 || newPass2) {
+            if (newPass1 !== newPass2) {
+                passChangeError.textContent = 'Les mots de passe ne correspondent pas.';
+                setPass2.classList.add('error');
+                err = true;
+            } else if (newPass1.length < 6) {
+                passChangeError.textContent = 'Minimum 6 caractères.';
+                setPass1.classList.add('error');
+                err = true;
+            }
+        }
+
+        if (err) return;
+
+        const idx = users.findIndex(u => u.email.toLowerCase() === session.email.toLowerCase());
+        if (newEmail)  users[idx].email    = newEmail;
+        if (newPass1)  users[idx].password = newPass1;
+        saveUsers(users);
+
+        const updatedEmail = newEmail || session.email;
+        localStorage.setItem('mvsiqva_session', JSON.stringify({ email: updatedEmail, loginAt: new Date().toISOString() }));
+
+        loadProfileUI(updatedEmail);
+        setEmail.value = setPass1.value = setPass2.value = setCurrentPass.value = '';
+        showProfileToast('Compte mis à jour !');
+    });
+
+    // ---- Supprimer le compte ----
+
+    deleteAccountBtn.addEventListener('click', function () {
+        const session = getSession();
+        if (!session) return;
+
+        if (deleteConfirmEmail.value.trim().toLowerCase() !== session.email.toLowerCase()) {
+            deleteConfirmEmail.classList.add('error');
+            showProfileToast('E-mail de confirmation incorrect.', 'error');
+            return;
+        }
+
+        // Supprimer uniquement CE compte dans la liste
+        saveUsers(getUsers().filter(u => u.email.toLowerCase() !== session.email.toLowerCase()));
+
+        // Supprimer le profil de CE compte
+        const profiles = getProfiles();
+        delete profiles[session.email.toLowerCase()];
+        saveProfiles(profiles);
+
+        // Supprimer la session
+        localStorage.removeItem('mvsiqva_session');
+
+        // Fermer la page + remettre l'UI à zéro
+        closeProfilePage();
+        document.body.classList.remove('page-open');
+
+        const pic = document.querySelector('.ProfilePicture');
+        if (pic) {
+            pic.src = 'media/DefaultProfilePicture.png';
+            ['display','visibility','background','border','boxShadow'].forEach(s => pic.style[s] = '');
+        }
+        const badge = document.getElementById('profileBadge');
+        if (badge) badge.remove();
+
+        showProfileToast('Compte supprimé. À bientôt ! 👋');
+    });
+
+        const logoutBtn = document.getElementById('logoutBtn');
+        const connectedEmailDisplay = document.getElementById('connectedEmailDisplay');
+
+        logoutBtn.addEventListener('click', function () {
+            localStorage.removeItem('mvsiqva_session');
+            closeProfilePage();
+            document.body.classList.remove('page-open');
+            const pic = document.querySelector('.ProfilePicture');
+            if (pic) {
+                pic.src = 'media/DefaultProfilePicture.png';
+                ['display', 'visibility', 'background', 'border', 'boxShadow'].forEach(s => pic.style[s] = '');
+            }
+            const badge = document.getElementById('profileBadge');
+            if (badge) badge.remove();
+            showProfileToast('Déconnecté avec succès !');
+        });
+
+        // ---- Toast ----
+
+    function showProfileToast(message, type = 'success') {
+        let t = document.getElementById('profileToast');
+        if (!t) {
+            t = document.createElement('div');
+            t.id = 'profileToast';
+            t.style.cssText = `
+                position:fixed; bottom:3vw; right:3vw;
+                padding:0.8vw 2vw; border-radius:3vw;
+                font-size:clamp(0.72rem,0.82vw,0.95rem); font-weight:600;
+                z-index:9999; pointer-events:none;
+                backdrop-filter:blur(10px); transition:opacity 0.35s ease; white-space:nowrap;
+            `;
+            document.body.appendChild(t);
+        }
+        t.textContent      = message;
+        t.style.background = type === 'success' ? 'rgba(230,201,19,0.12)' : 'rgba(255,80,80,0.12)';
+        t.style.border     = `1px solid ${type === 'success' ? 'rgba(230,201,19,0.4)' : 'rgba(255,80,80,0.4)'}`;
+        t.style.color      = type === 'success' ? 'rgb(230,201,19)' : 'rgba(255,100,100,0.9)';
+        t.style.opacity    = '1';
+        clearTimeout(t._t);
+        t._t = setTimeout(() => t.style.opacity = '0', 3000);
+    }
+
+    // ---- Observer le badge pour patcher son clic vers la page profil ----
+
+    const observer = new MutationObserver(() => {
+        const badge = document.getElementById('profileBadge');
+        if (badge && !badge._profileReady) {
+            badge._profileReady = true;
+            const fresh = badge.cloneNode(true);
+            fresh._profileReady = true;
+            badge.parentNode.replaceChild(fresh, badge);
+            fresh.addEventListener('mouseover', () => fresh.style.transform = 'scale(1.15)');
+            fresh.addEventListener('mouseout',  () => fresh.style.transform = 'scale(1)');
+            fresh.addEventListener('click', openProfilePage);
+        }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+
+})();
+ 
+})(); // fin IIFE auth
