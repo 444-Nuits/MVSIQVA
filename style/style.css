@@ -701,12 +701,64 @@ body.page-open .music-player.expanded .track-info { display: flex; order: 3; }
     opacity: 0.4;
 }
 
+
+.news-stack-card[data-index="1"] {
+    z-index: 49;
+    transform: translateY(68vh) scale(0.98);
+    filter: blur(1px);
+    opacity: 0.8;
+}
+
+.news-stack-card[data-index="2"] {
+    z-index: 48;
+    transform: translateY(69vh) scale(0.96);
+    filter: blur(2px);
+    opacity: 0.6;
+}
+
+.news-stack-card[data-index="3"] {
+    z-index: 47;
+    transform: translateY(70vh) scale(0.94);
+    filter: blur(3px);
+    opacity: 0.4;
+}
+
 .news-stack-card[data-index="4"] {
     z-index: 46;
     transform: translateY(71vh) scale(0.92);
     filter: blur(4px);
     opacity: 0.2;
 }
+
+
+.card-category-filter {
+    position: relative;
+    overflow: hidden;
+    z-index: 0;
+}
+
+.card-category-filter::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: var(--fill-color, rgba(230,201,19,0.8));
+    transform: translateX(-100%);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: -1;
+    border-radius: inherit;
+}
+
+.card-category-filter:hover::before {
+    transform: translateX(0);
+}
+
+.card-category-filter:hover {
+    color: #000 !important;
+    transition: color 0.15s ease 0.15s;
+}
+
+
 
 /* Cards scrolled up (passées) */
 .news-stack-card.scrolled-up {
@@ -755,6 +807,16 @@ body.page-open .music-player.expanded .track-info { display: flex; order: 3; }
 .news-stack-card[data-category="vinyl"] {
     --border-color-1: #ff9a9e;
     --border-color-2: #fecfef;
+}
+
+.news-stack-card[data-category="actualités"] {
+    --border-color-1: #ffecd2;
+    --border-color-2: #fcb69f;
+}
+
+.card-category.actualités {
+    color: #fcb69f;
+    border-color: rgba(252, 182, 159, 0.5);
 }
 
 /* Card Content */
@@ -2061,4 +2123,9 @@ body.page-open .music-player.expanded .track-info { display: flex; order: 3; }
     background: rgba(255,255,255,0.1);
     border-color: rgba(255,255,255,0.3);
     color: white;
+}
+
+@keyframes filterBadgeIn {
+    from { opacity: 0; transform: translateX(-50%) scale(0.85); }
+    to   { opacity: 1; transform: translateX(-50%) scale(1); }
 }

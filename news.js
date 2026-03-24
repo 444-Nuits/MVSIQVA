@@ -1,9 +1,21 @@
 // ============================================================
-// NEWS.JS — Chargement des articles via fetch + card stack
+// NEWS.JS — Fetch JSON + card stack + filtrage par catégorie
 // ============================================================
 
 let currentCardIndex = 0;
 let isScrolling      = false;
+let allArticles      = [];       // Cache de tous les articles fetchés
+let activeFilter     = null;     // Catégorie active ou null
+
+// ==================== POINT D'ENTRÉE ====================
+// Appelée par player.js à l'ouverture de la page News
+
+function initNewsPage() {
+    currentCardIndex = 0;
+    isScrolling      = false;
+    activeFilter     = null;
+    fetchNews();
+}
 
 // ==================== FETCH DES DONNÉES ====================
 
@@ -12,7 +24,7 @@ async function fetchNews() {
     const timelineDates = document.getElementById('timelineDates');
     if (!newsStack || !timelineDates) return;
 
-    // Afficher un état de chargement
+    // État de chargement
     newsStack.innerHTML = `
         <div style="
             display: flex; align-items: center; justify-content: center;
@@ -30,8 +42,8 @@ async function fetchNews() {
             throw new Error(`Erreur HTTP : ${response.status}`);
         }
 
-        const articles = await response.json();
-        renderNews(articles);
+        allArticles = await response.json();
+        renderNews(allArticles);
 
     } catch (error) {
         console.error('Impossible de charger les actualités :', error);
@@ -45,15 +57,14 @@ function renderNews(articles) {
     const newsStack     = document.getElementById('newsStack');
     const timelineDates = document.getElementById('timelineDates');
 
-    // Vider les conteneurs
     newsStack.innerHTML    = '';
     timelineDates.innerHTML = '';
 
-    // Générer chaque card depuis le JSON
     articles.forEach((article, index) => {
+
         // --- Card ---
         const card = document.createElement('article');
-        card.className   = 'news-stack-card';
+        card.className        = 'news-stack-card';
         card.dataset.index    = index;
         card.dataset.date     = article.date;
         card.dataset.category = article.category;
@@ -65,11 +76,13 @@ function renderNews(articles) {
                     <img
                         src="${article.image}"
                         alt="${article.title}"
-                        onerror="this.style.background='${fallbackGradient(article.category)}'; this.style.display='block'; this.src='';"
+                        onerror="this.style.background='${fallbackGradient(article.category)}'; this.src=''; this.style.display='block';"
                     >
                 </div>
                 <div class="card-info">
-                    <span class="card-category ${article.category}">${article.categoryLabel}</span>
+                    <span class="card-category ${article.category} card-category-filter" data-category="${article.category}">
+                        ${article.categoryLabel}
+                    </span>
                     <h2 class="card-title">${article.title}</h2>
                     <p class="card-description">${article.description}</p>
                     <button class="card-read-btn">
@@ -83,6 +96,16 @@ function renderNews(articles) {
             </div>
         `;
 
+        // Clic sur le badge catégorie → filtrer
+        const badge = card.querySelector('.card-category-filter');
+badge.style.cursor = 'pointer';
+badge.style.setProperty('--fill-color', badgeColor(article.category));
+
+badge.addEventListener('click', (e) => {
+    e.stopPropagation();
+    applyFilter(article.category, article.categoryLabel);
+});
+
         newsStack.appendChild(card);
 
         // --- Date dans la timeline ---
@@ -94,10 +117,96 @@ function renderNews(articles) {
         timelineDates.appendChild(dateItem);
     });
 
-    // Initialiser les positions et les événements
     currentCardIndex = 0;
     updateCardPositions();
     attachScrollHandler();
+}
+
+// ==================== FILTRAGE ====================
+
+function applyFilter(category, label) {
+    if (activeFilter === category) return;
+    activeFilter = category;
+
+    const filtered = allArticles.filter(a => a.category === category);
+    showFilterBadge(label, category);
+    renderNews(filtered);
+}
+
+function clearFilter() {
+    activeFilter = null;
+    removeFilterBadge();
+    renderNews(allArticles);
+}
+
+// ==================== BADGE FILTRE ACTIF ====================
+
+function showFilterBadge(label, category) {
+    removeFilterBadge();
+
+    const colors = {
+        album:     '#667eea',
+        interview: '#10d164',
+        festival:  '#f093fb',
+        divers : '#f093fb',
+    };
+    const color = colors[category] || 'rgba(230,201,19,0.8)';
+
+    const badge = document.createElement('div');
+    badge.id = 'activeFilterBadge';
+    badge.style.cssText = `
+        position: absolute;
+        top: 6vw;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        gap: 0.6vw;
+        padding: 0.5vw 1.2vw 0.5vw 1.4vw;
+        background: rgba(0,0,0,0.7);
+        backdrop-filter: blur(12px);
+        border: 1px solid ${color};
+        border-radius: 3vw;
+        color: ${color};
+        font-size: 0.9vw;
+        font-weight: 600;
+        z-index: 60;
+        animation: filterBadgeIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        white-space: nowrap;
+    `;
+
+    badge.innerHTML = `
+        <span>${label}</span>
+        <button onclick="clearFilter()" style="
+            background: none;
+            border: none;
+            color: ${color};
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.1vw;
+            margin-left: 0.2vw;
+            opacity: 0.7;
+            transition: opacity 0.2s, transform 0.2s;
+            font-size: 1.1vw;
+            line-height: 1;
+        "
+        onmouseover="this.style.opacity='1'; this.style.transform='scale(1.2)'"
+        onmouseout="this.style.opacity='0.7'; this.style.transform='scale(1)'"
+        aria-label="Supprimer le filtre">✕</button>
+    `;
+
+    const container = document.querySelector('.news-container');
+    if (container) {
+        container.style.position = 'relative';
+        container.appendChild(badge);
+    }
+}
+
+function removeFilterBadge() {
+    const badge = document.getElementById('activeFilterBadge');
+    if (badge) badge.remove();
 }
 
 // ==================== AFFICHAGE D'ERREUR ====================
@@ -123,7 +232,6 @@ function renderError() {
                 border: 1px solid rgba(230,201,19,0.4);
                 color: rgb(230,201,19); border-radius: 3vw;
                 cursor: pointer; font-size: 1vw;
-                transition: background 0.3s;
             ">
                 Réessayer
             </button>
@@ -131,17 +239,29 @@ function renderError() {
     `;
 }
 
-// ==================== COULEUR DE FALLBACK ====================
+// ==================== COULEUR FALLBACK IMAGE ====================
 
 function fallbackGradient(category) {
     const gradients = {
         album:     'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         interview: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
         festival:  'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-        streaming: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
-        vinyl:     'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+        divers : 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
     };
     return gradients[category] || 'linear-gradient(135deg, #333 0%, #111 100%)';
+}
+
+
+// ==================== COULEUR SURVOL CATEGORY ====================
+
+function badgeColor(category) {
+    const colors = {
+        album:      '#667eea',
+        interview:  '#10d164',
+        festival:   '#f093fb',
+        actualités: '#fcb69f',
+    };
+    return colors[category] || 'rgba(230,201,19,0.8)';
 }
 
 // ==================== SCROLL & NAVIGATION ====================
@@ -196,13 +316,4 @@ function jumpToCard(index) {
     currentCardIndex = index;
     updateCardPositions();
     setTimeout(() => isScrolling = false, 600);
-}
-
-// ==================== POINT D'ENTRÉE ====================
-// Appelée par player.js lors de l'ouverture de la page News
-
-function initNewsPage() {
-    currentCardIndex = 0;
-    isScrolling      = false;
-    fetchNews();
 }
