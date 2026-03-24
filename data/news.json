@@ -1,0 +1,47 @@
+[
+    {
+        "id": 1,
+        "date": "12 Février 2026",
+        "category": "album",
+        "categoryLabel": "🎵 Nouvel Album",
+        "title": "L'album surprise qui fait exploser les charts",
+        "description": "Une superstar mondiale vient de sortir un album complet sans aucune annonce préalable. Les fans sont en délire et les premières écoutes confirment : c'est un chef-d'œuvre.",
+        "image": "media/news/album1.jpg"
+    },
+    {
+        "id": 2,
+        "date": "11 Février 2026",
+        "category": "interview",
+        "categoryLabel": "🎤 Interview Exclusive",
+        "title": "Rencontre avec le phénomène du moment",
+        "description": "Interview exclusive avec l'artiste qui cumule les records. Il nous parle de son processus créatif, ses inspirations et ses projets futurs.",
+        "image": "media/news/interview1.jpg"
+    },
+    {
+        "id": 3,
+        "date": "10 Février 2026",
+        "category": "festival",
+        "categoryLabel": "🎪 Festival",
+        "title": "Les festivals de l'été dévoilent leur programmation",
+        "description": "Les line-ups tant attendus sont enfin là ! Découvrez quels artistes performeront cet été dans les plus grands festivals européens.",
+        "image": "media/news/festival1.jpg"
+    },
+    {
+        "id": 4,
+        "date": "9 Février 2026",
+        "category": "streaming",
+        "categoryLabel": "📊 Streaming",
+        "title": "Record historique : 100 milliards d'écoutes en un mois",
+        "description": "Le streaming musical atteint des sommets inégalés. Analyse des tendances et des artistes qui dominent les plateformes.",
+        "image": "media/news/streaming1.jpg"
+    },
+    {
+        "id": 5,
+        "date": "8 Février 2026",
+        "category": "vinyl",
+        "categoryLabel": "💿 Vinyle",
+        "title": "Le retour inattendu du vinyle chez les jeunes",
+        "description": "Les ventes de vinyles explosent auprès de la génération Z. Pourquoi cet engouement pour le format analogique ?",
+        "image": "media/news/vinyl1.jpg"
+    }
+]

@@ -25,19 +25,26 @@ document.querySelectorAll('.about-footer-zone a[href^="#"]').forEach(link => {
             return;
         }
 
-        if (navLink) {
+        const indicator = document.querySelector('.nav-indicator');
+
+        if (target === 'profile') {
+            // Profile n'a pas de lien navbar → masquer l'indicateur
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            if (indicator) indicator.style.opacity = '0';
+        } else if (navLink) {
             // Mettre à jour le slider navbar
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
             navLink.classList.add('active');
 
             // Déplacer l'indicateur
             const nav = document.querySelector('nav');
-            const indicator = document.querySelector('.nav-indicator');
             const rect = navLink.getBoundingClientRect();
             const navRect = nav.getBoundingClientRect();
-            indicator.style.left    = (rect.left - navRect.left) + 'px';
-            indicator.style.width   = rect.width + 'px';
-            indicator.style.opacity = '1';
+            if (indicator) {
+                indicator.style.left    = (rect.left - navRect.left) + 'px';
+                indicator.style.width   = rect.width + 'px';
+                indicator.style.opacity = '1';
+            }
         }
 
      

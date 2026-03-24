@@ -94,7 +94,7 @@
                 badge = document.createElement('div');
                 badge.id = 'profileBadge';
                 badge.style.cssText = `
-                    height: 4vw; width: 4vw;
+                    height: 3.5vw; width: 3.5vw;
                     border-radius: 50%;
                     background: linear-gradient(135deg, #e6c913, #c8a800);
                     color: #000;

@@ -182,12 +182,15 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     logoLink.addEventListener('click', function (e) {
-    e.preventDefault();
-    navLinks.forEach(l => l.classList.remove('active'));
-    indicator.style.opacity = '0';
-    musicPlayer.classList.remove('expanded');
-    openPage('home');
-});
+        e.preventDefault();
+        navLinks.forEach(l => l.classList.remove('active'));
+        indicator.style.opacity = '0';
+        musicPlayer.classList.remove('expanded');
+        // Forcer currentPage à une valeur différente de 'home'
+        // pour que openPage('home') ne soit pas court-circuité
+        currentPage = '__force__';
+        openPage('home');
+    });
 
     // ==================== NAVIGATION ENTRE PAGES ====================
 

@@ -97,6 +97,12 @@
         // Mettre à jour currentPage dans player.js
         if (typeof window.setCurrentPage === 'function') window.setCurrentPage('profile');
 
+        // Masquer l'indicateur navbar et retirer toutes les classes actives
+        // (Profile n'a pas de lien dédié dans la navbar)
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        const indicator = document.querySelector('.nav-indicator');
+        if (indicator) indicator.style.opacity = '0';
+
         // Remettre le premier onglet actif
         document.querySelectorAll('.settings-tab').forEach((t, i)     => t.classList.toggle('active', i === 0));
         document.querySelectorAll('.settings-content').forEach((c, i) => c.classList.toggle('active', i === 0));
