@@ -18,29 +18,30 @@
     // ==================== OUVERTURE / FERMETURE ====================
 
     window.openSearchPage = function () {
-        const page = document.getElementById('searchPage');
-        if (!page) return;
-        page.classList.add('active');
-        document.body.classList.add('page-open');
-        setTimeout(() => document.getElementById('searchMainInput').focus(), 400);
+    const page = document.getElementById('searchPage');
+    if (!page) return;
 
-        // Charger les tendances si pas encore fait
-        if (!document.getElementById('searchDefaultView').dataset.loaded) {
-            loadDefaultView();
-        }
-    };
+    // Fermer toutes les autres pages d'abord
+    document.getElementById('worldPage').classList.remove('active');
+    const newsPage = document.getElementById('newsPage');
+    if (newsPage) newsPage.classList.remove('active');
+    const aboutPage = document.getElementById('aboutPage');
+    if (aboutPage) aboutPage.classList.remove('active');
+    const profilePage = document.getElementById('profilePage');
+    if (profilePage) profilePage.classList.remove('active');
+    const chartsPage = document.getElementById('chartsPage');
+    if (chartsPage) chartsPage.classList.remove('active');
 
-    window.closeSearchPage = function () {
-        const page = document.getElementById('searchPage');
-        if (!page) return;
-        stopPreview();
-        closeArtistPanel();
-        page.style.transform = 'translateY(100vh)';
-        setTimeout(() => {
-            page.classList.remove('active');
-            page.style.transform = '';
-        }, 800);
-    };
+    // Ouvrir Search
+    page.classList.add('active');
+    document.body.classList.add('page-open');
+    if (typeof window.setCurrentPage === 'function') window.setCurrentPage('search');
+
+    setTimeout(() => document.getElementById('searchMainInput').focus(), 400);
+    if (!document.getElementById('searchDefaultView').dataset.loaded) {
+        loadDefaultView();
+    }
+};
 
     // ==================== VUE PAR DÉFAUT (tendances + historique) ====================
 
@@ -224,6 +225,7 @@
     // ==================== FICHE ARTISTE ====================
 
     window.openArtistPanel = async function (artistName) {
+        stopPreview();
         const panel = document.getElementById('artistPanel');
         panel.classList.add('active');
         renderArtistSkeleton();
@@ -240,7 +242,16 @@
     function closeArtistPanel() {
         const panel = document.getElementById('artistPanel');
         if (panel) panel.classList.remove('active');
+        stopPreview();
     }
+
+    window.closeSearchPage = function () {
+    stopPreview();
+    closeArtistPanel();
+    const page = document.getElementById('searchPage');
+    if (!page) return;
+    page.classList.remove('active');
+};
 
     function renderArtistSkeleton() {
         document.getElementById('artistPanelContent').innerHTML = `
@@ -363,6 +374,27 @@
     // ==================== INIT ====================
 
     document.addEventListener('DOMContentLoaded', function () {
+        
+        // Effet sticky scroll — le titre disparaît quand on scrolle
+const searchBody = document.querySelector('.search-body');
+const searchHero = document.querySelector('.search-hero');
+
+searchBody.addEventListener('scroll', function () {
+    if (this.scrollTop > 30) {
+        searchHero.classList.add('scrolled');
+    } else {
+        searchHero.classList.remove('scrolled');
+    }
+});
+
+// Fermer le panneau artiste en cliquant en dehors
+document.getElementById('searchPage').addEventListener('click', function(e) {
+    const panel = document.getElementById('artistPanel');
+    if (panel.classList.contains('active') && 
+        !panel.contains(e.target)) {
+        closeArtistPanel();
+    }
+});
 
         // Lien navbar Search
         document.querySelectorAll('.nav-link').forEach(link => {
@@ -373,9 +405,6 @@
                 });
             }
         });
-
-        // Bouton retour
-        document.getElementById('searchBackBtn').addEventListener('click', window.closeSearchPage);
 
         // Bouton fermer fiche artiste
         document.getElementById('artistPanelClose').addEventListener('click', closeArtistPanel);

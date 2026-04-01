@@ -91,6 +91,9 @@
         const aboutPage = document.getElementById('aboutPage');
         if (aboutPage) aboutPage.classList.remove('active');
 
+        const searchPage = document.getElementById('searchPage');
+        if (searchPage) searchPage.classList.remove('active');
+
         document.body.classList.add('page-open');
         profilePage.classList.add('active');
 
