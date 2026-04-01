@@ -156,7 +156,7 @@ function showFilterBadge(label, category) {
     badge.id = 'activeFilterBadge';
     badge.style.cssText = `
         position: absolute;
-        top: 6vw;
+        top: 1.5vw;
         left: 50%;
         transform: translateX(-50%);
         display: flex;
