@@ -5,7 +5,7 @@
 
 (function () {
 
-    const API_BASE = 'http://localhost:https://mvsiqva-api.onrender.com'; // ← remplacer par URL Railway en prod
+    const API_BASE = 'https://mvsiqva-api.onrender.com';
 
     // ==================== ÉTAT ====================
 
