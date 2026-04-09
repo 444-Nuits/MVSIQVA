@@ -1,0 +1,226 @@
+{
+  "users": [
+    {
+      "email": "camille.martin@gmail.com",
+      "password": "__seed__",
+      "pseudo": "Camille",
+      "bio": "Fan de rap FR et de bossa nova.",
+      "favArtist": "Népal",
+      "favTrack": "Sundance",
+      "minutes": 312,
+      "tracks": 87
+    },
+    {
+      "email": "theo.bernard@outlook.fr",
+      "password": "__seed__",
+      "pseudo": "ThéoB",
+      "bio": "Collectionneur de vinyles.",
+      "favArtist": "Yvnnis",
+      "favTrack": "BARA",
+      "minutes": 561,
+      "tracks": 143
+    },
+    {
+      "email": "sofia.dupont@icloud.com",
+      "password": "__seed__",
+      "pseudo": "Sofia",
+      "bio": "Je vis pour les concerts live.",
+      "favArtist": "Adèle Castillon",
+      "favTrack": "En boucle",
+      "minutes": 427,
+      "tracks": 109
+    },
+    {
+      "email": "lucas.girard@proton.me",
+      "password": "__seed__",
+      "pseudo": "Luc_G",
+      "bio": "Beatmaker le week-end.",
+      "favArtist": "FEMTOGO",
+      "favTrack": "Mr Ledger 2",
+      "minutes": 184,
+      "tracks": 52
+    },
+    {
+      "email": "marie.lefevre@gmail.com",
+      "password": "__seed__",
+      "pseudo": "MarieL",
+      "bio": "R&B, jazz, lo-fi.",
+      "favArtist": "Dominic Flike",
+      "favTrack": "Babydoll",
+      "minutes": 98,
+      "tracks": 31
+    },
+    {
+      "email": "antoine.moreau@yahoo.fr",
+      "password": "__seed__",
+      "pseudo": "Ant0ine",
+      "bio": "Rap old-school forever.",
+      "favArtist": "Alpha Wann",
+      "favTrack": "ÇA VA ENSEMBLE",
+      "minutes": 374,
+      "tracks": 95
+    },
+    {
+      "email": "ines.roux@gmail.com",
+      "password": "__seed__",
+      "pseudo": "Inès_R",
+      "bio": "Concerts, festivals, playlists.",
+      "favArtist": "Népal",
+      "favTrack": "Sundance",
+      "minutes": 288,
+      "tracks": 76
+    },
+    {
+      "email": "hugo.simon@laposte.net",
+      "password": "__seed__",
+      "pseudo": "HugoS",
+      "bio": "Guitare et samples.",
+      "favArtist": "Wallace Cleaver",
+      "favTrack": "INCENDIE",
+      "minutes": 453,
+      "tracks": 118
+    },
+    {
+      "email": "lea.blanc@orange.fr",
+      "password": "__seed__",
+      "pseudo": "Léa.B",
+      "bio": "Indie et électro. Double vie.",
+      "favArtist": "BU$HI",
+      "favTrack": "PEUR DE LA MORT",
+      "minutes": 210,
+      "tracks": 59
+    },
+    {
+      "email": "maxime.henry@gmail.com",
+      "password": "__seed__",
+      "pseudo": "MaxH",
+      "bio": "Audiophile & producteur amateur.",
+      "favArtist": "FEMTOGO",
+      "favTrack": "Mr Ledger 2",
+      "minutes": 630,
+      "tracks": 162
+    },
+    {
+      "email": "juliette.petit@sfr.fr",
+      "password": "__seed__",
+      "pseudo": "Jules.P",
+      "bio": "Chante sous la douche.",
+      "favArtist": "Adèle Castillon",
+      "favTrack": "En boucle",
+      "minutes": 155,
+      "tracks": 44
+    },
+    {
+      "email": "romain.lambert@gmail.com",
+      "password": "__seed__",
+      "pseudo": "Rom_L",
+      "bio": "Hip-hop, trap, drill.",
+      "favArtist": "Freeze Corleone",
+      "favTrack": "GIVE ME LA PRISE",
+      "minutes": 512,
+      "tracks": 131
+    },
+    {
+      "email": "clara.martinez@outlook.com",
+      "password": "__seed__",
+      "pseudo": "ClaraM",
+      "bio": "Soul et neo-soul addict.",
+      "favArtist": "Dominic Flike",
+      "favTrack": "Babydoll",
+      "minutes": 267,
+      "tracks": 70
+    },
+    {
+      "email": "kevin.robin@gmail.com",
+      "password": "__seed__",
+      "pseudo": "Kev_R",
+      "bio": "DJ le samedi, dev le lundi.",
+      "favArtist": "Yvnnis",
+      "favTrack": "BARA",
+      "minutes": 398,
+      "tracks": 103
+    },
+    {
+      "email": "pauline.david@icloud.com",
+      "password": "__seed__",
+      "pseudo": "PauD",
+      "bio": "Musique = ma thérapie.",
+      "favArtist": "Népal",
+      "favTrack": "Sundance",
+      "minutes": 344,
+      "tracks": 89
+    },
+    {
+      "email": "nicolas.morel@free.fr",
+      "password": "__seed__",
+      "pseudo": "NicoM",
+      "bio": "From Paris avec amour.",
+      "favArtist": "Alpha Wann",
+      "favTrack": "ÇA VA ENSEMBLE",
+      "minutes": 189,
+      "tracks": 54
+    },
+    {
+      "email": "alice.fournier@gmail.com",
+      "password": "__seed__",
+      "pseudo": "Ali_F",
+      "bio": "Piano jazz et rap conscient.",
+      "favArtist": "Wallace Cleaver",
+      "favTrack": "INCENDIE",
+      "minutes": 476,
+      "tracks": 122
+    },
+    {
+      "email": "baptiste.giraud@hotmail.fr",
+      "password": "__seed__",
+      "pseudo": "Bap_G",
+      "bio": "Toujours à fond dans les drops.",
+      "favArtist": "BU$HI",
+      "favTrack": "PEUR DE LA MORT",
+      "minutes": 233,
+      "tracks": 64
+    },
+    {
+      "email": "chloe.vincent@gmail.com",
+      "password": "__seed__",
+      "pseudo": "ChloV",
+      "bio": "Festivals et polaroids.",
+      "favArtist": "Adèle Castillon",
+      "favTrack": "En boucle",
+      "minutes": 501,
+      "tracks": 128
+    },
+    {
+      "email": "florian.leroy@proton.me",
+      "password": "__seed__",
+      "pseudo": "Flo.R",
+      "bio": "Underground seulement.",
+      "favArtist": "Freeze Corleone",
+      "favTrack": "GIVE ME LA PRISE",
+      "minutes": 142,
+      "tracks": 41
+    }
+  ],
+  "follows": {
+    "camille.martin@gmail.com":   ["theo.bernard@outlook.fr", "sofia.dupont@icloud.com", "ines.roux@gmail.com", "pauline.david@icloud.com"],
+    "theo.bernard@outlook.fr":    ["lucas.girard@proton.me", "marie.lefevre@gmail.com", "antoine.moreau@yahoo.fr", "kevin.robin@gmail.com"],
+    "sofia.dupont@icloud.com":    ["hugo.simon@laposte.net", "lea.blanc@orange.fr", "juliette.petit@sfr.fr", "chloe.vincent@gmail.com"],
+    "lucas.girard@proton.me":     ["maxime.henry@gmail.com", "romain.lambert@gmail.com", "nicolas.morel@free.fr", "florian.leroy@proton.me"],
+    "marie.lefevre@gmail.com":    ["clara.martinez@outlook.com", "alice.fournier@gmail.com", "baptiste.giraud@hotmail.fr", "camille.martin@gmail.com"],
+    "antoine.moreau@yahoo.fr":    ["camille.martin@gmail.com", "theo.bernard@outlook.fr", "ines.roux@gmail.com", "nicolas.morel@free.fr"],
+    "ines.roux@gmail.com":        ["camille.martin@gmail.com", "pauline.david@icloud.com", "sofia.dupont@icloud.com", "marie.lefevre@gmail.com"],
+    "hugo.simon@laposte.net":     ["alice.fournier@gmail.com", "baptiste.giraud@hotmail.fr", "lea.blanc@orange.fr", "florian.leroy@proton.me"],
+    "lea.blanc@orange.fr":        ["baptiste.giraud@hotmail.fr", "hugo.simon@laposte.net", "kevin.robin@gmail.com", "romain.lambert@gmail.com"],
+    "maxime.henry@gmail.com":     ["lucas.girard@proton.me", "theo.bernard@outlook.fr", "kevin.robin@gmail.com", "romain.lambert@gmail.com"],
+    "juliette.petit@sfr.fr":      ["sofia.dupont@icloud.com", "chloe.vincent@gmail.com", "marie.lefevre@gmail.com", "clara.martinez@outlook.com"],
+    "romain.lambert@gmail.com":   ["florian.leroy@proton.me", "lea.blanc@orange.fr", "lucas.girard@proton.me", "maxime.henry@gmail.com"],
+    "clara.martinez@outlook.com": ["marie.lefevre@gmail.com", "juliette.petit@sfr.fr", "camille.martin@gmail.com", "kevin.robin@gmail.com"],
+    "kevin.robin@gmail.com":      ["theo.bernard@outlook.fr", "maxime.henry@gmail.com", "lea.blanc@orange.fr", "antoine.moreau@yahoo.fr"],
+    "pauline.david@icloud.com":   ["camille.martin@gmail.com", "ines.roux@gmail.com", "sofia.dupont@icloud.com", "nicolas.morel@free.fr"],
+    "nicolas.morel@free.fr":      ["antoine.moreau@yahoo.fr", "lucas.girard@proton.me", "pauline.david@icloud.com", "florian.leroy@proton.me"],
+    "alice.fournier@gmail.com":   ["hugo.simon@laposte.net", "marie.lefevre@gmail.com", "baptiste.giraud@hotmail.fr", "clara.martinez@outlook.com"],
+    "baptiste.giraud@hotmail.fr": ["lea.blanc@orange.fr", "hugo.simon@laposte.net", "alice.fournier@gmail.com", "romain.lambert@gmail.com"],
+    "chloe.vincent@gmail.com":    ["sofia.dupont@icloud.com", "juliette.petit@sfr.fr", "clara.martinez@outlook.com", "marie.lefevre@gmail.com"],
+    "florian.leroy@proton.me":    ["romain.lambert@gmail.com", "nicolas.morel@free.fr", "hugo.simon@laposte.net", "baptiste.giraud@hotmail.fr"]
+  }
+}

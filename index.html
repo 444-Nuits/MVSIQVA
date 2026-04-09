@@ -94,7 +94,7 @@
         </audio>
     </div>
 
-    <!-- PAGE HOME - Section d'accueil -->
+    <!------------------------------------------------------ PAGE HOME ---------------------------------------------------->
     <section id="homePage" class="page active">
         <video autoplay muted preload="auto" loop class="video">
             <source src="media/5983038-uhd_3840_2160_24fps.mp4" type="video/mp4">
@@ -103,11 +103,11 @@
         <div class="home-content">
             <p class="p0">MVSIQVA</p>
             <p class="p1">_</p>
-            <p class="p01">Your new favorite music website</p>
+            <p class="p01">Your new favorite musical website</p>
         </div>
     </section>
 
-    <!-- PAGE WORLD - Section qui slide depuis le bas -->
+    <!----------------------------------------------------- PAGE WORLD ---------------------------------------------------->
     <section id="worldPage" class="page secondary-page">
         <div class="fond">
             <img class="micro" src="media/micro.jpg">
@@ -123,81 +123,79 @@
 
     <section id="chartsPage" class="page secondary-page charts-page">
 
-    <!-- En-tête -->
-    <div class="charts-header">
-        <button class="charts-back-btn" id="chartsBackBtn">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M19 12H5M12 5l-7 7 7 7"/>
-            </svg>
-            Retour
-        </button>
-
-        <div class="charts-header-title">
-            <h1 class="charts-title">Charts</h1>
-            <span class="charts-subtitle">Propulsé par iTunes</span>
-        </div>
-
-        <div class="charts-search-wrap">
-            <div class="charts-search-box">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="flex-shrink:0; opacity:0.5;">
-                    <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+        <!-- En-tête -->
+        <div class="charts-header">
+            <button class="charts-back-btn" id="chartsBackBtn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 5l-7 7 7 7" />
                 </svg>
-                <input
-                    type="text"
-                    id="chartsSearchInput"
-                    placeholder="Rechercher artiste, titre…"
-                    class="charts-search-input"
-                    autocomplete="off"
-                >
-                <button class="charts-search-btn" id="chartsSearchBtn">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                Retour
+            </button>
+
+            <div class="charts-header-title">
+                <h1 class="charts-title">Charts</h1>
+                <span class="charts-subtitle">Propulsed by iTunes</span>
+            </div>
+
+            <div class="charts-search-wrap">
+                <div class="charts-search-box">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                        style="flex-shrink:0; opacity:0.5;">
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="M21 21l-4.35-4.35" />
                     </svg>
-                </button>
+                    <input type="text" id="chartsSearchInput" placeholder="Rechercher artiste, titre…"
+                        class="charts-search-input" autocomplete="off">
+                    <button class="charts-search-btn" id="chartsSearchBtn">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Filtres genre -->
-    <div class="charts-genres">
-        <button class="genre-btn active" data-genre="hip-hop">Hip-Hop</button>
-        <button class="genre-btn" data-genre="pop">Pop</button>
-        <button class="genre-btn" data-genre="rock">Rock</button>
-        <button class="genre-btn" data-genre="electronic">Electronic</button>
-        <button class="genre-btn" data-genre="rnb soul">R&amp;B</button>
-        <button class="genre-btn" data-genre="jazz">Jazz</button>
-    </div>
-
-    <!-- Tableau -->
-    <div class="charts-body">
-
-        <!-- État vide / erreur -->
-        <div id="chartsEmpty" class="charts-empty" style="display:none;">
-            <span style="font-size:2.5vw;">🎵</span>
-            <p>Aucun résultat.</p>
+        <!-- Filtres genre -->
+        <div class="charts-genres">
+            <button class="genre-btn active" data-genre="hip-hop">Hip-Hop</button>
+            <button class="genre-btn" data-genre="pop">Pop</button>
+            <button class="genre-btn" data-genre="rock">Rock</button>
+            <button class="genre-btn" data-genre="electronic">Electronic</button>
+            <button class="genre-btn" data-genre="rnb soul">R&amp;B</button>
+            <button class="genre-btn" data-genre="jazz">Jazz</button>
         </div>
 
-        <!-- Tableau Billboard -->
-        <div id="chartsTableWrap" class="charts-table-wrap">
-            <table class="charts-table">
-                <thead>
-                    <tr>
-                        <th class="th-rank">#</th>
-                        <th class="th-cover"></th>
-                        <th class="th-info">Titre</th>
-                        <th class="th-album">Album</th>
-                        <th class="th-duration">Durée</th>
-                    </tr>
-                </thead>
-                <tbody id="chartsTableBody">
-                </tbody>
-            </table>
+        <!-- Tableau -->
+        <div class="charts-body">
+
+            <!-- État vide / erreur -->
+            <div id="chartsEmpty" class="charts-empty" style="display:none;">
+                <span style="font-size:2.5vw;">🎵</span>
+                <p>No results.</p>
+            </div>
+
+            <!-- Tableau Billboard -->
+            <div id="chartsTableWrap" class="charts-table-wrap">
+                <table class="charts-table">
+                    <thead>
+                        <tr>
+                            <th class="th-rank">#</th>
+                            <th class="th-cover"></th>
+                            <th class="th-info">Titre</th>
+                            <th class="th-album">Album</th>
+                            <th class="th-duration">Durée</th>
+                        </tr>
+                    </thead>
+                    <tbody id="chartsTableBody">
+                    </tbody>
+                </table>
+            </div>
+
         </div>
+    </section>
 
-    </div>
-</section>
-
-    <!-- PAGE NEWS - CARD STACK TIMELINE -->
+    <!---------------------------------------------- PAGE NEWS - CARD STACK TIMELINE --------------------------------------->
     <section id="newsPage" class="page secondary-page">
         <div class="news-container">
 
@@ -205,20 +203,112 @@
             <div class="news-timeline">
                 <div class="timeline-track"></div>
                 <div class="timeline-dates" id="timelineDates">
-                    <!-- Les dates seront générées dynamiquement -->
+                    <!-- Dynamically generated dates -->
                 </div>
             </div>
 
             <!-- CARD STACK RIGHT -->
             <div class="news-stack" id="newsStack">
-
-                <!-- CARTES GÉNÉRÉES AUTOMATIQUEMENT AVEC JSON -->
-
+                <!-- AUTOMTICALLY CARDS GENEREATED WITH JSON -->
             </div>
         </div>
     </section>
 
 
+    <!------------------------------------------------------- PAGE SOCIAL --------------------------------------------------->
+
+    <section id="socialPage" class="page secondary-page">
+    <div class="social-wrapper">
+
+        <!-- HERO + SEARCH -->
+        <div class="social-hero">
+            <div class="social-hero-text">
+                <p class="social-eyebrow">Communauté</p>
+                <h1 class="social-title">Social</h1>
+            </div>
+
+            <div class="social-search-bar">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="social-search-icon">
+                    <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+                </svg>
+                <input
+                    type="text"
+                    id="socialSearchInput"
+                    class="social-search-input"
+                    placeholder="Rechercher un utilisateur…"
+                    autocomplete="off"
+                >
+                <button class="social-search-clear" id="socialSearchClear" style="display:none">✕</button>
+            </div>
+        </div>
+
+        <!-- CORPS PRINCIPAL : suggestions + abonnements -->
+        <div class="social-body" id="socialBody">
+
+            <!-- VUE SUGGESTIONS (défaut) -->
+            <div id="socialDefaultView">
+
+                <!-- Abonnements (rangée horizontale) -->
+                <div class="social-following-section" id="socialFollowingSection" style="display:none">
+                    <h2 class="social-section-title">
+                        <span class="social-section-line"></span>
+                        Vos abonnements
+                        <span class="social-section-line"></span>
+                    </h2>
+                    <div class="social-following-row" id="socialFollowingRow">
+                        <!-- Avatars générés dynamiquement -->
+                    </div>
+                </div>
+
+                <!-- Suggestions -->
+                <div class="social-suggestions-section">
+                    <h2 class="social-section-title">
+                        <span class="social-section-line"></span>
+                        Suggestions pour vous
+                        <span class="social-section-line"></span>
+                    </h2>
+                    <div class="social-grid" id="socialSuggestionsGrid">
+                        <!-- Cartes générées dynamiquement -->
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- VUE RÉSULTATS RECHERCHE -->
+            <div id="socialResultsView" style="display:none">
+                <h2 class="social-section-title" id="socialResultsLabel">
+                    <span class="social-section-line"></span>
+                    Résultats
+                    <span class="social-section-line"></span>
+                </h2>
+                <div class="social-grid" id="socialResultsGrid"></div>
+                <div class="social-empty" id="socialResultsEmpty" style="display:none">
+                    <span>🔍</span>
+                    <p>Aucun utilisateur trouvé</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- PANNEAU PROFIL UTILISATEUR (latéral) -->
+    <div class="social-user-panel" id="socialUserPanel">
+        <button class="social-panel-close" id="socialPanelClose">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </button>
+        <div class="social-panel-content" id="socialPanelContent">
+            <!-- Contenu généré dynamiquement -->
+        </div>
+    </div>
+
+</section>
+
+
+
+
+    <!------------------------------------------------------- PAGE ABOUT --------------------------------------------------->
     <section id="aboutPage" class="page secondary-page">
 
         <!-- Vidéo de fond (même que l'accueil) + voile noir 95% -->
@@ -234,9 +324,9 @@
             <!-- HERO -->
             <div class="about-hero">
                 <div class="about-hero-content">
-                    <p class="about-eyebrow">À propos</p>
+                    <p class="about-eyebrow">About</p>
                     <h1 class="about-title">MVSIQVA</h1>
-                    <p class="about-subtitle">Votre nouveau site musical favori</p>
+                    <p class="about-subtitle">Your new favorite musical website</p>
                 </div>
                 <div class="about-vinyl">
                     <div class="av-ring r1"></div>
@@ -251,23 +341,23 @@
 
                 <div class="about-card">
                     <span class="about-card-number">01</span>
-                    <h2 class="about-card-title">Qui sommes‑nous ?</h2>
+                    <h2 class="about-card-title">Who are we ?</h2>
                     <div class="about-card-divider"></div>
                     <p class="about-card-text">
-                        Nous sommes 2 étudiants passionnés de musique. MVSIQVA est notre projet
-                        de fin d'année — un site musical pensé pour découvrir, écouter et
-                        s'informer sur l'actualité musicale.
+                        We are 2 students passionated about music. MVSIQVA is our end-year project - 
+                        a musical website thinked to discover, listening to music and be informed 
+                        about the musical news.
                     </p>
                 </div>
 
                 <div class="about-card">
                     <span class="about-card-number">02</span>
-                    <h2 class="about-card-title">Ce qu'on fait</h2>
+                    <h2 class="about-card-title">What we do</h2>
                     <div class="about-card-divider"></div>
                     <p class="about-card-text">
-                        MVSIQVA propose un lecteur musical intégré, un classement des titres du moment,
-                        les dernières actualités de l'industrie musicale et un espace profil personnalisable,
-                        le tout dans une interface sombre et élégante.
+                        MVSIQVA offers an integrated music player, a ranking of current tracks,
+                        the latest news from the music industry and a customizable profile space,
+                        all in a dark and elegant interface.
                     </p>
                 </div>
 
@@ -276,9 +366,9 @@
                     <h2 class="about-card-title">Technologies</h2>
                     <div class="about-card-divider"></div>
                     <p class="about-card-text">
-                        HTML5, CSS3 et JavaScript vanilla, sans framework.
-                        Les données sont gérées via localStorage et des appels à des APIs publiques.
-                        Le projet est hébergé sur GitHub Pages et versionné sur GitHub.
+                        HTML5, CSS3 et JavaScript vanilla, without framework.
+                        Data is managed via localStorage and calls to public APIs.
+                        The project is hosted on GitHub Pages and versioned on GitHub.
                     </p>
                 </div>
 
@@ -288,24 +378,24 @@
             <div class="about-contact-section">
                 <h2 class="about-section-title">
                     <span class="about-title-line"></span>
-                    Nous contacter
+                    Contact us
                     <span class="about-title-line"></span>
                 </h2>
-                <p class="about-contact-intro">Des suggestions, des questions ? On sera ravis de vous répondre.</p>
+                <p class="about-contact-intro">Some suggestions or questions ? We will be happy to answer you.</p>
                 <div class="about-team">
 
                     <a href="mailto:victor.bosshard@etu.estia.fr" class="about-team-card">
                         <div class="about-team-avatar">V</div>
                         <p class="about-team-name">Victor Bosshard</p>
                         <span class="about-team-email">victor.bosshard@etu.estia.fr</span>
-                        <span class="about-team-cta">Envoyer un mail →</span>
+                        <span class="about-team-cta">Send an email →</span>
                     </a>
 
                     <a href="mailto:jules.duplantier@etu.estia.fr" class="about-team-card">
                         <div class="about-team-avatar">J</div>
                         <p class="about-team-name">Jules Duplantier</p>
                         <span class="about-team-email">jules.duplantier@etu.estia.fr</span>
-                        <span class="about-team-cta">Envoyer un mail →</span>
+                        <span class="about-team-cta">Send an mail →</span>
                     </a>
 
                 </div>
@@ -319,7 +409,7 @@
                     <div class="about-footer-content">
                         <a href="#world">Navigation</a>
                         <a class="about-fc2" href="#about">Contact</a>
-                        <p>Ce site a été créé par Victor Bosshard<br>et Jules Duplantier.<br>
+                        <p>This website was created by Victor Bosshard<br>and Jules Duplantier.<br>
                             --------------------------<br>MVSIQVA® ©All rights reserved<br>--------------------------
                         </p>
                     </div>
@@ -331,21 +421,21 @@
                         <a class="about-footer-c1" href="#profile">Profile</a><br>
                     </div>
                     <div class="about-footer-content-l1">
-                        <a class="about-footer-c2" href="#about">Contactez-nous</a><br>
-                        <a class="about-footer-c2" href="#about">Qui sommes nous ?</a><br>
+                        <a class="about-footer-c2" href="#about">Contact us</a><br>
+                        <a class="about-footer-c2" href="#about">Who are we ?</a><br>
                     </div>
                 </div>
                 <div>
                     <div class="about-newsletter-card">
                         <div class="about-newsletter-header">
-                            <span class="about-newsletter-title">Abonnez-vous !</span>
-                            <p class="about-newsletter-desc">Restez au courant des dernières sorties de vos artistes
-                                préférés et ne loupez aucune nouveauté, en vous abonnant à notre Newsletter !</p>
+                            <span class="about-newsletter-title">Subscribe !</span>
+                            <p class="about-newsletter-desc">Stay up-to-date with the latest releases from your favorite
+                                artists and never miss a thing by subscribing to our newsletter!</p>
                         </div>
                         <div class="about-newsletter-form">
-                            <input id="newsletterEmail" placeholder="Votre Email" type="email"
+                            <input id="newsletterEmail" placeholder="Your Email" type="email"
                                 class="about-newsletter-input">
-                            <button class="about-newsletter-btn" id="newsletterBtn">S'inscrire</button>
+                            <button class="about-newsletter-btn" id="newsletterBtn">Subscribe</button>
                         </div>
                     </div>
                 </div>
@@ -357,86 +447,82 @@
     <section id="searchPage" class="page secondary-page search-page">
 
         <!-- BARRE DE RECHERCHE PRINCIPALE -->
-    <div class="search-hero">
-        <h1 class="search-hero-title">Rechercher</h1>
-        <div class="search-input-wrap">
-            <svg class="search-input-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
-            </svg>
-            <input
-                type="text"
-                id="searchMainInput"
-                class="search-main-input"
-                placeholder="Artistes, titres, albums…"
-                autocomplete="off"
-                spellcheck="false"
-            >
-            <button class="search-clear-btn" id="searchClearBtn" style="display:none;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M18 6L6 18M6 6l12 12"/>
+        <div class="search-hero">
+            <h1 class="search-hero-title">Rechercher</h1>
+            <div class="search-input-wrap">
+                <svg class="search-input-icon" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="1.5">
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="M21 21l-4.35-4.35" />
                 </svg>
-            </button>
-        </div>
-    </div>
-
-    <!-- CORPS SCROLLABLE -->
-    <div class="search-body">
-
-        <!-- VUE PAR DÉFAUT (tendances + historique) -->
-        <div id="searchDefaultView">
-
-            <!-- Historique -->
-            <div id="searchHistorySection" class="search-section" style="display:none;">
-                <h2 class="search-section-title">Recherches récentes</h2>
-                <div id="searchHistoryWrap" class="history-chips"></div>
+                <input type="text" id="searchMainInput" class="search-main-input"
+                    placeholder="Artistes, titres, albums…" autocomplete="off" spellcheck="false">
+                <button class="search-clear-btn" id="searchClearBtn" style="display:none;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18M6 6l12 12" />
+                    </svg>
+                </button>
             </div>
-
-            <!-- Artistes tendance -->
-            <div class="search-section">
-                <h2 class="search-section-title">Artistes tendance</h2>
-                <div id="trendingArtistsWrap" class="artists-grid"></div>
-            </div>
-
-            <!-- Titres tendance -->
-            <div class="search-section">
-                <h2 class="search-section-title">Titres tendance</h2>
-                <div id="trendingTracksWrap" class="tracks-list"></div>
-            </div>
-
         </div>
 
-        <!-- VUE RÉSULTATS -->
-        <div id="searchResultsView" style="display:none;">
+        <!-- CORPS SCROLLABLE -->
+        <div class="search-body">
 
-            <!-- Artistes -->
-            <div id="searchArtistsSection" class="search-section">
-                <h2 class="search-section-title" id="searchArtistsLabel">Artistes</h2>
-                <div id="searchArtistsWrap" class="artists-grid"></div>
+            <!-- VUE PAR DÉFAUT (tendances + historique) -->
+            <div id="searchDefaultView">
+
+                <!-- Historique -->
+                <div id="searchHistorySection" class="search-section" style="display:none;">
+                    <h2 class="search-section-title">Recherches récentes</h2>
+                    <div id="searchHistoryWrap" class="history-chips"></div>
+                </div>
+
+                <!-- Artistes tendance -->
+                <div class="search-section">
+                    <h2 class="search-section-title">Artistes tendance</h2>
+                    <div id="trendingArtistsWrap" class="artists-grid"></div>
+                </div>
+
+                <!-- Titres tendance -->
+                <div class="search-section">
+                    <h2 class="search-section-title">Titres tendance</h2>
+                    <div id="trendingTracksWrap" class="tracks-list"></div>
+                </div>
+
             </div>
 
-            <!-- Titres -->
-            <div id="searchTracksSection" class="search-section">
-                <h2 class="search-section-title" id="searchTracksLabel">Titres</h2>
-                <div id="searchTracksWrap" class="tracks-list"></div>
+            <!-- VUE RÉSULTATS -->
+            <div id="searchResultsView" style="display:none;">
+
+                <!-- Artistes -->
+                <div id="searchArtistsSection" class="search-section">
+                    <h2 class="search-section-title" id="searchArtistsLabel">Artistes</h2>
+                    <div id="searchArtistsWrap" class="artists-grid"></div>
+                </div>
+
+                <!-- Titres -->
+                <div id="searchTracksSection" class="search-section">
+                    <h2 class="search-section-title" id="searchTracksLabel">Titres</h2>
+                    <div id="searchTracksWrap" class="tracks-list"></div>
+                </div>
+
             </div>
 
         </div>
 
-    </div>
-
-    <!-- PANNEAU FICHE ARTISTE (slide depuis la droite) -->
-    <div id="artistPanel" class="artist-panel">
-        <div class="artist-panel-header">
-            <button class="artist-panel-close" id="artistPanelClose">
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                    <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-            </button>
+        <!-- PANNEAU FICHE ARTISTE (slide depuis la droite) -->
+        <div id="artistPanel" class="artist-panel">
+            <div class="artist-panel-header">
+                <button class="artist-panel-close" id="artistPanelClose">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                </button>
+            </div>
+            <div id="artistPanelContent" class="artist-panel-body"></div>
         </div>
-        <div id="artistPanelContent" class="artist-panel-body"></div>
-    </div>
 
-</section>
+    </section>
 
 
     <!-- --------------------------------------------------- SECTION PROFILE ------------------------------------------------- -->
@@ -808,6 +894,7 @@
     <script src="news.js"></script>
     <script src="auth.js"></script>
     <script src="profile.js"></script>
+    <script src="social.js"></script>
     <script src="about.js"></script>
     <script src="search.js"></script>
     <script src="charts.js"></script>

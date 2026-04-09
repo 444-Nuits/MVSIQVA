@@ -2850,3 +2850,629 @@ body.page-open .music-player.expanded .track-info { display: flex; order: 3; }
     text-align: center;
     flex-shrink: 0;
 }
+
+/* ============================================================
+   SOCIAL PAGE — À ajouter à la fin de style.css
+   ============================================================ */
+
+/* ── Wrapper général ── */
+#socialPage {
+    background: #000;
+    overflow: hidden;
+}
+
+.social-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* ── Hero ── */
+.social-hero {
+    flex-shrink: 0;
+    padding: 9vh 4vw 0;
+    display: flex;
+    align-items: flex-end;
+    gap: 3vw;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    padding-bottom: 1.8vw;
+}
+
+.social-hero-text {
+    flex-shrink: 0;
+}
+
+.social-eyebrow {
+    font-size: clamp(0.65rem, 0.8vw, 0.9rem);
+    color: rgba(230,201,19,0.6);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 0.3em;
+    position: static;
+}
+
+.social-title {
+    font-family: "Playfair Display", serif;
+    font-size: clamp(2rem, 4.5vw, 5.5rem);
+    font-weight: 900;
+    color: white;
+    line-height: 1;
+}
+
+/* ── Barre de recherche ── */
+.social-search-bar {
+    flex: 1;
+    max-width: 38vw;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.social-search-icon {
+    position: absolute;
+    left: 1.2vw;
+    color: rgba(255,255,255,0.3);
+    pointer-events: none;
+    flex-shrink: 0;
+}
+
+.social-search-input {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 3vw;
+    padding: 0.85vw 3vw 0.85vw 3vw;
+    color: white;
+    font-size: clamp(0.8rem, 0.95vw, 1.1rem);
+    font-family: inherit;
+    outline: none;
+    transition: all 0.3s ease;
+    min-height: 44px;
+}
+
+.social-search-input::placeholder {
+    color: rgba(255,255,255,0.2);
+}
+
+.social-search-input:focus {
+    border-color: rgba(230,201,19,0.5);
+    background: rgba(230,201,19,0.04);
+    box-shadow: 0 0 0 3px rgba(230,201,19,0.07);
+}
+
+.social-search-clear {
+    position: absolute;
+    right: 1vw;
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.35);
+    cursor: pointer;
+    font-size: 0.9vw;
+    padding: 0.3vw;
+    transition: color 0.2s;
+}
+
+.social-search-clear:hover { color: white; }
+
+/* ── Corps scrollable ── */
+.social-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 2vw 4vw 3vw;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(230,201,19,0.25) transparent;
+}
+
+/* ── Titres de section ── */
+.social-section-title {
+    font-family: "Playfair Display", serif;
+    font-size: clamp(0.72rem, 0.9vw, 1rem);
+    font-weight: 700;
+    color: rgba(230,201,19,0.7);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 1.5vw;
+    margin-bottom: 1.6vw;
+}
+
+.social-section-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(230,201,19,0.25), transparent);
+}
+
+/* ── Rangée abonnements ── */
+.social-following-section {
+    margin-bottom: 2.5vw;
+}
+
+.social-following-row {
+    display: flex;
+    gap: 1.5vw;
+    overflow-x: auto;
+    overflow-y: visible;
+    padding-bottom: 1.2vw;
+    padding-top: 0.6vw;
+    scrollbar-width: none;
+}
+
+.social-following-row::-webkit-scrollbar { display: none; }
+
+.social-following-chip {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5vw;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: transform 0.25s ease;
+}
+
+.social-following-chip:hover { transform: translateY(-3px); }
+
+.social-following-avatar {
+    width: 4vw; height: 4vw;
+    min-width: 48px; min-height: 48px;
+    border-radius: 50%;
+    border: 2px solid rgba(230,201,19,0.4);
+    background: linear-gradient(135deg, #2a2000, #1a1000);
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Playfair Display", serif;
+    font-size: 1.3vw;
+    font-weight: 700;
+    color: rgb(230,201,19);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+}
+
+.social-following-chip:hover .social-following-avatar {
+    border-color: rgba(230,201,19,0.9);
+    box-shadow: 0 0 16px rgba(230,201,19,0.25);
+}
+
+.social-following-name {
+    font-size: clamp(0.6rem, 0.7vw, 0.8rem);
+    color: rgba(255,255,255,0.55);
+    text-align: center;
+    max-width: 5vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ── Grille de suggestions ── */
+.social-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(18vw, 220px), 1fr));
+    gap: 1.3vw;
+}
+
+/* ── Carte utilisateur ── */
+.social-user-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 1.3vw;
+    padding: 1.8vw 1.5vw 1.4vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.7vw;
+    cursor: pointer;
+    transition: all 0.35s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.social-user-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgb(230,201,19), transparent);
+    transform: scaleX(0);
+    transition: transform 0.4s ease;
+}
+
+.social-user-card:hover::before { transform: scaleX(1); }
+
+.social-user-card:hover {
+    border-color: rgba(230,201,19,0.2);
+    background: rgba(230,201,19,0.04);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+}
+
+/* Badge de suggestion en haut à droite */
+.social-card-badge {
+    position: absolute;
+    top: 0.8vw;
+    right: 0.8vw;
+    font-size: clamp(0.55rem, 0.62vw, 0.72rem);
+    padding: 0.25vw 0.7vw;
+    border-radius: 2vw;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+}
+
+.social-card-badge.similar-artist {
+    background: rgba(102, 126, 234, 0.15);
+    border: 1px solid rgba(102, 126, 234, 0.35);
+    border-right: none;
+    color: #a0aef7;
+}
+ 
+.social-card-badge.similar-track {
+    background: rgba(29, 158, 117, 0.13);
+    border: 1px solid rgba(29, 158, 117, 0.35);
+    border-right: none;
+    color: #5dcaa5;
+}
+ 
+.social-card-badge.friend-of-friend {
+    background: rgba(16, 209, 100, 0.12);
+    border: 1px solid rgba(16, 209, 100, 0.3);
+    border-right: none;
+    color: #5de89c;
+}
+ 
+.social-card-badge.new-member {
+    background: rgba(230,201,19,0.10);
+    border: 1px solid rgba(230,201,19,0.30);
+    border-right: none;
+    color: rgba(230,201,19,0.85);
+}
+
+/* Avatar carte */
+.social-card-avatar {
+    width: 5vw; height: 5vw;
+    min-width: 56px; min-height: 56px;
+    border-radius: 50%;
+    border: 2px solid rgba(230,201,19,0.25);
+    background: linear-gradient(135deg, #2a2000, #111);
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Playfair Display", serif;
+    font-size: 1.6vw;
+    font-weight: 700;
+    color: rgb(230,201,19);
+    flex-shrink: 0;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.social-user-card:hover .social-card-avatar {
+    border-color: rgba(230,201,19,0.6);
+    box-shadow: 0 0 20px rgba(230,201,19,0.15);
+}
+
+.social-card-name {
+    font-family: "Playfair Display", serif;
+    font-size: clamp(0.85rem, 1.1vw, 1.3rem);
+    font-weight: 700;
+    color: white;
+    text-align: center;
+    line-height: 1.2;
+}
+
+.social-card-artist {
+    font-size: clamp(0.62rem, 0.72vw, 0.82rem);
+    color: rgba(230,201,19,0.6);
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.social-card-reason {
+    font-size: clamp(0.58rem, 0.66vw, 0.76rem);
+    color: rgba(255,255,255,0.28);
+    text-align: center;
+    font-style: italic;
+    line-height: 1.4;
+}
+
+/* Bouton Suivre */
+.social-follow-btn {
+    margin-top: 0.3vw;
+    padding: 0.5vw 1.6vw;
+    min-height: 30px;
+    border-radius: 3vw;
+    font-family: inherit;
+    font-size: clamp(0.65rem, 0.75vw, 0.85rem);
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(230,201,19,0.5);
+    background: transparent;
+    color: rgba(230,201,19,0.9);
+}
+
+.social-follow-btn:hover {
+    background: rgba(230,201,19,0.1);
+    border-color: rgb(230,201,19);
+    color: rgb(230,201,19);
+}
+
+.social-follow-btn.following {
+    background: rgba(230,201,19,0.12);
+    border-color: rgba(230,201,19,0.4);
+    color: rgba(255,255,255,0.5);
+}
+
+.social-follow-btn.following:hover {
+    background: rgba(255,50,50,0.08);
+    border-color: rgba(255,90,90,0.4);
+    color: rgba(255,100,100,0.8);
+}
+
+/* ── Skeleton loading ── */
+.social-skeleton-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 1.3vw;
+    padding: 1.8vw 1.5vw 1.4vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8vw;
+}
+
+.skeleton-block {
+    background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.6s infinite;
+    border-radius: 4px;
+}
+
+@keyframes skeleton-shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* ── Vide ── */
+.social-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1vw;
+    padding: 4vw;
+    color: rgba(255,255,255,0.3);
+    text-align: center;
+}
+
+.social-empty span { font-size: 3vw; }
+.social-empty p    { font-size: clamp(0.8rem, 1vw, 1.1rem); }
+
+/* ── Panneau latéral utilisateur ── */
+.social-user-panel {
+    position: absolute;
+    top: 13vh;
+    right: 0;
+    width: 22vw;
+    min-width: 260px;
+    height: calc(100% - 13vh);
+    background: rgba(8,8,8,0.97);
+    border-left: 1px solid rgba(255,255,255,0.08);
+    backdrop-filter: blur(20px);
+    z-index: 60;
+    transform: translateX(100%);
+    transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.social-user-panel.active {
+    transform: translateX(0);
+}
+
+.social-panel-close {
+    position: absolute;
+    top: 1.2vw;
+    right: 1.2vw;
+    width: 2vw; height: 2vw;
+    min-width: 28px; min-height: 28px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 50%;
+    color: rgba(255,255,255,0.4);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s ease;
+    z-index: 5;
+}
+
+.social-panel-close:hover {
+    background: rgba(255,255,255,0.12);
+    color: white;
+    transform: rotate(90deg);
+}
+
+.social-panel-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 2.5vw 1.8vw;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(230,201,19,0.2) transparent;
+}
+
+/* Hero du panneau */
+.social-panel-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8vw;
+    margin-bottom: 1.8vw;
+    padding-top: 1vw;
+}
+
+.social-panel-avatar {
+    width: 7vw; height: 7vw;
+    min-width: 70px; min-height: 70px;
+    border-radius: 50%;
+    border: 3px solid rgba(230,201,19,0.4);
+    background: linear-gradient(135deg, #2a2000, #111);
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Playfair Display", serif;
+    font-size: 2.5vw;
+    font-weight: 700;
+    color: rgb(230,201,19);
+    box-shadow: 0 0 30px rgba(230,201,19,0.12);
+}
+
+.social-panel-name {
+    font-family: "Playfair Display", serif;
+    font-size: clamp(1.1rem, 1.6vw, 2rem);
+    font-weight: 700;
+    color: white;
+    text-align: center;
+}
+
+.social-panel-email {
+    font-size: clamp(0.62rem, 0.72vw, 0.82rem);
+    color: rgba(230,201,19,0.5);
+    text-align: center;
+}
+
+.social-panel-bio {
+    font-size: clamp(0.72rem, 0.82vw, 0.92rem);
+    color: rgba(255,255,255,0.4);
+    text-align: center;
+    font-style: italic;
+    line-height: 1.6;
+    position: static;
+}
+
+/* Stats communes */
+.social-panel-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8vw;
+    margin-bottom: 1.6vw;
+}
+
+.social-panel-stat {
+    background: rgba(230,201,19,0.05);
+    border: 1px solid rgba(230,201,19,0.1);
+    border-radius: 0.8vw;
+    padding: 0.9vw;
+    text-align: center;
+}
+
+.social-panel-stat-val {
+    font-family: "Playfair Display", serif;
+    font-size: clamp(1rem, 1.5vw, 1.8rem);
+    font-weight: 900;
+    color: white;
+    line-height: 1;
+    margin-bottom: 0.2em;
+}
+
+.social-panel-stat-label {
+    font-size: clamp(0.58rem, 0.66vw, 0.76rem);
+    color: rgba(255,255,255,0.35);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+/* Artiste favori commun */
+.social-panel-section-title {
+    font-size: clamp(0.62rem, 0.72vw, 0.8rem);
+    color: rgba(230,201,19,0.6);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 0.8vw;
+    font-weight: 700;
+    position: static;
+}
+
+.social-panel-common-row {
+    display: flex;
+    align-items: center;
+    gap: 0.8vw;
+    padding: 0.8vw;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 0.8vw;
+    margin-bottom: 0.5vw;
+}
+
+.social-panel-common-icon {
+    font-size: 1.2vw;
+    flex-shrink: 0;
+}
+
+.social-panel-common-text {
+    font-size: clamp(0.68rem, 0.78vw, 0.88rem);
+    color: rgba(255,255,255,0.6);
+    line-height: 1.4;
+}
+
+.social-panel-common-text strong {
+    color: white;
+    font-weight: 600;
+}
+
+/* Bouton Suivre dans le panneau */
+.social-panel-follow-btn {
+    width: 100%;
+    padding: 0.9vw 0;
+    min-height: 40px;
+    border-radius: 0.8vw;
+    font-family: inherit;
+    font-size: clamp(0.75rem, 0.88vw, 1rem);
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 1.2vw;
+    background: linear-gradient(135deg, #e6c913, #c8a800);
+    border: none;
+    color: #000;
+    box-shadow: 0 6px 20px rgba(230,201,19,0.2);
+}
+
+.social-panel-follow-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(230,201,19,0.35);
+}
+
+.social-panel-follow-btn.following {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.5);
+    box-shadow: none;
+}
+
+.social-panel-follow-btn.following:hover {
+    background: rgba(255,50,50,0.08);
+    border-color: rgba(255,90,90,0.4);
+    color: rgba(255,100,100,0.8);
+}
+
+/* Animation d'entrée des cartes */
+@keyframes cardFadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.social-user-card {
+    animation: cardFadeIn 0.4s ease both;
+}
