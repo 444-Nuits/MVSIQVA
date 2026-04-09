@@ -31,6 +31,8 @@
     if (profilePage) profilePage.classList.remove('active');
     const chartsPage = document.getElementById('chartsPage');
     if (chartsPage) chartsPage.classList.remove('active');
+    const socialPage = document.getElementById('socialPage');
+if (socialPage) socialPage.classList.remove('active');
 
     // Ouvrir Search
     page.classList.add('active');

@@ -207,6 +207,8 @@ document.addEventListener('DOMContentLoaded', function () {
     if (aboutPage) aboutPage.classList.remove('active');
     const searchPage = document.getElementById('searchPage');
     if (searchPage) searchPage.classList.remove('active');
+    const socialPage = document.getElementById('socialPage');
+if (socialPage) socialPage.classList.remove('active');
 
     if (pageName === 'world') {
         document.body.classList.add('page-open');
@@ -226,6 +228,9 @@ document.addEventListener('DOMContentLoaded', function () {
     } else if (pageName === 'home') {
         document.body.classList.remove('page-open');
         currentPage = 'home';
+    }
+    else if (target === 'social') {
+        if (typeof window.openSocialPage === 'function') window.openSocialPage();
     }
 }
 

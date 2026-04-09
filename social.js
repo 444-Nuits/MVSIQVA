@@ -534,7 +534,7 @@
     // ============================================================
 
     window.openSocialPage = async function () {
-        ['worldPage', 'newsPage', 'aboutPage', 'profilePage'].forEach(id => {
+        ['worldPage', 'newsPage', 'aboutPage', 'profilePage', 'searchPage'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.classList.remove('active');
         });
