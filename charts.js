@@ -8,7 +8,7 @@
 
     // En local → http://localhost:3000
     // Une fois déployé sur Railway → remplacer par l'URL Railway
-    const API_BASE = 'http://localhost:3000';
+    const API_BASE = 'http://https://mvsiqva-api.onrender.com:3000';
 
     // ==================== ÉTAT ====================
 

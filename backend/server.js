@@ -4,7 +4,7 @@ const fetch   = require('node-fetch');
 
 const app     = express();
 const PORT    = 3000;
-const LASTFM_KEY = '4d7ebbef5b0b9430cf28419a88af87da'; // ← votre clé Last.fm
+const LASTFM_KEY = process.env.LASTFM_KEY || '4d7ebbef5b0b9430cf28419a88af87da'; // API key (last.fm)
 
 app.use(cors());
 
