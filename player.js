@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
         { title: "Sundance", artist: "Népal", file: "media/music/Népal - Sundance.mp3", cover: "media/cover/AdiosBahamas.jpg" },
         { title: "INCENDIE", artist: "Wallace Cleaver", file: "media/music/INCENDIE - Wallace Cleaver.mp3", cover: "media/cover/INCENDIE.jpg" },
         { title: "BARA", artist: "Yvnnis", file: "media/music/Yvnnis - BARA.mp3", cover: "media/cover/DND.jpg" },
-        { title: "GIVE ME LA PRISE CONNECTÉE (remix)", artist: "Freeze Corleone", file: "media/music/GIVE ME LA PRISE CONNECTÉE - Freeze Corleone (remix).mp3", cover: "media/cover/GiveMe.jpg" },
+        { title: "GIVE ME LA PRISE CONNECTÉE (remix)", artist: "Freeze Corleone", file: "media/music/givemelaprisecorleone.mp3", cover: "media/cover/GiveMe.jpg" },
         { title: "ÇA VA ENSEMBLE (remix)", artist: "Alpa Wann, Nujabes", file: "media/music/ÇA VA ENSEMBLE - Alpha Wann x Nujabes (remix).mp3", cover: "media/cover/UMLA.jpg" },
         { title: "Mr Ledger 2", artist: "FEMTOGO", file: "media/music/FEMTOGO - MrLedger2.mp3", cover: "media/cover/BabyHayabusa.jpg" },
         { title: "En boucle", artist: "Adèle Castillon, Zamdane", file: "media/music/En boucle - Adèle Castillon, Zamdane.mp3", cover: "media/cover/EnBoucle.jpg" },
