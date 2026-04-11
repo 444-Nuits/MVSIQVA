@@ -17,7 +17,7 @@ async function enrichWithItunes(title, artist) {
     try {
         const query = encodeURIComponent(`${title} ${artist}`);
         const url   = `https://itunes.apple.com/search?term=${query}&media=music&entity=musicTrack&limit=3`;
-        const res   = await fetch(url);
+        const res   = await fetch(url, ITUNES_HEADERS);
         const data  = await res.json();
 
         if (data.results && data.results.length > 0) {
@@ -42,7 +42,7 @@ async function enrichWithItunes(title, artist) {
     try {
         const query = encodeURIComponent(artist);
         const url   = `https://itunes.apple.com/search?term=${query}&media=music&entity=musicTrack&limit=1`;
-        const res   = await fetch(url);
+        const res   = await fetch(url, ITUNES_HEADERS);
         const data  = await res.json();
 
         if (data.results && data.results.length > 0) {
@@ -290,7 +290,7 @@ async function getArtistImageFromItunes(artistName) {
     // 2. Fallback: iTunes album artwork
     try {
         const url  = `https://itunes.apple.com/search?term=${encodeURIComponent(artistName)}&media=music&entity=musicTrack&limit=1`;
-        const res  = await fetch(url);
+        const res  = await fetch(url, ITUNES_HEADERS);
         const data = await res.json();
         if (data.results && data.results.length > 0) {
             return (data.results[0].artworkUrl100 || '').replace('100x100', '300x300');
@@ -304,7 +304,7 @@ async function getArtistImageFromItunes(artistName) {
 app.get('/api/debug/itunes', async function(req, res) {
     try {
         const url  = 'https://itunes.apple.com/search?term=Kanye+West&media=music&entity=musicTrack&limit=1';
-        const r    = await fetch(url);
+        const r    = await fetch(url, ITUNES_HEADERS);
         const data = await r.json();
         res.json({ status: r.status, results: data.results?.length, first: data.results?.[0] });
     } catch (e) {
