@@ -1,5 +1,5 @@
 // ============================================================
-// PLAYER.JS — Lecteur musical + Navigation entre pages
+// PLAYER.JS — Lecteur musical + Routeur de navigation centralisé
 // ============================================================
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -19,58 +19,119 @@ document.addEventListener('DOMContentLoaded', function () {
     ];
 
     let currentTrackIndex = 0;
-    let isPlaying = false;
+    let isPlaying  = false;
     let currentPage = 'home';
 
     // ==================== ÉLÉMENTS DOM ====================
 
-    const audio = document.getElementById('audioPlayer');
-    const playPauseBtn = document.getElementById('playPauseBtn');
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
+    const audio          = document.getElementById('audioPlayer');
+    const playPauseBtn   = document.getElementById('playPauseBtn');
+    const prevBtn        = document.getElementById('prevBtn');
+    const nextBtn        = document.getElementById('nextBtn');
     const progressSlider = document.getElementById('progressSlider');
-    const progressFill = document.getElementById('progressFill');
-    const progressBar = document.querySelector('.progress-bar');
-    const timeCurrent = document.querySelector('.time-current');
-    const timeTotal = document.querySelector('.time-total');
-    const playIcon = document.getElementById('playIcon');
-    const pauseIcon = document.getElementById('pauseIcon');
-    const trackTitle = document.querySelector('.track-title');
-    const trackArtist = document.querySelector('.track-artist');
-    const albumCover = document.getElementById('albumCover');
-    const musicPlayer = document.getElementById('musicPlayer');
+    const progressFill   = document.getElementById('progressFill');
+    const progressBar    = document.querySelector('.progress-bar');
+    const timeCurrent    = document.querySelector('.time-current');
+    const timeTotal      = document.querySelector('.time-total');
+    const playIcon       = document.getElementById('playIcon');
+    const pauseIcon      = document.getElementById('pauseIcon');
+    const trackTitle     = document.querySelector('.track-title');
+    const trackArtist    = document.querySelector('.track-artist');
+    const albumCover     = document.getElementById('albumCover');
+    const musicPlayer    = document.getElementById('musicPlayer');
+    const logoLink       = document.getElementById('logoLink');
+    const navLinks       = document.querySelectorAll('.nav-link');
+    const nav            = document.querySelector('nav');
+    const indicator      = document.querySelector('.nav-indicator');
 
-    const logoLink = document.getElementById('logoLink');
-    const navLinks = document.querySelectorAll('.nav-link');
-    const worldPage = document.getElementById('worldPage');
-    const newsPage = document.getElementById('newsPage');
+    // ============================================================
+    // ROUTEUR CENTRALISÉ — window.navigateTo(pageName)
+    //
+    // Principe : on ferme TOUTES les pages d'un coup grâce à la
+    // classe commune ".page", puis on ouvre uniquement la cible.
+    // Aucun fichier JS n'a besoin de connaître les autres pages.
+    // ============================================================
 
-    // ==================== NAVBAR INDICATOR ====================
+    window.navigateTo = function (pageName) {
+        if (currentPage === pageName) return;
+        currentPage = pageName;
 
-    const nav = document.querySelector('nav');
-    const indicator = document.querySelector('.nav-indicator');
+        // 1. Fermer toutes les pages sans exception
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
 
-    function moveIndicatorToActive() {
-        const activeLink = document.querySelector('nav ul li a.active');
-        if (!activeLink) return;
-        const rect = activeLink.getBoundingClientRect();
+        // 2. Ouvrir la bonne page
+        if (pageName === 'home') {
+            document.body.classList.remove('page-open');
+            const homePage = document.getElementById('homePage');
+            if (homePage) homePage.classList.add('active');
+        } else {
+            document.body.classList.add('page-open');
+            const target = document.getElementById(pageName + 'Page');
+            if (target) target.classList.add('active');
+
+            // Callback spécial pour la page News (initialisation du feed)
+            if (pageName === 'news') setTimeout(() => initNewsPage(), 100);
+        }
+
+        // 3. Mettre à jour la navbar
+        updateNavbar(pageName);
+    };
+
+    // Met à jour l'indicateur et les classes actives de la navbar
+    function updateNavbar(pageName) {
+        navLinks.forEach(l => l.classList.remove('active'));
+        const link = document.querySelector(`.nav-link[href="#${pageName}"]`);
+        if (link) {
+            link.classList.add('active');
+            moveIndicatorTo(link);
+        } else {
+            // Pages sans lien navbar (home, profile) → cacher l'indicateur
+            indicator.style.opacity = '0';
+        }
+    }
+
+    function moveIndicatorTo(linkEl) {
+        const rect    = linkEl.getBoundingClientRect();
         const navRect = nav.getBoundingClientRect();
-        indicator.style.left = (rect.left - navRect.left) + 'px';
-        indicator.style.width = rect.width + 'px';
+        indicator.style.left    = (rect.left - navRect.left) + 'px';
+        indicator.style.width   = rect.width + 'px';
         indicator.style.opacity = '1';
     }
 
+    window.addEventListener('resize', () => {
+        const activeLink = document.querySelector('nav ul li a.active');
+        if (activeLink) moveIndicatorTo(activeLink);
+    });
+
+    // Exposé pour que les autres fichiers puissent lire/écrire currentPage
+    window.setCurrentPage = function (name) { currentPage = name; };
+
+    // ==================== NAVBAR — CLICS ====================
+
     navLinks.forEach(link => {
-        link.addEventListener('click', function () {
-            navLinks.forEach(l => l.classList.remove('active'));
-            this.classList.add('active');
-            moveIndicatorToActive();
+        link.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = this.getAttribute('href').substring(1);
+
+            // Search et Social ont leurs propres callbacks d'initialisation
+            // → on les délègue à leurs fichiers JS respectifs
+            if (target === 'search') {
+                if (typeof window.openSearchPage === 'function') window.openSearchPage();
+            } else if (target === 'social') {
+                if (typeof window.openSocialPage === 'function') window.openSocialPage();
+            } else {
+                window.navigateTo(target);
+            }
         });
     });
 
-    window.addEventListener('resize', moveIndicatorToActive);
-
-    
+    // Logo → retour accueil
+    logoLink.addEventListener('click', function (e) {
+        e.preventDefault();
+        musicPlayer.classList.remove('expanded');
+        currentPage = '__force__'; // Contourner la garde "même page"
+        window.navigateTo('home');
+    });
 
     // ==================== FONCTIONS LECTEUR ====================
 
@@ -83,13 +144,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function loadTrack(index) {
         const track = playlist[index];
-        audio.src = track.file;
-        trackTitle.textContent = track.title;
-        trackArtist.textContent = track.artist;
-        albumCover.src = track.cover;
+        audio.src                = track.file;
+        trackTitle.textContent   = track.title;
+        trackArtist.textContent  = track.artist;
+        albumCover.src           = track.cover;
         progressFill.style.width = '0%';
-        progressSlider.value = 0;
-        timeCurrent.textContent = '0:00';
+        progressSlider.value     = 0;
+        timeCurrent.textContent  = '0:00';
         audio.load();
     }
 
@@ -97,12 +158,12 @@ document.addEventListener('DOMContentLoaded', function () {
     playPauseBtn.addEventListener('click', function () {
         if (isPlaying) {
             audio.pause();
-            playIcon.style.display = 'block';
+            playIcon.style.display  = 'block';
             pauseIcon.style.display = 'none';
             musicPlayer.classList.remove('playing');
         } else {
             audio.play();
-            playIcon.style.display = 'none';
+            playIcon.style.display  = 'none';
             pauseIcon.style.display = 'block';
             musicPlayer.classList.add('playing');
         }
@@ -130,40 +191,39 @@ document.addEventListener('DOMContentLoaded', function () {
     // Progression en temps réel
     audio.addEventListener('timeupdate', function () {
         if (!audio.duration) return;
-        const progress = (audio.currentTime / audio.duration) * 100;
+        const progress           = (audio.currentTime / audio.duration) * 100;
         progressFill.style.width = progress + '%';
-        progressSlider.value = progress;
-        timeCurrent.textContent = formatTime(audio.currentTime);
+        progressSlider.value     = progress;
+        timeCurrent.textContent  = formatTime(audio.currentTime);
     });
 
     // Durée totale
     audio.addEventListener('loadedmetadata', function () {
         timeTotal.textContent = formatTime(audio.duration);
-        progressSlider.max = 100;
+        progressSlider.max    = 100;
     });
 
     // Slider de progression
     progressSlider.addEventListener('input', function () {
-        const time = (progressSlider.value / 100) * audio.duration;
-        audio.currentTime = time;
+        audio.currentTime        = (progressSlider.value / 100) * audio.duration;
         progressFill.style.width = progressSlider.value + '%';
     });
 
     // Clic sur la barre de progression
     progressBar.addEventListener('click', function (e) {
-        const rect = progressBar.getBoundingClientRect();
-        const percentage = ((e.clientX - rect.left) / rect.width) * 100;
-        progressSlider.value = percentage;
-        audio.currentTime = (percentage / 100) * audio.duration;
+        const rect               = progressBar.getBoundingClientRect();
+        const percentage         = ((e.clientX - rect.left) / rect.width) * 100;
+        progressSlider.value     = percentage;
+        audio.currentTime        = (percentage / 100) * audio.duration;
         progressFill.style.width = percentage + '%';
     });
 
-    // Fin de piste
+    // Fin de piste → suivant automatique
     audio.addEventListener('ended', function () {
         currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
         loadTrack(currentTrackIndex);
         if (currentTrackIndex === 0) {
-            playIcon.style.display = 'block';
+            playIcon.style.display  = 'block';
             pauseIcon.style.display = 'none';
             isPlaying = false;
             musicPlayer.classList.remove('playing');
@@ -180,79 +240,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (e.target.closest('.control-btn') || e.target.closest('.progress-slider')) return;
         this.classList.toggle('expanded');
     });
-
-    logoLink.addEventListener('click', function (e) {
-        e.preventDefault();
-        navLinks.forEach(l => l.classList.remove('active'));
-        indicator.style.opacity = '0';
-        musicPlayer.classList.remove('expanded');
-        // Forcer currentPage à une valeur différente de 'home'
-        // pour que openPage('home') ne soit pas court-circuité
-        currentPage = '__force__';
-        openPage('home');
-    });
-
-    // ==================== NAVIGATION ENTRE PAGES ====================
-
-    function openPage(pageName) {
-    if (currentPage === pageName) return;
-    currentPage = pageName;
-
-    // Fermer toutes les pages d'abord
-    worldPage.classList.remove('active');
-    if (newsPage) newsPage.classList.remove('active');
-    const profilePage = document.getElementById('profilePage');
-    if (profilePage) profilePage.classList.remove('active');
-    const aboutPage = document.getElementById('aboutPage');
-    if (aboutPage) aboutPage.classList.remove('active');
-    const searchPage = document.getElementById('searchPage');
-    if (searchPage) searchPage.classList.remove('active');
-    const socialPage = document.getElementById('socialPage');
-if (socialPage) socialPage.classList.remove('active');
-
-    if (pageName === 'world') {
-        document.body.classList.add('page-open');
-        worldPage.classList.add('active');
-
-    } else if (pageName === 'news') {
-        document.body.classList.add('page-open');
-        if (newsPage) {
-            newsPage.classList.add('active');
-            setTimeout(() => initNewsPage(), 100);
-        }
-
-    } else if (pageName === 'about') {
-        document.body.classList.add('page-open');
-        if (aboutPage) aboutPage.classList.add('active');
-
-    } else if (pageName === 'home') {
-        document.body.classList.remove('page-open');
-        currentPage = 'home';
-    }
-    else if (target === 'social') {
-        if (typeof window.openSocialPage === 'function') window.openSocialPage();
-    }
-}
-
-    navLinks.forEach(link => {
-        link.addEventListener('click', function (e) {
-            e.preventDefault();
-            const target = this.getAttribute('href').substring(1);
-            if (target === 'world') openPage('world');
-            else if (target === 'news') openPage('news');
-            else if (target === 'about') openPage('about');
-            else if (target === 'search') {
-                if (typeof window.openSearchPage === 'function') window.openSearchPage();
-            }
-        });
-    });
-
-    
-
-    // ==================== EXPOSITION GLOBALE ====================
-    // Permet à profile.js, about.js etc. d'appeler openPage et setCurrentPage
-    window.openPage = openPage;
-    window.setCurrentPage = function(name) { currentPage = name; };
 
     // ==================== INIT ====================
     loadTrack(currentTrackIndex);

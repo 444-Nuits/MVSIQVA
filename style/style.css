@@ -186,27 +186,7 @@ p { position: relative; color: white; }
     bottom: 6.5vw;
 }
 
-.page-content {
-    padding: 12vw 8vw 4vw;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.page-title {
-    font-family: "Playfair Display", serif;
-    font-size: 6vw;
-    color: rgb(168, 150, 31);
-    margin-bottom: 3vw;
-    text-align: center;
-}
-
-.page-text {
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 1.2vw;
-    line-height: 1.8;
-}
-
-.page-text p { margin-bottom: 1.5vw; position: static; }
+/* .page-content, .page-title, .page-text — supprimées (ancienne structure inutilisée) */
 
 
 
@@ -875,15 +855,7 @@ body.page-open .music-player.expanded .track-info { display: flex; order: 3; }
     border-color: rgba(240, 147, 251, 0.5);
 }
 
-.card-category.streaming { 
-    color: #ffecd2; 
-    border-color: rgba(255, 236, 210, 0.5);
-}
-
-.card-category.vinyl { 
-    color: #ff9a9e; 
-    border-color: rgba(255, 154, 158, 0.5);
-}
+/* .card-category.streaming/.vinyl — supprimées (catégories absentes de news.json) */
 
 .card-title {
     font-family: "Playfair Display", serif;
@@ -1006,14 +978,7 @@ body.page-open .music-player.expanded .track-info { display: flex; order: 3; }
 }
 
 /* Fond dégradé doré-sombre */
-.auth-visual-gradient {
-    position: absolute;
-    inset: 0;
-    background:
-        radial-gradient(ellipse 80% 80% at 30% 20%, rgba(230,201,19,0.18) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 60% at 80% 80%, rgba(168,150,31,0.12) 0%, transparent 50%),
-        linear-gradient(160deg, #111 0%, #000 100%);
-}
+/* .auth-visual-gradient — supprimée (élément retiré du HTML) */
 
 /* Grille décorative */
 .auth-visual-inner::before {
@@ -2438,28 +2403,7 @@ body.page-open .music-player.expanded .track-info { display: flex; order: 3; }
 }
 
 /* Header */
-.search-header {
-    display: flex;
-    align-items: center;
-    padding: 1.8vw 3vw 0;
-    flex-shrink: 0;
-}
-
-.search-back-btn {
-    display: flex;
-    align-items: center;
-    gap: 0.5vw;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.12);
-    color: rgba(255,255,255,0.7);
-    font-family: inherit;
-    font-size: 0.85vw;
-    padding: 0.6vw 1.2vw;
-    border-radius: 3vw;
-    cursor: pointer;
-    transition: all 0.25s ease;
-}
-.search-back-btn:hover { background: rgba(255,255,255,0.12); color: white; }
+/* .search-header, .search-back-btn — supprimées (ancienne nav Search inutilisée) */
 
 /* Hero barre de recherche */
 .search-hero {

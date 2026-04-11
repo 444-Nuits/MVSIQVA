@@ -8,7 +8,6 @@
 
     // ============================================================
     // CLÉS LOCALSTORAGE
-    // (session + follows de l'utilisateur réel uniquement)
     // ============================================================
 
     const SESSION_KEY  = 'mvsiqva_session';
@@ -25,11 +24,10 @@
 
     async function fetchUsers() {
         if (_seedUsers.length > 0) return;
-
         try {
             const res = await fetch('data/users.json');
             if (!res.ok) throw new Error('HTTP ' + res.status);
-            const data = await res.json();
+            const data   = await res.json();
             _seedUsers   = data.users   || [];
             _seedFollows = data.follows || {};
         } catch (err) {
@@ -49,7 +47,6 @@
     function getFollows()    { try { return JSON.parse(localStorage.getItem(FOLLOWS_KEY)) || {};  } catch { return {}; } }
     function saveFollows(f)  { localStorage.setItem(FOLLOWS_KEY, JSON.stringify(f)); }
 
-    // Fusionne les follows seeds (lecture seule) avec ceux stockés localement
     function getMergedFollows() {
         const merged = Object.assign({}, _seedFollows);
         const local  = getFollows();
@@ -71,10 +68,10 @@
         const session = getSession();
         if (!session) { showSocialToast('Connectez-vous pour suivre des utilisateurs.', 'error'); return false; }
 
-        const follows        = getFollows();
-        const myEmail        = session.email.toLowerCase();
-        const target         = targetEmail.toLowerCase();
-        follows[myEmail]     = follows[myEmail] || [];
+        const follows    = getFollows();
+        const myEmail    = session.email.toLowerCase();
+        const target     = targetEmail.toLowerCase();
+        follows[myEmail] = follows[myEmail] || [];
 
         if (follows[myEmail].includes(target)) {
             follows[myEmail] = follows[myEmail].filter(e => e !== target);
@@ -93,10 +90,9 @@
     // ============================================================
 
     function getUserProfile(email) {
-        const lc      = email.toLowerCase();
-        const local   = getProfiles()[lc] || {};
-        const seed    = _seedUsers.find(u => u.email.toLowerCase() === lc) || {};
-
+        const lc    = email.toLowerCase();
+        const local = getProfiles()[lc] || {};
+        const seed  = _seedUsers.find(u => u.email.toLowerCase() === lc) || {};
         return {
             email,
             pseudo:    local.pseudo    || seed.pseudo    || email.split('@')[0],
@@ -109,7 +105,6 @@
         };
     }
 
-    // Liste complète des emails (seeds + comptes réels créés via auth.js)
     function getAllEmails() {
         const seedEmails = _seedUsers.map(u => u.email.toLowerCase());
         let realEmails   = [];
@@ -124,15 +119,14 @@
 
     // ============================================================
     // SYNCHRONISATION DES SEEDS → localStorage
-    // Permet à auth.js de reconnaître les comptes seeds lors de la connexion
     // ============================================================
 
     function syncSeedsToLocalStorage() {
         let users = [];
         try { users = JSON.parse(localStorage.getItem('mvsiqva_users') || '[]'); } catch {}
 
-        const existing = users.map(u => u.email.toLowerCase());
-        let usersChanged = false;
+        const existing    = users.map(u => u.email.toLowerCase());
+        let usersChanged  = false;
 
         _seedUsers.forEach(s => {
             if (!existing.includes(s.email.toLowerCase())) {
@@ -142,8 +136,8 @@
         });
         if (usersChanged) localStorage.setItem('mvsiqva_users', JSON.stringify(users));
 
-        const profiles        = getProfiles();
-        let profilesChanged   = false;
+        const profiles      = getProfiles();
+        let profilesChanged = false;
         _seedUsers.forEach(s => {
             const k = s.email.toLowerCase();
             if (!profiles[k]) {
@@ -171,12 +165,12 @@
             if (email === myEmail)        return;
             if (myFollow.includes(email)) return;
 
-            const p    = getUserProfile(email);
-            let reason = null;
-            let type   = 'new-member';
-            let score  = 0;
+            const p     = getUserProfile(email);
+            let reason  = null;
+            let type    = 'new-member';
+            let score   = 0;
 
-            // 1. Goûts similaires — artiste ou titre favori
+            // 1. Goûts similaires
             if (myEmail && session) {
                 const myP = getUserProfile(myEmail);
                 if (myP.favArtist !== '—' && p.favArtist === myP.favArtist) {
@@ -192,163 +186,87 @@
 
             // 2. Ami d'ami
             if (!reason) {
-                const commonFriends = myFollow.filter(f => (follows[f] || []).includes(email));
-                if (commonFriends.length > 0) {
-                    const friendP = getUserProfile(commonFriends[0]);
-                    reason = `Suivi par <strong>${friendP.pseudo}</strong>`;
+                const theirFollows = follows[email] || [];
+                const common       = myFollow.filter(f => theirFollows.includes(f));
+                if (common.length) {
+                    const name = getUserProfile(common[0]).pseudo;
+                    reason = `Suivi par <strong>${name}</strong>`;
                     type   = 'friend-of-friend';
-                    score += 5 + commonFriends.length * 2;
+                    score += 5;
                 }
             }
 
-            // 3. Fallback populaire / nouveau membre
-            if (!reason) {
-                const followers = Object.values(follows).filter(arr => arr.includes(email)).length;
-                if (followers >= 3) {
-                    reason = `${followers} abonnés sur MVSIQVA`;
-                    score += followers;
-                } else {
-                    reason = 'Membre de MVSIQVA';
-                    score += 1;
-                }
-            }
-
-            scored.push({ email, profile: p, reason, type, score });
+            scored.push({ email, p, reason, type, score });
         });
 
-        // Trier par score puis interleave les types
         scored.sort((a, b) => b.score - a.score);
-
-        const buckets = {};
-        scored.forEach(item => {
-            buckets[item.type] = buckets[item.type] || [];
-            buckets[item.type].push(item);
-        });
-        const keys        = Object.keys(buckets);
-        const interleaved = [];
-        let added = true;
-        while (added) {
-            added = false;
-            keys.forEach(k => {
-                if (buckets[k].length) { interleaved.push(buckets[k].shift()); added = true; }
-            });
-        }
-        return interleaved.slice(0, 24);
+        return scored.slice(0, 12);
     }
 
     // ============================================================
-    // RENDU DES CARTES
+    // RENDU — VUE PAR DÉFAUT
     // ============================================================
+
+    async function loadDefaultView() {
+        await fetchUsers();
+        syncSeedsToLocalStorage();
+        renderSuggestions();
+        renderFollowingRow();
+    }
+
+    function renderSuggestions() {
+        const grid        = document.getElementById('socialGrid');
+        const suggestions = buildSuggestions();
+
+        if (!suggestions.length) {
+            grid.innerHTML = `<p style="color:rgba(255,255,255,0.3);font-size:1vw;grid-column:1/-1;">Aucune suggestion pour le moment.</p>`;
+            return;
+        }
+
+        grid.innerHTML = suggestions.map(({ email, p, reason, type }) => {
+            const following   = isFollowing(email);
+            const initial     = (p.pseudo || email).charAt(0).toUpperCase();
+            const avatarStyle = p.avatar ? `background-image:url('${escAttr(p.avatar)}');background-size:cover;background-position:center;` : '';
+
+            return `
+            <div class="social-user-card" onclick="window._socialOpenPanel('${escAttr(email)}')">
+                <div class="social-card-avatar" style="${avatarStyle}">${p.avatar ? '' : initial}</div>
+                <div class="social-card-name">${escHtml(p.pseudo)}</div>
+                ${reason ? `<div class="social-card-reason">${reason}</div>` : ''}
+                <span class="social-card-badge ${type}">${badgeLabel(type)}</span>
+                <button class="social-follow-btn${following ? ' following' : ''}" data-email="${escAttr(email)}"
+                    onclick="event.stopPropagation(); handleFollowClick(this, '${escAttr(email)}')">
+                    ${following ? 'Abonné' : 'Suivre'}
+                </button>
+            </div>`;
+        }).join('');
+    }
 
     function badgeLabel(type) {
         if (type === 'similar-artist')   return 'Fav. artist';
         if (type === 'similar-track')    return 'Fav. track';
         if (type === 'friend-of-friend') return 'Friend of friend';
-        return 'Discover';
+        return 'New';
     }
 
-    function renderCard(item, delay = 0) {
-        const { email, profile, reason, type } = item;
-        const following   = isFollowing(email);
-        const initial     = profile.pseudo.charAt(0).toUpperCase();
-        const avatarStyle = profile.avatar
-            ? `background-image:url('${profile.avatar}'); background-size:cover; background-position:center;`
-            : '';
+    function renderFollowingRow() {
+        const myFollows = getMyFollows();
+        const section   = document.getElementById('socialFollowingSection');
+        const row       = document.getElementById('socialFollowingRow');
+        if (!section || !row) return;
 
-        const card = document.createElement('div');
-        card.className            = 'social-user-card';
-        card.style.animationDelay = delay + 'ms';
-        card.dataset.email        = email;
-
-        card.innerHTML = `
-            <span class="social-card-badge ${type}">${badgeLabel(type)}</span>
-            <div class="social-card-avatar" style="${avatarStyle}">${profile.avatar ? '' : initial}</div>
-            <div class="social-card-name">${escHtml(profile.pseudo)}</div>
-            <div class="social-card-artist">🎵 ${escHtml(profile.favArtist)}</div>
-            <div class="social-card-reason">${reason}</div>
-            <button class="social-follow-btn${following ? ' following' : ''}" data-email="${escAttr(email)}">
-                ${following ? 'Abonné' : 'Suivre'}
-            </button>
-        `;
-
-        card.addEventListener('click', (e) => {
-            if (e.target.closest('.social-follow-btn')) return;
-            openUserPanel(email);
-        });
-
-        card.querySelector('.social-follow-btn').addEventListener('click', (e) => {
-            e.stopPropagation();
-            const btn          = e.currentTarget;
-            const nowFollowing = toggleFollow(email);
-            btn.textContent    = nowFollowing ? 'Abonné' : 'Suivre';
-            btn.classList.toggle('following', nowFollowing);
-            showSocialToast(nowFollowing ? `Vous suivez ${profile.pseudo} !` : `Vous ne suivez plus ${profile.pseudo}.`);
-            refreshFollowingRow();
-            syncPanelFollowBtn(email, nowFollowing);
-        });
-
-        return card;
-    }
-
-    function renderSkeletons(container, count = 8) {
-        container.innerHTML = Array.from({ length: count }, () => `
-            <div class="social-skeleton-card">
-                <div class="skeleton-block" style="width:5vw;height:5vw;min-width:56px;min-height:56px;border-radius:50%;"></div>
-                <div class="skeleton-block" style="width:60%;height:14px;border-radius:4px;"></div>
-                <div class="skeleton-block" style="width:45%;height:11px;border-radius:4px;"></div>
-                <div class="skeleton-block" style="width:80%;height:11px;border-radius:4px;"></div>
-                <div class="skeleton-block" style="width:50%;height:28px;border-radius:3vw;margin-top:4px;"></div>
-            </div>
-        `).join('');
-    }
-
-    // ============================================================
-    // CHARGEMENT DE LA VUE PAR DÉFAUT
-    // ============================================================
-
-    async function loadDefaultView() {
-        const grid = document.getElementById('socialSuggestionsGrid');
-        renderSkeletons(grid);
-
-        await fetchUsers();          // charge users.json
-        syncSeedsToLocalStorage();   // synchronise vers auth.js
-
-        const suggestions = buildSuggestions();
-        grid.innerHTML = '';
-
-        if (!suggestions.length) {
-            grid.innerHTML = `
-                <div class="social-empty" style="grid-column:1/-1">
-                    <span>👥</span>
-                    <p>Aucun utilisateur à suggérer pour l'instant.</p>
-                </div>`;
-            return;
-        }
-
-        suggestions.forEach((item, i) => grid.appendChild(renderCard(item, i * 40)));
-        refreshFollowingRow();
-    }
-
-    function refreshFollowingRow() {
-        const row     = document.getElementById('socialFollowingRow');
-        const section = document.getElementById('socialFollowingSection');
-        const follows = getMyFollows();
-
-        if (!follows.length) { section.style.display = 'none'; return; }
-
+        if (!myFollows.length) { section.style.display = 'none'; return; }
         section.style.display = 'block';
-        row.innerHTML = follows.map(email => {
-            const p           = getUserProfile(email);
-            const initial     = p.pseudo.charAt(0).toUpperCase();
-            const avatarStyle = p.avatar
-                ? `background-image:url('${p.avatar}'); background-size:cover; background-position:center;`
-                : '';
+
+        row.innerHTML = myFollows.map(email => {
+            const p       = getUserProfile(email);
+            const initial = (p.pseudo || email).charAt(0).toUpperCase();
+            const style   = p.avatar ? `background-image:url('${escAttr(p.avatar)}');background-size:cover;background-position:center;` : '';
             return `
-                <div class="social-following-chip" onclick="window._socialOpenPanel('${escAttr(email)}')">
-                    <div class="social-following-avatar" style="${avatarStyle}">${p.avatar ? '' : initial}</div>
-                    <div class="social-following-name">${escHtml(p.pseudo)}</div>
-                </div>
-            `;
+            <div class="social-following-chip" onclick="window._socialOpenPanel('${escAttr(email)}')">
+                <div class="social-following-avatar" style="${style}">${p.avatar ? '' : initial}</div>
+                <span class="social-following-name">${escHtml(p.pseudo)}</span>
+            </div>`;
         }).join('');
     }
 
@@ -356,163 +274,54 @@
     // RECHERCHE
     // ============================================================
 
-    async function doSearch(query) {
-        const q        = query.trim().toLowerCase();
-        const defaultV = document.getElementById('socialDefaultView');
-        const resultsV = document.getElementById('socialResultsView');
-        const grid     = document.getElementById('socialResultsGrid');
-        const empty    = document.getElementById('socialResultsEmpty');
-        const label    = document.getElementById('socialResultsLabel');
+    function doSearch(query) {
+        const grid = document.getElementById('socialGrid');
+        const q    = query.trim().toLowerCase();
 
-        if (!q) {
-            defaultV.style.display = 'block';
-            resultsV.style.display = 'none';
-            document.getElementById('socialSearchClear').style.display = 'none';
-            return;
-        }
-
-        defaultV.style.display = 'none';
-        resultsV.style.display = 'block';
-        document.getElementById('socialSearchClear').style.display = 'flex';
-
-        await fetchUsers();
-
-        const session = getSession();
-        const myEmail = session ? session.email.toLowerCase() : null;
+        if (!q) { renderSuggestions(); return; }
 
         const results = getAllEmails()
-            .filter(email => email !== myEmail)
-            .map(email => ({ email, profile: getUserProfile(email) }))
-            .filter(({ email, profile }) =>
-                profile.pseudo.toLowerCase().includes(q) ||
-                email.includes(q) ||
-                profile.favArtist.toLowerCase().includes(q)
-            );
-
-        label.innerHTML = `
-            <span class="social-section-line"></span>
-            ${results.length} résultat${results.length !== 1 ? 's' : ''} pour « ${escHtml(query.trim())} »
-            <span class="social-section-line"></span>
-        `;
-
-        grid.innerHTML = '';
+            .filter(email => {
+                const p = getUserProfile(email);
+                return p.pseudo.toLowerCase().includes(q) || email.includes(q);
+            })
+            .map(email => ({ email, p: getUserProfile(email) }));
 
         if (!results.length) {
-            empty.style.display = 'flex';
-            grid.style.display  = 'none';
+            grid.innerHTML = `<p style="color:rgba(255,255,255,0.3);font-size:1vw;grid-column:1/-1;">Aucun utilisateur trouvé.</p>`;
             return;
         }
 
-        empty.style.display = 'none';
-        grid.style.display  = '';
-
-        results.forEach(({ email, profile }, i) => {
-            grid.appendChild(renderCard({
-                email,
-                profile,
-                reason: profile.favArtist !== '—' ? `🎵 ${profile.favArtist}` : 'Membre MVSIQVA',
-                type: 'new-member',
-            }, i * 40));
-        });
+        grid.innerHTML = results.map(({ email, p }) => {
+            const following   = isFollowing(email);
+            const initial     = (p.pseudo || email).charAt(0).toUpperCase();
+            const avatarStyle = p.avatar ? `background-image:url('${escAttr(p.avatar)}');background-size:cover;background-position:center;` : '';
+            return `
+            <div class="social-user-card" onclick="window._socialOpenPanel('${escAttr(email)}')">
+                <div class="social-card-avatar" style="${avatarStyle}">${p.avatar ? '' : initial}</div>
+                <div class="social-card-name">${escHtml(p.pseudo)}</div>
+                <button class="social-follow-btn${following ? ' following' : ''}" data-email="${escAttr(email)}"
+                    onclick="event.stopPropagation(); handleFollowClick(this, '${escAttr(email)}')">
+                    ${following ? 'Abonné' : 'Suivre'}
+                </button>
+            </div>`;
+        }).join('');
     }
 
     // ============================================================
-    // PANNEAU PROFIL UTILISATEUR
+    // FOLLOW
     // ============================================================
 
-    function openUserPanel(email) {
-        const panel     = document.getElementById('socialUserPanel');
-        const content   = document.getElementById('socialPanelContent');
-        const p         = getUserProfile(email);
-        const following = isFollowing(email);
+    window.handleFollowClick = function (btn, email) {
+        const nowFollowing = toggleFollow(email);
+        btn.textContent    = nowFollowing ? 'Abonné' : 'Suivre';
+        btn.classList.toggle('following', nowFollowing);
+        showSocialToast(nowFollowing ? `Vous suivez ${getUserProfile(email).pseudo} !` : `Vous ne suivez plus ${getUserProfile(email).pseudo}.`);
+        refreshFollowingRow();
+        syncPanelFollowBtn(email, nowFollowing);
+    };
 
-        const session    = getSession();
-        const commonRows = [];
-
-        if (session) {
-            const myP = getUserProfile(session.email);
-            if (myP.favArtist !== '—' && myP.favArtist === p.favArtist) {
-                commonRows.push(`<div class="social-panel-common-row">
-                    <span class="social-panel-common-icon">🎵</span>
-                    <span class="social-panel-common-text">Artiste favori commun : <strong>${escHtml(p.favArtist)}</strong></span>
-                </div>`);
-            }
-            if (myP.favTrack !== '—' && myP.favTrack === p.favTrack) {
-                commonRows.push(`<div class="social-panel-common-row">
-                    <span class="social-panel-common-icon">🎧</span>
-                    <span class="social-panel-common-text">Titre favori commun : <strong>${escHtml(p.favTrack)}</strong></span>
-                </div>`);
-            }
-
-            const follows     = getMergedFollows();
-            const myFollow    = getMyFollows();
-            const theirFollow = follows[email] || [];
-            const common      = myFollow.filter(f => theirFollow.includes(f));
-            if (common.length) {
-                const names = common.slice(0, 3).map(e => getUserProfile(e).pseudo).join(', ');
-                commonRows.push(`<div class="social-panel-common-row">
-                    <span class="social-panel-common-icon">👥</span>
-                    <span class="social-panel-common-text">Abonnements communs : <strong>${escHtml(names)}</strong></span>
-                </div>`);
-            }
-        }
-
-        const initial     = p.pseudo.charAt(0).toUpperCase();
-        const avatarStyle = p.avatar
-            ? `background-image:url('${p.avatar}'); background-size:cover; background-position:center;`
-            : '';
-
-        content.innerHTML = `
-            <div class="social-panel-hero">
-                <div class="social-panel-avatar" style="${avatarStyle}">${p.avatar ? '' : initial}</div>
-                <div class="social-panel-name">${escHtml(p.pseudo)}</div>
-                ${p.bio ? `<p class="social-panel-bio">${escHtml(p.bio)}</p>` : ''}
-                <p class="social-panel-email">${escHtml(email)}</p>
-            </div>
-
-            <div class="social-panel-stats">
-                <div class="social-panel-stat">
-                    <div class="social-panel-stat-val">${p.minutes}</div>
-                    <div class="social-panel-stat-label">minutes</div>
-                </div>
-                <div class="social-panel-stat">
-                    <div class="social-panel-stat-val">${p.tracks}</div>
-                    <div class="social-panel-stat-label">titres</div>
-                </div>
-            </div>
-
-            ${commonRows.length ? `
-                <p class="social-panel-section-title">Points communs</p>
-                ${commonRows.join('')}
-            ` : ''}
-
-            <p class="social-panel-section-title" style="margin-top:${commonRows.length ? '1.4vw' : '0'}">Artiste favori</p>
-            <div class="social-panel-common-row">
-                <span class="social-panel-common-icon">🎤</span>
-                <span class="social-panel-common-text"><strong>${escHtml(p.favArtist)}</strong></span>
-            </div>
-            <p class="social-panel-section-title" style="margin-top:0.8vw">Titre favori</p>
-            <div class="social-panel-common-row">
-                <span class="social-panel-common-icon">🎵</span>
-                <span class="social-panel-common-text"><strong>${escHtml(p.favTrack)}</strong></span>
-            </div>
-
-            <button class="social-panel-follow-btn${following ? ' following' : ''}" id="panelFollowBtn" data-email="${escAttr(email)}">
-                ${following ? '✓ Abonné' : '+ Suivre'}
-            </button>
-        `;
-
-        content.querySelector('#panelFollowBtn').addEventListener('click', function () {
-            const nowFollowing = toggleFollow(email);
-            this.textContent   = nowFollowing ? '✓ Abonné' : '+ Suivre';
-            this.classList.toggle('following', nowFollowing);
-            showSocialToast(nowFollowing ? `Vous suivez ${p.pseudo} !` : `Vous ne suivez plus ${p.pseudo}.`);
-            refreshFollowingRow();
-            syncCardFollowBtn(email, nowFollowing);
-        });
-
-        panel.classList.add('active');
-    }
+    function refreshFollowingRow() { renderFollowingRow(); }
 
     function syncPanelFollowBtn(email, nowFollowing) {
         const panelBtn = document.getElementById('panelFollowBtn');
@@ -530,20 +339,82 @@
     }
 
     // ============================================================
-    // OUVERTURE / FERMETURE DE LA PAGE
+    // PANNEAU UTILISATEUR
+    // ============================================================
+
+    function openUserPanel(email) {
+        const panel   = document.getElementById('socialUserPanel');
+        const content = document.getElementById('socialPanelContent');
+        const p       = getUserProfile(email);
+        const following   = isFollowing(email);
+        const initial     = (p.pseudo || email).charAt(0).toUpperCase();
+        const avatarStyle = p.avatar
+            ? `background-image:url('${escAttr(p.avatar)}');background-size:cover;background-position:center;`
+            : '';
+
+        const myEmail   = getSession()?.email?.toLowerCase();
+        const commonRows = myEmail ? (() => {
+            const myP  = getUserProfile(myEmail);
+            const rows = [];
+            if (p.favArtist !== '—' && p.favArtist === myP.favArtist)
+                rows.push(`<div class="social-panel-common-row"><span class="social-panel-common-icon">🎤</span><span class="social-panel-common-text">Même artiste favori : <strong>${escHtml(p.favArtist)}</strong></span></div>`);
+            if (p.favTrack !== '—' && p.favTrack === myP.favTrack)
+                rows.push(`<div class="social-panel-common-row"><span class="social-panel-common-icon">🎵</span><span class="social-panel-common-text">Même titre favori : <strong>${escHtml(p.favTrack)}</strong></span></div>`);
+            return rows;
+        })() : [];
+
+        content.innerHTML = `
+            <div class="social-panel-hero">
+                <div class="social-panel-avatar" style="${avatarStyle}">${p.avatar ? '' : initial}</div>
+                <div class="social-panel-name">${escHtml(p.pseudo)}</div>
+                ${p.bio ? `<p class="social-panel-bio">${escHtml(p.bio)}</p>` : ''}
+                <p class="social-panel-email">${escHtml(email)}</p>
+            </div>
+            <div class="social-panel-stats">
+                <div class="social-panel-stat">
+                    <div class="social-panel-stat-val">${p.minutes}</div>
+                    <div class="social-panel-stat-label">minutes</div>
+                </div>
+                <div class="social-panel-stat">
+                    <div class="social-panel-stat-val">${p.tracks}</div>
+                    <div class="social-panel-stat-label">titres</div>
+                </div>
+            </div>
+            ${commonRows.length ? `<p class="social-panel-section-title">Points communs</p>${commonRows.join('')}` : ''}
+            <p class="social-panel-section-title" style="margin-top:${commonRows.length ? '1.4vw' : '0'}">Artiste favori</p>
+            <div class="social-panel-common-row">
+                <span class="social-panel-common-icon">🎤</span>
+                <span class="social-panel-common-text"><strong>${escHtml(p.favArtist)}</strong></span>
+            </div>
+            <p class="social-panel-section-title" style="margin-top:0.8vw">Titre favori</p>
+            <div class="social-panel-common-row">
+                <span class="social-panel-common-icon">🎵</span>
+                <span class="social-panel-common-text"><strong>${escHtml(p.favTrack)}</strong></span>
+            </div>
+            <button class="social-panel-follow-btn${following ? ' following' : ''}" id="panelFollowBtn" data-email="${escAttr(email)}">
+                ${following ? '✓ Abonné' : '+ Suivre'}
+            </button>`;
+
+        content.querySelector('#panelFollowBtn').addEventListener('click', function () {
+            const nowFollowing = toggleFollow(email);
+            this.textContent   = nowFollowing ? '✓ Abonné' : '+ Suivre';
+            this.classList.toggle('following', nowFollowing);
+            showSocialToast(nowFollowing ? `Vous suivez ${p.pseudo} !` : `Vous ne suivez plus ${p.pseudo}.`);
+            refreshFollowingRow();
+            syncCardFollowBtn(email, nowFollowing);
+        });
+
+        panel.classList.add('active');
+    }
+
+    // ============================================================
+    // OUVERTURE DE LA PAGE
+    // Utilise le routeur centralisé + callback d'init propre à Social
     // ============================================================
 
     window.openSocialPage = async function () {
-        ['worldPage', 'newsPage', 'aboutPage', 'profilePage', 'searchPage'].forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.classList.remove('active');
-        });
-
+        window.navigateTo('social');
         const page = document.getElementById('socialPage');
-        page.classList.add('active');
-        document.body.classList.add('page-open');
-        if (typeof window.setCurrentPage === 'function') window.setCurrentPage('social');
-
         if (!page.dataset.loaded) {
             page.dataset.loaded = '1';
             await loadDefaultView();
@@ -599,15 +470,6 @@
 
     document.addEventListener('DOMContentLoaded', function () {
 
-        document.querySelectorAll('.nav-link').forEach(link => {
-            if (link.getAttribute('href') === '#social') {
-                link.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    window.openSocialPage();
-                });
-            }
-        });
-
         document.getElementById('socialPanelClose').addEventListener('click', () => {
             document.getElementById('socialUserPanel').classList.remove('active');
         });
@@ -631,7 +493,7 @@
 
         searchInput.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') {
-                this.value = '';
+                this.value             = '';
                 clearBtn.style.display = 'none';
                 doSearch('');
             }
@@ -641,18 +503,6 @@
             searchInput.value      = '';
             clearBtn.style.display = 'none';
             doSearch('');
-        });
-
-        document.getElementById('logoLink').addEventListener('click', () => {
-            const page = document.getElementById('socialPage');
-            if (page) page.classList.remove('active');
-        });
-
-        document.querySelectorAll('.nav-link').forEach(l => {
-            l.addEventListener('click', () => {
-                const page = document.getElementById('socialPage');
-                if (page && l.getAttribute('href') !== '#social') page.classList.remove('active');
-            });
         });
     });
 

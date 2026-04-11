@@ -28,11 +28,11 @@
 
     // Stats fictives déterministes (toujours les mêmes pour un email donné)
     const STATS_POOL = [
-        { minutes: '312', tracks: '87',  fav: 'Sundance',   artist: 'Népal' },
-        { minutes: '184', tracks: '52',  fav: 'INCENDIE',   artist: 'Wallace Cleaver' },
-        { minutes: '561', tracks: '143', fav: 'BARA',       artist: 'Yvnnis' },
+        { minutes: '312', tracks: '87',  fav: 'Sundance',    artist: 'Népal' },
+        { minutes: '184', tracks: '52',  fav: 'INCENDIE',    artist: 'Wallace Cleaver' },
+        { minutes: '561', tracks: '143', fav: 'BARA',        artist: 'Yvnnis' },
         { minutes: '98',  tracks: '31',  fav: 'Mr Ledger 2', artist: 'FEMTOGO' },
-        { minutes: '427', tracks: '109', fav: 'En boucle',  artist: 'Adèle Castillon' },
+        { minutes: '427', tracks: '109', fav: 'En boucle',   artist: 'Adèle Castillon' },
     ];
 
     function getStatsForEmail(email) {
@@ -45,16 +45,16 @@
     // ÉLÉMENTS DOM
     // ============================================================
 
-    const profilePage    = document.getElementById('profilePage');
-    const profileBannerBg  = document.getElementById('profileBannerBg');
-    const profileAvatarEl  = document.getElementById('profileAvatarDisplay');
-    const profileUsername  = document.getElementById('profileUsername');
-    const profileBioEl     = document.getElementById('profileBioDisplay');
-    const profileEmailEl   = document.getElementById('profileEmailDisplay');
-    const statMinutes = document.getElementById('statMinutes');
-    const statTracks  = document.getElementById('statTracks');
-    const statFav     = document.getElementById('statFav');
-    const statArtist  = document.getElementById('statArtist');
+    const profilePage       = document.getElementById('profilePage');
+    const profileBannerBg   = document.getElementById('profileBannerBg');
+    const profileAvatarEl   = document.getElementById('profileAvatarDisplay');
+    const profileUsername   = document.getElementById('profileUsername');
+    const profileBioEl      = document.getElementById('profileBioDisplay');
+    const profileEmailEl    = document.getElementById('profileEmailDisplay');
+    const statMinutes       = document.getElementById('statMinutes');
+    const statTracks        = document.getElementById('statTracks');
+    const statFav           = document.getElementById('statFav');
+    const statArtist        = document.getElementById('statArtist');
 
     const setPseudo      = document.getElementById('setPseudo');
     const setBio         = document.getElementById('setBio');
@@ -62,49 +62,33 @@
     const setBanner      = document.getElementById('setBanner');
     const saveProfileBtn = document.getElementById('saveProfileBtn');
 
-    const setEmail         = document.getElementById('setEmail');
-    const setPass1         = document.getElementById('setPass1');
-    const setPass2         = document.getElementById('setPass2');
-    const setCurrentPass   = document.getElementById('setCurrentPass');
-    const saveAccountBtn   = document.getElementById('saveAccountBtn');
-    const emailChangeError = document.getElementById('emailChangeError');
-    const passChangeError  = document.getElementById('passChangeError');
-    const currentPassError = document.getElementById('currentPassError');
-    const deleteConfirmEmail = document.getElementById('deleteConfirmEmail');
-    const deleteAccountBtn   = document.getElementById('deleteAccountBtn');
-    const logoutBtn          = document.getElementById('logoutBtn');
+    const setEmail            = document.getElementById('setEmail');
+    const setPass1            = document.getElementById('setPass1');
+    const setPass2            = document.getElementById('setPass2');
+    const setCurrentPass      = document.getElementById('setCurrentPass');
+    const saveAccountBtn      = document.getElementById('saveAccountBtn');
+    const emailChangeError    = document.getElementById('emailChangeError');
+    const passChangeError     = document.getElementById('passChangeError');
+    const currentPassError    = document.getElementById('currentPassError');
+    const deleteConfirmEmail  = document.getElementById('deleteConfirmEmail');
+    const deleteAccountBtn    = document.getElementById('deleteAccountBtn');
+    const logoutBtn           = document.getElementById('logoutBtn');
     const connectedEmailDisplay = document.getElementById('connectedEmailDisplay');
 
     // ============================================================
     // OUVRIR / FERMER LA PAGE PROFIL
+    // Utilise le routeur centralisé de player.js
     // ============================================================
 
     window.openProfilePage = function () {
         const session = getSession();
         if (!session) return;
+
         loadProfileUI(session.email);
         populateSettingsFields(session.email);
 
-        // Fermer toutes les pages
-        document.getElementById('worldPage').classList.remove('active');
-        document.getElementById('newsPage').classList.remove('active');
-        const aboutPage = document.getElementById('aboutPage');
-        if (aboutPage) aboutPage.classList.remove('active');
-
-        const searchPage = document.getElementById('searchPage');
-        if (searchPage) searchPage.classList.remove('active');
-
-        document.body.classList.add('page-open');
-        profilePage.classList.add('active');
-
-        // Mettre à jour currentPage dans player.js
-        if (typeof window.setCurrentPage === 'function') window.setCurrentPage('profile');
-
-        // Masquer l'indicateur navbar et retirer toutes les classes actives
-        // (Profile n'a pas de lien dédié dans la navbar)
-        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        const indicator = document.querySelector('.nav-indicator');
-        if (indicator) indicator.style.opacity = '0';
+        // Le routeur ferme toutes les autres pages et ouvre profilePage
+        window.navigateTo('profile');
 
         // Remettre le premier onglet actif
         document.querySelectorAll('.settings-tab').forEach((t, i)     => t.classList.toggle('active', i === 0));
@@ -112,14 +96,14 @@
 
         // Allumer le cercle doré sur le badge
         const badge = document.getElementById('profileBadge');
-        if (window.setCurrentPage('profile')) badge.style.boxShadow = '0 0 0 2.5px rgb(230,201,19), 0 0 12px rgba(230,201,19,0.4)';
-        else badge.style.boxShadow = '';
+        if (badge) badge.style.boxShadow = '0 0 0 2.5px rgb(230,201,19), 0 0 12px rgba(230,201,19,0.4)';
     };
 
     function closeProfilePage() {
-        profilePage.classList.remove('active');
-        document.body.classList.remove('page-open');
-        if (typeof window.setCurrentPage === 'function') window.setCurrentPage('home');
+        window.navigateTo('home');
+        // Éteindre le cercle doré sur le badge
+        const badge = document.getElementById('profileBadge');
+        if (badge) badge.style.boxShadow = '';
     }
 
     document.getElementById('logoLink').addEventListener('click', closeProfilePage);
@@ -134,7 +118,6 @@
         const stats   = getStatsForEmail(email);
         const pseudo  = profile.pseudo || email.split('@')[0];
 
-        // Email connecté dans l'onglet danger
         if (connectedEmailDisplay) connectedEmailDisplay.textContent = email;
 
         // Bannière
@@ -155,7 +138,6 @@
         if (profileBioEl)    { profileBioEl.textContent = profile.bio || ''; profileBioEl.style.display = profile.bio ? 'block' : 'none'; }
         if (profileEmailEl)  profileEmailEl.textContent = email;
 
-        // Stats
         if (statMinutes) statMinutes.textContent = stats.minutes;
         if (statTracks)  statTracks.textContent  = stats.tracks;
         if (statFav)     statFav.textContent     = stats.fav;
@@ -164,13 +146,13 @@
 
     function populateSettingsFields(email) {
         const p = getProfileForEmail(email);
-        if (setPseudo)    setPseudo.value = p.pseudo || '';
-        if (setBio)       setBio.value    = p.bio    || '';
-        if (setAvatar)    setAvatar.value = p.avatar || '';
-        if (setBanner)    setBanner.value = p.banner || '';
-        if (setEmail)     setEmail.value  = '';
-        if (setPass1)     setPass1.value  = '';
-        if (setPass2)     setPass2.value  = '';
+        if (setPseudo)      setPseudo.value      = p.pseudo || '';
+        if (setBio)         setBio.value         = p.bio    || '';
+        if (setAvatar)      setAvatar.value      = p.avatar || '';
+        if (setBanner)      setBanner.value      = p.banner || '';
+        if (setEmail)       setEmail.value       = '';
+        if (setPass1)       setPass1.value       = '';
+        if (setPass2)       setPass2.value       = '';
         if (setCurrentPass) setCurrentPass.value = '';
         clearErrors();
     }
@@ -253,7 +235,8 @@
             const users = getUsers();
             const user  = users.find(u => u.email.toLowerCase() === session.email.toLowerCase());
 
-            if (!user || user.password !== curPass) {
+            // Vérification du mot de passe actuel (stocké en btoa)
+            if (!user || user.password !== btoa(curPass)) {
                 currentPassError.textContent = 'Mot de passe actuel incorrect.';
                 setCurrentPass.classList.add('error');
                 err = true;
@@ -287,7 +270,7 @@
 
             const idx = users.findIndex(u => u.email.toLowerCase() === session.email.toLowerCase());
             if (newEmail) users[idx].email    = newEmail;
-            if (newPass1) users[idx].password = newPass1;
+            if (newPass1) users[idx].password = btoa(newPass1); // Encodé comme à l'inscription
             saveUsers(users);
 
             const updatedEmail = newEmail || session.email;
@@ -306,16 +289,15 @@
     if (logoutBtn) {
         logoutBtn.addEventListener('click', function () {
             localStorage.removeItem('mvsiqva_session');
-            closeProfilePage();
-            if (typeof window.setCurrentPage === 'function') window.setCurrentPage('home');
+            closeProfilePage(); // Gère navigateTo('home') et éteint le badge
             const pic = document.querySelector('.ProfilePicture');
             if (pic) {
-                pic.src                = 'media/DefaultProfilePicture.png';
-                pic.style.display      = '';
-                pic.style.visibility   = '';
-                pic.style.background   = '';
-                pic.style.border       = '';
-                pic.style.boxShadow    = '';
+                pic.src              = 'media/DefaultProfilePicture.png';
+                pic.style.display    = '';
+                pic.style.visibility = '';
+                pic.style.background = '';
+                pic.style.border     = '';
+                pic.style.boxShadow  = '';
                 pic.style.borderRadius = '';
             }
             const badge = document.getElementById('profileBadge');
@@ -339,17 +321,14 @@
                 return;
             }
 
-            // Supprimer uniquement CE compte
             saveUsers(getUsers().filter(u => u.email.toLowerCase() !== session.email.toLowerCase()));
 
-            // Supprimer le profil de CE compte
             const profiles = getProfiles();
             delete profiles[session.email.toLowerCase()];
             saveProfiles(profiles);
 
             localStorage.removeItem('mvsiqva_session');
             closeProfilePage();
-            document.body.classList.remove('page-open');
 
             const pic = document.querySelector('.ProfilePicture');
             if (pic) {

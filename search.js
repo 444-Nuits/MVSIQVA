@@ -1,6 +1,6 @@
 // ============================================================
 // SEARCH.JS — Recherche artistes + titres, fiche artiste
-// Last.fm + iTunes + Wikipedia via backend
+// Last.fm + iTunes via backend
 // ============================================================
 
 (function () {
@@ -9,41 +9,22 @@
 
     // ==================== ÉTAT ====================
 
-    let isSearching     = false;
-    let previewAudio    = null;
-    let previewBtn      = null;
-    let searchDebounce  = null;
-    const HISTORY_KEY   = 'mvsiqva_search_history';
+    let isSearching    = false;
+    let previewAudio   = null;
+    let previewBtn     = null;
+    let searchDebounce = null;
+    const HISTORY_KEY  = 'mvsiqva_search_history';
 
-    // ==================== OUVERTURE / FERMETURE ====================
+    // ==================== OUVERTURE ====================
+    // Utilise le routeur centralisé de player.js + callback d'init propre à Search
 
     window.openSearchPage = function () {
-    const page = document.getElementById('searchPage');
-    if (!page) return;
-
-    // Fermer toutes les autres pages d'abord
-    document.getElementById('worldPage').classList.remove('active');
-    const newsPage = document.getElementById('newsPage');
-    if (newsPage) newsPage.classList.remove('active');
-    const aboutPage = document.getElementById('aboutPage');
-    if (aboutPage) aboutPage.classList.remove('active');
-    const profilePage = document.getElementById('profilePage');
-    if (profilePage) profilePage.classList.remove('active');
-    const chartsPage = document.getElementById('chartsPage');
-    if (chartsPage) chartsPage.classList.remove('active');
-    const socialPage = document.getElementById('socialPage');
-if (socialPage) socialPage.classList.remove('active');
-
-    // Ouvrir Search
-    page.classList.add('active');
-    document.body.classList.add('page-open');
-    if (typeof window.setCurrentPage === 'function') window.setCurrentPage('search');
-
-    setTimeout(() => document.getElementById('searchMainInput').focus(), 400);
-    if (!document.getElementById('searchDefaultView').dataset.loaded) {
-        loadDefaultView();
-    }
-};
+        window.navigateTo('search');
+        setTimeout(() => document.getElementById('searchMainInput').focus(), 400);
+        if (!document.getElementById('searchDefaultView').dataset.loaded) {
+            loadDefaultView();
+        }
+    };
 
     // ==================== VUE PAR DÉFAUT (tendances + historique) ====================
 
@@ -55,7 +36,6 @@ if (socialPage) socialPage.classList.remove('active');
         renderDefaultSkeletons();
 
         try {
-            // Top artistes + top titres en parallèle
             const [artistsRes, tracksRes] = await Promise.all([
                 fetch(`${API_BASE}/api/search/trending/artists`),
                 fetch(`${API_BASE}/api/search/trending/tracks`),
@@ -63,7 +43,7 @@ if (socialPage) socialPage.classList.remove('active');
             const artistsData = await artistsRes.json();
             const tracksData  = await tracksRes.json();
             renderTrendingArtists(artistsData.artists || []);
-            renderTrendingTracks(tracksData.tracks   || []);
+            renderTrendingTracks(tracksData.tracks    || []);
         } catch (e) {
             console.error('Erreur tendances :', e);
             document.getElementById('trendingArtistsWrap').innerHTML =
@@ -118,7 +98,7 @@ if (socialPage) socialPage.classList.remove('active');
     }
 
     function renderTrendingTracks(tracks) {
-        document.getElementById('trendingTracksWrap').innerHTML = tracks.map((t, i) => `
+        document.getElementById('trendingTracksWrap').innerHTML = tracks.map((t) => `
             <div class="search-track-row" onclick="playPreviewTrack('${escAttr(t.previewUrl || '')}', '${escAttr(t.title)}', '${escAttr(t.artist)}', this)">
                 <div class="search-track-cover" style="${t.cover ? `background-image:url('${escAttr(t.cover)}')` : ''}">
                     ${!t.cover ? `<span style="font-size:1.2vw;">🎵</span>` : ''}
@@ -158,7 +138,7 @@ if (socialPage) socialPage.classList.remove('active');
             const artistsData = await artistsRes.json();
             const tracksData  = await tracksRes.json();
             renderSearchArtists(artistsData.artists || [], query);
-            renderSearchTracks(tracksData.tracks   || [], query);
+            renderSearchTracks(tracksData.tracks    || [], query);
         } catch (e) {
             console.error('Erreur recherche :', e);
         } finally {
@@ -187,8 +167,7 @@ if (socialPage) socialPage.classList.remove('active');
     function renderSearchArtists(artists, query) {
         const section = document.getElementById('searchArtistsSection');
         const wrap    = document.getElementById('searchArtistsWrap');
-        document.getElementById('searchArtistsLabel').textContent =
-            `Artistes pour "${query}"`;
+        document.getElementById('searchArtistsLabel').textContent = `Artistes pour "${query}"`;
         if (!artists.length) { section.style.display = 'none'; return; }
         section.style.display = 'block';
         wrap.innerHTML = artists.map(a => `
@@ -204,8 +183,7 @@ if (socialPage) socialPage.classList.remove('active');
     function renderSearchTracks(tracks, query) {
         const section = document.getElementById('searchTracksSection');
         const wrap    = document.getElementById('searchTracksWrap');
-        document.getElementById('searchTracksLabel').textContent =
-            `Titres pour "${query}"`;
+        document.getElementById('searchTracksLabel').textContent = `Titres pour "${query}"`;
         if (!tracks.length) { section.style.display = 'none'; return; }
         section.style.display = 'block';
         wrap.innerHTML = tracks.map(t => `
@@ -246,14 +224,6 @@ if (socialPage) socialPage.classList.remove('active');
         if (panel) panel.classList.remove('active');
         stopPreview();
     }
-
-    window.closeSearchPage = function () {
-    stopPreview();
-    closeArtistPanel();
-    const page = document.getElementById('searchPage');
-    if (!page) return;
-    page.classList.remove('active');
-};
 
     function renderArtistSkeleton() {
         document.getElementById('artistPanelContent').innerHTML = `
@@ -312,10 +282,8 @@ if (socialPage) socialPage.classList.remove('active');
 
     window.playPreviewTrack = function (url, title, artist, rowEl) {
         if (!url) return;
-
         if (previewBtn === rowEl) { stopPreview(); return; }
         stopPreview();
-
         previewAudio = new Audio(url);
         previewBtn   = rowEl;
         rowEl.classList.add('playing');
@@ -331,16 +299,16 @@ if (socialPage) socialPage.classList.remove('active');
     // ==================== VUES ====================
 
     function showResultsView() {
-        document.getElementById('searchDefaultView').style.display  = 'none';
-        document.getElementById('searchResultsView').style.display  = 'block';
-        document.getElementById('searchClearBtn').style.display     = 'flex';
+        document.getElementById('searchDefaultView').style.display = 'none';
+        document.getElementById('searchResultsView').style.display = 'block';
+        document.getElementById('searchClearBtn').style.display    = 'flex';
     }
 
     function showDefaultView() {
-        document.getElementById('searchDefaultView').style.display  = 'block';
-        document.getElementById('searchResultsView').style.display  = 'none';
-        document.getElementById('searchClearBtn').style.display     = 'none';
-        document.getElementById('searchMainInput').value            = '';
+        document.getElementById('searchDefaultView').style.display = 'block';
+        document.getElementById('searchResultsView').style.display = 'none';
+        document.getElementById('searchClearBtn').style.display    = 'none';
+        document.getElementById('searchMainInput').value           = '';
         renderHistory();
     }
 
@@ -376,35 +344,19 @@ if (socialPage) socialPage.classList.remove('active');
     // ==================== INIT ====================
 
     document.addEventListener('DOMContentLoaded', function () {
-        
-        // Effet sticky scroll — le titre disparaît quand on scrolle
-const searchBody = document.querySelector('.search-body');
-const searchHero = document.querySelector('.search-hero');
 
-searchBody.addEventListener('scroll', function () {
-    if (this.scrollTop > 30) {
-        searchHero.classList.add('scrolled');
-    } else {
-        searchHero.classList.remove('scrolled');
-    }
-});
+        // Effet sticky scroll sur le titre
+        const searchBody = document.querySelector('.search-body');
+        const searchHero = document.querySelector('.search-hero');
+        searchBody.addEventListener('scroll', function () {
+            searchHero.classList.toggle('scrolled', this.scrollTop > 30);
+        });
 
-// Fermer le panneau artiste en cliquant en dehors
-document.getElementById('searchPage').addEventListener('click', function(e) {
-    const panel = document.getElementById('artistPanel');
-    if (panel.classList.contains('active') && 
-        !panel.contains(e.target)) {
-        closeArtistPanel();
-    }
-});
-
-        // Lien navbar Search
-        document.querySelectorAll('.nav-link').forEach(link => {
-            if (link.getAttribute('href') === '#search') {
-                link.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    window.openSearchPage();
-                });
+        // Fermer le panneau artiste en cliquant en dehors
+        document.getElementById('searchPage').addEventListener('click', function (e) {
+            const panel = document.getElementById('artistPanel');
+            if (panel.classList.contains('active') && !panel.contains(e.target)) {
+                closeArtistPanel();
             }
         });
 

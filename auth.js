@@ -39,13 +39,13 @@
 
     function registerUser(email, password) {
         const users = getUsers();
-        users.push({ email, password, createdAt: new Date().toISOString() });
+        users.push({ email, password: btoa(password), createdAt: new Date().toISOString() });
         saveUsers(users);
     }
 
     function loginUser(email, password) {
         return getUsers().some(
-            u => u.email.toLowerCase() === email.toLowerCase() && u.password === password
+            u => u.email.toLowerCase() === email.toLowerCase() && u.password === btoa(password)
         );
     }
 
