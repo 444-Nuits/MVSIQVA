@@ -8,6 +8,12 @@ const LASTFM_KEY = process.env.LASTFM_KEY || '4d7ebbef5b0b9430cf28419a88af87da';
 
 app.use(cors());
 
+// iTunes blocks requests without a browser User-Agent
+const ITUNES_HEADERS = {
+    headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36' }
+};
+
+
 // ── Enrich a track with cover + preview from iTunes ──────────────
 // Strategy:
 //   1. Search iTunes with "title artist" → exact match
