@@ -1,44 +1,45 @@
 // ============================================================
-// SOCIAL.JS — Page sociale : recherche, suggestions, suivi
-// Les utilisateurs fictifs sont chargés depuis users.json
-// via fetch() — pas de données en dur dans ce fichier.
+// SOCIAL.JS — Social page: search, suggestions, follow system
+// Seed users are loaded from users.json via fetch().
 // ============================================================
 
 (function () {
 
     // ============================================================
-    // CLÉS LOCALSTORAGE
+    // LOCALSTORAGE KEYS
     // ============================================================
 
     const SESSION_KEY  = 'mvsiqva_session';
     const FOLLOWS_KEY  = 'mvsiqva_follows';
     const PROFILES_KEY = 'mvsiqva_profiles';
 
-    // Cache mémoire — rempli une seule fois par fetchUsers()
+    // In-memory cache — filled once by fetchUsers()
     let _seedUsers   = [];
     let _seedFollows = {};
 
     // ============================================================
-    // CHARGEMENT DE users.json (fetch + cache mémoire)
+    // LOAD users.json (fetch + memory cache)
     // ============================================================
 
     async function fetchUsers() {
-        if (_seedUsers.length > 0) return;
+        if (_seedUsers.length > 0) return true; // already loaded
         try {
             const res = await fetch('data/users.json');
             if (!res.ok) throw new Error('HTTP ' + res.status);
             const data   = await res.json();
             _seedUsers   = data.users   || [];
             _seedFollows = data.follows || {};
+            return true;
         } catch (err) {
-            console.error('[Social] Impossible de charger users.json :', err);
+            console.error('[Social] Could not load users.json:', err);
             _seedUsers   = [];
             _seedFollows = {};
+            return false; // signals failure to caller
         }
     }
 
     // ============================================================
-    // LOCALSTORAGE
+    // LOCALSTORAGE HELPERS
     // ============================================================
 
     function getSession()    { try { return JSON.parse(localStorage.getItem(SESSION_KEY));        } catch { return null; } }
@@ -66,7 +67,7 @@
 
     function toggleFollow(targetEmail) {
         const session = getSession();
-        if (!session) { showSocialToast('Connectez-vous pour suivre des utilisateurs.', 'error'); return false; }
+        if (!session) { showSocialToast('Log in to follow users.', 'error'); return false; }
 
         const follows    = getFollows();
         const myEmail    = session.email.toLowerCase();
@@ -85,8 +86,8 @@
     }
 
     // ============================================================
-    // PROFIL D'UN UTILISATEUR
-    // Priorité : localStorage (profil édité) > users.json > fallback
+    // USER PROFILE
+    // Priority: localStorage (edited) > users.json > fallback
     // ============================================================
 
     function getUserProfile(email) {
@@ -118,7 +119,7 @@
     }
 
     // ============================================================
-    // SYNCHRONISATION DES SEEDS → localStorage
+    // SYNC SEEDS → localStorage
     // ============================================================
 
     function syncSeedsToLocalStorage() {
@@ -149,7 +150,7 @@
     }
 
     // ============================================================
-    // ALGORITHME DE SUGGESTIONS
+    // SUGGESTION ALGORITHM
     // ============================================================
 
     function buildSuggestions() {
@@ -170,27 +171,27 @@
             let type    = 'new-member';
             let score   = 0;
 
-            // 1. Goûts similaires
+            // 1. Similar tastes
             if (myEmail && session) {
                 const myP = getUserProfile(myEmail);
                 if (myP.favArtist !== '—' && p.favArtist === myP.favArtist) {
-                    reason = `Vous aimez tous les deux <strong>${p.favArtist}</strong>`;
+                    reason = `You both love <strong>${p.favArtist}</strong>`;
                     type   = 'similar-artist';
                     score += 10;
                 } else if (myP.favTrack !== '—' && p.favTrack === myP.favTrack) {
-                    reason = `Même titre favori : <em>${p.favTrack}</em>`;
+                    reason = `Same favourite track: <em>${p.favTrack}</em>`;
                     type   = 'similar-track';
                     score += 7;
                 }
             }
 
-            // 2. Ami d'ami
+            // 2. Friend of friend
             if (!reason) {
                 const theirFollows = follows[email] || [];
                 const common       = myFollow.filter(f => theirFollows.includes(f));
                 if (common.length) {
                     const name = getUserProfile(common[0]).pseudo;
-                    reason = `Suivi par <strong>${name}</strong>`;
+                    reason = `Followed by <strong>${name}</strong>`;
                     type   = 'friend-of-friend';
                     score += 5;
                 }
@@ -204,22 +205,78 @@
     }
 
     // ============================================================
-    // RENDU — VUE PAR DÉFAUT
+    // RENDER — DEFAULT VIEW
     // ============================================================
 
     async function loadDefaultView() {
-        await fetchUsers();
+        const grid = document.getElementById('socialSuggestionsGrid');
+
+        // Show loading skeletons while fetching
+        renderSkeletons(grid);
+
+        const ok = await fetchUsers();
+
+        // If fetch failed, show a visible error with a retry button
+        if (!ok) {
+            renderError(grid, loadDefaultView);
+            return;
+        }
+
         syncSeedsToLocalStorage();
         renderSuggestions();
         renderFollowingRow();
     }
 
+    // Loading skeletons — shown while users.json is being fetched
+    function renderSkeletons(grid) {
+        grid.innerHTML = Array.from({ length: 6 }, () => `
+            <div class="social-user-card" style="pointer-events:none;">
+                <div class="social-card-avatar skeleton-block"></div>
+                <div class="skeleton-block" style="width:60%;height:13px;border-radius:4px;margin:8px auto 6px;"></div>
+                <div class="skeleton-block" style="width:40%;height:11px;border-radius:4px;margin:0 auto 10px;"></div>
+                <div class="skeleton-block" style="width:70px;height:28px;border-radius:2vw;margin:0 auto;"></div>
+            </div>`).join('');
+    }
+
+    // Visible error message shown when users.json fails to load
+    function renderError(container, retryFn) {
+        container.innerHTML = `
+            <div style="
+                grid-column: 1 / -1;
+                display: flex; flex-direction: column; align-items: center;
+                gap: 1vw; padding: 3vw 0; text-align: center;
+            ">
+                <span style="font-size:2.5vw;">📡</span>
+                <p style="color:rgba(255,255,255,0.6);font-size:1.1vw;margin:0;">
+                    Could not load user data.
+                </p>
+                <p style="color:rgba(255,255,255,0.3);font-size:0.85vw;margin:0;">
+                    Check your connection or try again later.
+                </p>
+                <button onclick="window._socialRetry()" style="
+                    margin-top:0.5vw; padding:0.6vw 2vw;
+                    background:rgba(230,201,19,0.1); border:1px solid rgba(230,201,19,0.4);
+                    color:rgb(230,201,19); border-radius:3vw; cursor:pointer;
+                    font-size:0.9vw; font-family:inherit;
+                ">Retry</button>
+            </div>`;
+
+        // Expose retry function globally so the inline onclick can reach it
+        window._socialRetry = async function () {
+            _seedUsers   = []; // reset cache so fetchUsers() tries again
+            _seedFollows = {};
+            const page = document.getElementById('socialPage');
+            if (page) delete page.dataset.loaded;
+            await retryFn();
+        };
+    }
+
     function renderSuggestions() {
-        const grid        = document.getElementById('socialGrid');
+        const grid        = document.getElementById('socialSuggestionsGrid');
         const suggestions = buildSuggestions();
 
         if (!suggestions.length) {
-            grid.innerHTML = `<p style="color:rgba(255,255,255,0.3);font-size:1vw;grid-column:1/-1;">Aucune suggestion pour le moment.</p>`;
+            grid.innerHTML = `<p style="color:rgba(255,255,255,0.3);font-size:1vw;grid-column:1/-1;">No suggestions yet.</p>`;
             return;
         }
 
@@ -236,7 +293,7 @@
                 <span class="social-card-badge ${type}">${badgeLabel(type)}</span>
                 <button class="social-follow-btn${following ? ' following' : ''}" data-email="${escAttr(email)}"
                     onclick="event.stopPropagation(); handleFollowClick(this, '${escAttr(email)}')">
-                    ${following ? 'Abonné' : 'Suivre'}
+                    ${following ? 'Following' : 'Follow'}
                 </button>
             </div>`;
         }).join('');
@@ -271,11 +328,11 @@
     }
 
     // ============================================================
-    // RECHERCHE
+    // SEARCH
     // ============================================================
 
     function doSearch(query) {
-        const grid = document.getElementById('socialGrid');
+        const grid = document.getElementById('socialSuggestionsGrid');
         const q    = query.trim().toLowerCase();
 
         if (!q) { renderSuggestions(); return; }
@@ -288,7 +345,7 @@
             .map(email => ({ email, p: getUserProfile(email) }));
 
         if (!results.length) {
-            grid.innerHTML = `<p style="color:rgba(255,255,255,0.3);font-size:1vw;grid-column:1/-1;">Aucun utilisateur trouvé.</p>`;
+            grid.innerHTML = `<p style="color:rgba(255,255,255,0.3);font-size:1vw;grid-column:1/-1;">No user found.</p>`;
             return;
         }
 
@@ -302,7 +359,7 @@
                 <div class="social-card-name">${escHtml(p.pseudo)}</div>
                 <button class="social-follow-btn${following ? ' following' : ''}" data-email="${escAttr(email)}"
                     onclick="event.stopPropagation(); handleFollowClick(this, '${escAttr(email)}')">
-                    ${following ? 'Abonné' : 'Suivre'}
+                    ${following ? 'Following' : 'Follow'}
                 </button>
             </div>`;
         }).join('');
@@ -314,9 +371,10 @@
 
     window.handleFollowClick = function (btn, email) {
         const nowFollowing = toggleFollow(email);
-        btn.textContent    = nowFollowing ? 'Abonné' : 'Suivre';
+        btn.textContent    = nowFollowing ? 'Following' : 'Follow';
         btn.classList.toggle('following', nowFollowing);
-        showSocialToast(nowFollowing ? `Vous suivez ${getUserProfile(email).pseudo} !` : `Vous ne suivez plus ${getUserProfile(email).pseudo}.`);
+        const pseudo = getUserProfile(email).pseudo;
+        showSocialToast(nowFollowing ? `You are now following ${pseudo}!` : `You unfollowed ${pseudo}.`);
         refreshFollowingRow();
         syncPanelFollowBtn(email, nowFollowing);
     };
@@ -326,20 +384,20 @@
     function syncPanelFollowBtn(email, nowFollowing) {
         const panelBtn = document.getElementById('panelFollowBtn');
         if (panelBtn && panelBtn.dataset.email === email) {
-            panelBtn.textContent = nowFollowing ? '✓ Abonné' : '+ Suivre';
+            panelBtn.textContent = nowFollowing ? '✓ Following' : '+ Follow';
             panelBtn.classList.toggle('following', nowFollowing);
         }
     }
 
     function syncCardFollowBtn(email, nowFollowing) {
         document.querySelectorAll(`.social-follow-btn[data-email="${email}"]`).forEach(btn => {
-            btn.textContent = nowFollowing ? 'Abonné' : 'Suivre';
+            btn.textContent = nowFollowing ? 'Following' : 'Follow';
             btn.classList.toggle('following', nowFollowing);
         });
     }
 
     // ============================================================
-    // PANNEAU UTILISATEUR
+    // USER PANEL
     // ============================================================
 
     function openUserPanel(email) {
@@ -357,9 +415,9 @@
             const myP  = getUserProfile(myEmail);
             const rows = [];
             if (p.favArtist !== '—' && p.favArtist === myP.favArtist)
-                rows.push(`<div class="social-panel-common-row"><span class="social-panel-common-icon">🎤</span><span class="social-panel-common-text">Même artiste favori : <strong>${escHtml(p.favArtist)}</strong></span></div>`);
+                rows.push(`<div class="social-panel-common-row"><span class="social-panel-common-icon">🎤</span><span class="social-panel-common-text">Same favourite artist: <strong>${escHtml(p.favArtist)}</strong></span></div>`);
             if (p.favTrack !== '—' && p.favTrack === myP.favTrack)
-                rows.push(`<div class="social-panel-common-row"><span class="social-panel-common-icon">🎵</span><span class="social-panel-common-text">Même titre favori : <strong>${escHtml(p.favTrack)}</strong></span></div>`);
+                rows.push(`<div class="social-panel-common-row"><span class="social-panel-common-icon">🎵</span><span class="social-panel-common-text">Same favourite track: <strong>${escHtml(p.favTrack)}</strong></span></div>`);
             return rows;
         })() : [];
 
@@ -377,29 +435,29 @@
                 </div>
                 <div class="social-panel-stat">
                     <div class="social-panel-stat-val">${p.tracks}</div>
-                    <div class="social-panel-stat-label">titres</div>
+                    <div class="social-panel-stat-label">tracks</div>
                 </div>
             </div>
-            ${commonRows.length ? `<p class="social-panel-section-title">Points communs</p>${commonRows.join('')}` : ''}
-            <p class="social-panel-section-title" style="margin-top:${commonRows.length ? '1.4vw' : '0'}">Artiste favori</p>
+            ${commonRows.length ? `<p class="social-panel-section-title">In common</p>${commonRows.join('')}` : ''}
+            <p class="social-panel-section-title" style="margin-top:${commonRows.length ? '1.4vw' : '0'}">Favourite artist</p>
             <div class="social-panel-common-row">
                 <span class="social-panel-common-icon">🎤</span>
                 <span class="social-panel-common-text"><strong>${escHtml(p.favArtist)}</strong></span>
             </div>
-            <p class="social-panel-section-title" style="margin-top:0.8vw">Titre favori</p>
+            <p class="social-panel-section-title" style="margin-top:0.8vw">Favourite track</p>
             <div class="social-panel-common-row">
                 <span class="social-panel-common-icon">🎵</span>
                 <span class="social-panel-common-text"><strong>${escHtml(p.favTrack)}</strong></span>
             </div>
             <button class="social-panel-follow-btn${following ? ' following' : ''}" id="panelFollowBtn" data-email="${escAttr(email)}">
-                ${following ? '✓ Abonné' : '+ Suivre'}
+                ${following ? '✓ Following' : '+ Follow'}
             </button>`;
 
         content.querySelector('#panelFollowBtn').addEventListener('click', function () {
             const nowFollowing = toggleFollow(email);
-            this.textContent   = nowFollowing ? '✓ Abonné' : '+ Suivre';
+            this.textContent   = nowFollowing ? '✓ Following' : '+ Follow';
             this.classList.toggle('following', nowFollowing);
-            showSocialToast(nowFollowing ? `Vous suivez ${p.pseudo} !` : `Vous ne suivez plus ${p.pseudo}.`);
+            showSocialToast(nowFollowing ? `You are now following ${p.pseudo}!` : `You unfollowed ${p.pseudo}.`);
             refreshFollowingRow();
             syncCardFollowBtn(email, nowFollowing);
         });
@@ -408,8 +466,7 @@
     }
 
     // ============================================================
-    // OUVERTURE DE LA PAGE
-    // Utilise le routeur centralisé + callback d'init propre à Social
+    // PAGE OPEN — uses centralized router + Social-specific init
     // ============================================================
 
     window.openSocialPage = async function () {

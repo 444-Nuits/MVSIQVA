@@ -1,6 +1,6 @@
 // ============================================================
 // SEARCH.JS — Recherche artistes + titres, fiche artiste
-// Last.fm + iTunes via backend
+// Last.fm + iTunes + Wikipedia via backend
 // ============================================================
 
 (function () {
@@ -9,14 +9,13 @@
 
     // ==================== ÉTAT ====================
 
-    let isSearching    = false;
-    let previewAudio   = null;
-    let previewBtn     = null;
-    let searchDebounce = null;
-    const HISTORY_KEY  = 'mvsiqva_search_history';
+    let isSearching     = false;
+    let previewAudio    = null;
+    let previewBtn      = null;
+    let searchDebounce  = null;
+    const HISTORY_KEY   = 'mvsiqva_search_history';
 
-    // ==================== OUVERTURE ====================
-    // Utilise le routeur centralisé de player.js + callback d'init propre à Search
+    // ==================== OUVERTURE / FERMETURE ====================
 
     window.openSearchPage = function () {
         window.navigateTo('search');
@@ -36,6 +35,7 @@
         renderDefaultSkeletons();
 
         try {
+            // Top artistes + top titres en parallèle
             const [artistsRes, tracksRes] = await Promise.all([
                 fetch(`${API_BASE}/api/search/trending/artists`),
                 fetch(`${API_BASE}/api/search/trending/tracks`),
@@ -43,12 +43,27 @@
             const artistsData = await artistsRes.json();
             const tracksData  = await tracksRes.json();
             renderTrendingArtists(artistsData.artists || []);
-            renderTrendingTracks(tracksData.tracks    || []);
+            renderTrendingTracks(tracksData.tracks   || []);
         } catch (e) {
-            console.error('Erreur tendances :', e);
-            document.getElementById('trendingArtistsWrap').innerHTML =
-                '<p style="color:rgba(255,255,255,0.3);font-size:0.9vw;">Impossible de charger les tendances.</p>';
-            document.getElementById('trendingTracksWrap').innerHTML = '';
+            console.error('Trending load error:', e);
+            const errHtml = `
+                <div style="display:flex;flex-direction:column;align-items:center;gap:0.8vw;padding:2vw 0;text-align:center;">
+                    <span style="font-size:2vw;">📡</span>
+                    <p style="color:rgba(255,255,255,0.5);font-size:0.95vw;margin:0;">Could not reach the server.</p>
+                    <p style="color:rgba(255,255,255,0.3);font-size:0.8vw;margin:0;">Check your connection and try again.</p>
+                    <button onclick="window._searchRetry()" style="
+                        margin-top:0.3vw;padding:0.5vw 1.8vw;
+                        background:rgba(230,201,19,0.1);border:1px solid rgba(230,201,19,0.4);
+                        color:rgb(230,201,19);border-radius:3vw;cursor:pointer;
+                        font-size:0.85vw;font-family:inherit;">Retry</button>
+                </div>`;
+            document.getElementById('trendingArtistsWrap').innerHTML = errHtml;
+            document.getElementById('trendingTracksWrap').innerHTML  = '';
+            window._searchRetry = function () {
+                const view = document.getElementById('searchDefaultView');
+                delete view.dataset.loaded;
+                loadDefaultView();
+            };
         }
     }
 
@@ -98,7 +113,7 @@
     }
 
     function renderTrendingTracks(tracks) {
-        document.getElementById('trendingTracksWrap').innerHTML = tracks.map((t) => `
+        document.getElementById('trendingTracksWrap').innerHTML = tracks.map((t, i) => `
             <div class="search-track-row" onclick="playPreviewTrack('${escAttr(t.previewUrl || '')}', '${escAttr(t.title)}', '${escAttr(t.artist)}', this)">
                 <div class="search-track-cover" style="${t.cover ? `background-image:url('${escAttr(t.cover)}')` : ''}">
                     ${!t.cover ? `<span style="font-size:1.2vw;">🎵</span>` : ''}
@@ -138,7 +153,7 @@
             const artistsData = await artistsRes.json();
             const tracksData  = await tracksRes.json();
             renderSearchArtists(artistsData.artists || [], query);
-            renderSearchTracks(tracksData.tracks    || [], query);
+            renderSearchTracks(tracksData.tracks   || [], query);
         } catch (e) {
             console.error('Erreur recherche :', e);
         } finally {
@@ -167,7 +182,8 @@
     function renderSearchArtists(artists, query) {
         const section = document.getElementById('searchArtistsSection');
         const wrap    = document.getElementById('searchArtistsWrap');
-        document.getElementById('searchArtistsLabel').textContent = `Artistes pour "${query}"`;
+        document.getElementById('searchArtistsLabel').textContent =
+            `Artistes pour "${query}"`;
         if (!artists.length) { section.style.display = 'none'; return; }
         section.style.display = 'block';
         wrap.innerHTML = artists.map(a => `
@@ -183,7 +199,8 @@
     function renderSearchTracks(tracks, query) {
         const section = document.getElementById('searchTracksSection');
         const wrap    = document.getElementById('searchTracksWrap');
-        document.getElementById('searchTracksLabel').textContent = `Titres pour "${query}"`;
+        document.getElementById('searchTracksLabel').textContent =
+            `Titres pour "${query}"`;
         if (!tracks.length) { section.style.display = 'none'; return; }
         section.style.display = 'block';
         wrap.innerHTML = tracks.map(t => `
@@ -224,6 +241,14 @@
         if (panel) panel.classList.remove('active');
         stopPreview();
     }
+
+    window.closeSearchPage = function () {
+    stopPreview();
+    closeArtistPanel();
+    const page = document.getElementById('searchPage');
+    if (!page) return;
+    page.classList.remove('active');
+};
 
     function renderArtistSkeleton() {
         document.getElementById('artistPanelContent').innerHTML = `
@@ -282,8 +307,10 @@
 
     window.playPreviewTrack = function (url, title, artist, rowEl) {
         if (!url) return;
+
         if (previewBtn === rowEl) { stopPreview(); return; }
         stopPreview();
+
         previewAudio = new Audio(url);
         previewBtn   = rowEl;
         rowEl.classList.add('playing');
@@ -299,16 +326,16 @@
     // ==================== VUES ====================
 
     function showResultsView() {
-        document.getElementById('searchDefaultView').style.display = 'none';
-        document.getElementById('searchResultsView').style.display = 'block';
-        document.getElementById('searchClearBtn').style.display    = 'flex';
+        document.getElementById('searchDefaultView').style.display  = 'none';
+        document.getElementById('searchResultsView').style.display  = 'block';
+        document.getElementById('searchClearBtn').style.display     = 'flex';
     }
 
     function showDefaultView() {
-        document.getElementById('searchDefaultView').style.display = 'block';
-        document.getElementById('searchResultsView').style.display = 'none';
-        document.getElementById('searchClearBtn').style.display    = 'none';
-        document.getElementById('searchMainInput').value           = '';
+        document.getElementById('searchDefaultView').style.display  = 'block';
+        document.getElementById('searchResultsView').style.display  = 'none';
+        document.getElementById('searchClearBtn').style.display     = 'none';
+        document.getElementById('searchMainInput').value            = '';
         renderHistory();
     }
 
@@ -344,21 +371,23 @@
     // ==================== INIT ====================
 
     document.addEventListener('DOMContentLoaded', function () {
+        
+        // Effet sticky scroll — le titre disparaît quand on scrolle
+const searchBody = document.querySelector('.search-body');
+const searchHero = document.querySelector('.search-hero');
 
-        // Effet sticky scroll sur le titre
-        const searchBody = document.querySelector('.search-body');
-        const searchHero = document.querySelector('.search-hero');
-        searchBody.addEventListener('scroll', function () {
+searchBody.addEventListener('scroll', function () {
             searchHero.classList.toggle('scrolled', this.scrollTop > 30);
         });
 
-        // Fermer le panneau artiste en cliquant en dehors
-        document.getElementById('searchPage').addEventListener('click', function (e) {
-            const panel = document.getElementById('artistPanel');
-            if (panel.classList.contains('active') && !panel.contains(e.target)) {
-                closeArtistPanel();
-            }
-        });
+// Fermer le panneau artiste en cliquant en dehors
+document.getElementById('searchPage').addEventListener('click', function(e) {
+    const panel = document.getElementById('artistPanel');
+    if (panel.classList.contains('active') && 
+        !panel.contains(e.target)) {
+        closeArtistPanel();
+    }
+});
 
         // Bouton fermer fiche artiste
         document.getElementById('artistPanelClose').addEventListener('click', closeArtistPanel);

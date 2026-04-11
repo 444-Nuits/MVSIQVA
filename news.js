@@ -1,14 +1,14 @@
 // ============================================================
-// NEWS.JS — Fetch JSON + card stack + filtrage par catégorie
+// NEWS.JS — Fetch JSON + card stack + category filter + article modal
 // ============================================================
 
 let currentCardIndex = 0;
 let isScrolling      = false;
-let allArticles      = [];       // Cache de tous les articles fetchés
-let activeFilter     = null;     // Catégorie active ou null
+let allArticles      = [];   // Cache of all fetched articles
+let activeFilter     = null; // Active category filter or null
 
-// ==================== POINT D'ENTRÉE ====================
-// Appelée par player.js à l'ouverture de la page News
+// ==================== ENTRY POINT ====================
+// Called by player.js when the News page opens
 
 function initNewsPage() {
     currentCardIndex = 0;
@@ -17,47 +17,46 @@ function initNewsPage() {
     fetchNews();
 }
 
-// ==================== FETCH DES DONNÉES ====================
+// ==================== FETCH DATA ====================
 
 async function fetchNews() {
     const newsStack     = document.getElementById('newsStack');
     const timelineDates = document.getElementById('timelineDates');
     if (!newsStack || !timelineDates) return;
 
-    // État de chargement
+    // Loading skeleton — shown while news.json is being fetched
     newsStack.innerHTML = `
-        <div style="
-            display: flex; align-items: center; justify-content: center;
-            height: 70vh; color: rgba(255,255,255,0.4);
-            font-size: 1.2vw; letter-spacing: 0.1em;
-        ">
-            Chargement des actualités…
-        </div>
-    `;
+        <div class="news-stack-card" style="pointer-events:none;">
+            <div class="card-border"></div>
+            <div class="card-content">
+                <div class="card-image skeleton-block" style="border-radius:0;"></div>
+                <div class="card-info" style="gap:1.2vw;">
+                    <div class="skeleton-block" style="width:30%;height:1.2vw;border-radius:3vw;"></div>
+                    <div class="skeleton-block" style="width:80%;height:2.5vw;border-radius:8px;"></div>
+                    <div class="skeleton-block" style="width:90%;height:1vw;border-radius:4px;"></div>
+                    <div class="skeleton-block" style="width:70%;height:1vw;border-radius:4px;"></div>
+                </div>
+            </div>
+        </div>`;
 
     try {
         const response = await fetch('data/news.json');
-
-        if (!response.ok) {
-            throw new Error(`Erreur HTTP : ${response.status}`);
-        }
-
+        if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
         allArticles = await response.json();
         renderNews(allArticles);
-
     } catch (error) {
-        console.error('Impossible de charger les actualités :', error);
+        console.error('Could not load news:', error);
         renderError();
     }
 }
 
-// ==================== RENDU DES CARDS ====================
+// ==================== RENDER CARDS ====================
 
 function renderNews(articles) {
-    const newsStack     = document.getElementById('newsStack');
-    const timelineDates = document.getElementById('timelineDates');
+    const newsStack      = document.getElementById('newsStack');
+    const timelineDates  = document.getElementById('timelineDates');
 
-    newsStack.innerHTML    = '';
+    newsStack.innerHTML     = '';
     timelineDates.innerHTML = '';
 
     articles.forEach((article, index) => {
@@ -85,8 +84,8 @@ function renderNews(articles) {
                     </span>
                     <h2 class="card-title">${article.title}</h2>
                     <p class="card-description">${article.description}</p>
-                    <button class="card-read-btn">
-                        <span>Lire l'article complet</span>
+                    <button class="card-read-btn" ${!article.article ? 'style="opacity:0.4;cursor:default;"' : ''}>
+                        <span>Read full article</span>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2">
                             <path d="M5 12h14M12 5l7 7-7 7"/>
@@ -96,19 +95,27 @@ function renderNews(articles) {
             </div>
         `;
 
-        // Clic sur le badge catégorie → filtrer
+        // Click on category badge → filter
         const badge = card.querySelector('.card-category-filter');
-badge.style.cursor = 'pointer';
-badge.style.setProperty('--fill-color', badgeColor(article.category));
+        badge.style.cursor = 'pointer';
+        badge.style.setProperty('--fill-color', badgeColor(article.category));
+        badge.addEventListener('click', (e) => {
+            e.stopPropagation();
+            applyFilter(article.category, article.categoryLabel);
+        });
 
-badge.addEventListener('click', (e) => {
-    e.stopPropagation();
-    applyFilter(article.category, article.categoryLabel);
-});
+        // Click on "Read full article" → open modal
+        const readBtn = card.querySelector('.card-read-btn');
+        if (article.article) {
+            readBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openArticleModal(article);
+            });
+        }
 
         newsStack.appendChild(card);
 
-        // --- Date dans la timeline ---
+        // --- Timeline date ---
         const dateItem = document.createElement('div');
         dateItem.className = 'timeline-date-item';
         if (index === 0) dateItem.classList.add('active');
@@ -122,12 +129,132 @@ badge.addEventListener('click', (e) => {
     attachScrollHandler();
 }
 
-// ==================== FILTRAGE ====================
+// ==================== ARTICLE MODAL ====================
+
+function openArticleModal(article) {
+    const existing = document.getElementById('articleModal');
+    if (existing) existing.remove();
+
+    const color = badgeColor(article.category);
+
+    const modal = document.createElement('div');
+    modal.id = 'articleModal';
+    modal.style.cssText = `
+        position: fixed; inset: 0; z-index: 9999;
+        display: flex; align-items: center; justify-content: center;
+        animation: fadeIn 0.25s ease;
+    `;
+
+    modal.innerHTML = `
+        <style>
+            @keyframes fadeIn  { from { opacity:0; } to { opacity:1; } }
+            @keyframes slideUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
+        </style>
+
+        <!-- Backdrop -->
+        <div id="articleModalBackdrop" style="
+            position:absolute; inset:0;
+            background:rgba(0,0,0,0.85);
+            backdrop-filter:blur(12px);
+        "></div>
+
+        <!-- Modal box -->
+        <div style="
+            position:relative; z-index:1;
+            width:70vw; max-width:1000px; max-height:85vh;
+            background:#0d0d0d;
+            border:1px solid rgba(255,255,255,0.08);
+            border-radius:1.2vw;
+            overflow:hidden;
+            animation:slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1);
+            display:flex; flex-direction:column;
+        ">
+            <!-- HERO: image left + title right -->
+            <div style="display:flex;flex-direction:row;height:28vw;max-height:320px;flex-shrink:0;">
+
+                <!-- Image -->
+                <div style="width:45%;flex-shrink:0;overflow:hidden;">
+                    <img src="${article.image}" alt="${article.title}"
+                        style="width:100%;height:100%;object-fit:cover;display:block;"
+                        onerror="this.style.background='${fallbackGradient(article.category)}';this.style.display='block';this.src='';">
+                </div>
+
+                <!-- Title block -->
+                <div style="
+                    flex:1; padding:2.5vw 2.5vw 2vw;
+                    display:flex; flex-direction:column; justify-content:flex-end;
+                    background:linear-gradient(135deg,#111 0%,#0a0a0a 100%);
+                ">
+                    <span style="
+                        font-size:0.8vw; font-weight:700; letter-spacing:0.12em;
+                        text-transform:uppercase; color:${color}; margin-bottom:1vw;
+                    ">${article.categoryLabel}</span>
+                    <h2 style="
+                        font-family:'Playfair Display',serif;
+                        font-size:clamp(1.2rem,2.2vw,2.4rem);
+                        font-weight:900; color:white; line-height:1.2; margin:0 0 1.2vw;
+                    ">${article.title}</h2>
+                    <div style="display:flex;align-items:center;gap:1.2vw;font-size:0.8vw;color:rgba(255,255,255,0.4);">
+                        <span>✍️ ${article.author || 'Editorial'}</span>
+                        <span>·</span>
+                        <span>📅 ${article.date}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ARTICLE BODY -->
+            <div style="
+                flex:1; overflow-y:auto; padding:2.5vw 3vw 3vw;
+                scrollbar-width:thin; scrollbar-color:rgba(255,255,255,0.1) transparent;
+            ">
+                ${article.article.map(paragraph => `
+                    <p style="
+                        color:rgba(255,255,255,0.75);
+                        font-size:clamp(0.8rem,1vw,1.05rem);
+                        line-height:1.85; margin:0 0 1.4vw;
+                    ">${paragraph}</p>
+                `).join('')}
+            </div>
+
+            <!-- CLOSE BUTTON -->
+            <button id="articleModalClose" style="
+                position:absolute; top:1.2vw; right:1.2vw;
+                width:2.4vw; height:2.4vw; min-width:32px; min-height:32px;
+                border-radius:50%;
+                background:rgba(255,255,255,0.08);
+                border:1px solid rgba(255,255,255,0.15);
+                color:rgba(255,255,255,0.7); cursor:pointer;
+                display:flex; align-items:center; justify-content:center;
+                transition:background 0.2s,color 0.2s; z-index:2;
+            "
+            onmouseover="this.style.background='rgba(255,255,255,0.18)';this.style.color='white'"
+            onmouseout="this.style.background='rgba(255,255,255,0.08)';this.style.color='rgba(255,255,255,0.7)'">
+                <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
+                    <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </button>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    document.getElementById('articleModalBackdrop').addEventListener('click', closeArticleModal);
+    document.getElementById('articleModalClose').addEventListener('click', closeArticleModal);
+    document._newsEscHandler = (e) => { if (e.key === 'Escape') closeArticleModal(); };
+    document.addEventListener('keydown', document._newsEscHandler);
+}
+
+function closeArticleModal() {
+    const modal = document.getElementById('articleModal');
+    if (modal) modal.remove();
+    document.removeEventListener('keydown', document._newsEscHandler);
+}
+
+// ==================== FILTERING ====================
 
 function applyFilter(category, label) {
     if (activeFilter === category) return;
     activeFilter = category;
-
     const filtered = allArticles.filter(a => a.category === category);
     showFilterBadge(label, category);
     renderNews(filtered);
@@ -139,7 +266,7 @@ function clearFilter() {
     renderNews(allArticles);
 }
 
-// ==================== BADGE FILTRE ACTIF ====================
+// ==================== FILTER BADGE ====================
 
 function showFilterBadge(label, category) {
     removeFilterBadge();
@@ -148,53 +275,33 @@ function showFilterBadge(label, category) {
         album:     '#667eea',
         interview: '#10d164',
         festival:  '#f093fb',
-        divers : '#f093fb',
+        divers:    '#f093fb',
     };
     const color = colors[category] || 'rgba(230,201,19,0.8)';
 
     const badge = document.createElement('div');
     badge.id = 'activeFilterBadge';
     badge.style.cssText = `
-        position: absolute;
-        top: 1.5vw;
-        left: 50%;
-        transform: translateX(-50%);
-        display: flex;
-        align-items: center;
-        gap: 0.6vw;
-        padding: 0.5vw 1.2vw 0.5vw 1.4vw;
-        background: rgba(0,0,0,0.7);
-        backdrop-filter: blur(12px);
-        border: 1px solid ${color};
-        border-radius: 3vw;
-        color: ${color};
-        font-size: 0.9vw;
-        font-weight: 600;
-        z-index: 60;
-        animation: filterBadgeIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        white-space: nowrap;
+        position:absolute; top:1.5vw; left:50%; transform:translateX(-50%);
+        display:flex; align-items:center; gap:0.6vw;
+        padding:0.5vw 1.2vw 0.5vw 1.4vw;
+        background:rgba(0,0,0,0.7); backdrop-filter:blur(12px);
+        border:1px solid ${color}; border-radius:3vw;
+        color:${color}; font-size:0.9vw; font-weight:600;
+        z-index:60; animation:filterBadgeIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+        white-space:nowrap;
     `;
-
     badge.innerHTML = `
         <span>${label}</span>
         <button onclick="clearFilter()" style="
-            background: none;
-            border: none;
-            color: ${color};
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.1vw;
-            margin-left: 0.2vw;
-            opacity: 0.7;
-            transition: opacity 0.2s, transform 0.2s;
-            font-size: 1.1vw;
-            line-height: 1;
+            background:none;border:none;color:${color};cursor:pointer;
+            display:flex;align-items:center;justify-content:center;
+            padding:0.1vw;margin-left:0.2vw;opacity:0.7;
+            transition:opacity 0.2s,transform 0.2s;font-size:1.1vw;line-height:1;
         "
-        onmouseover="this.style.opacity='1'; this.style.transform='scale(1.2)'"
-        onmouseout="this.style.opacity='0.7'; this.style.transform='scale(1)'"
-        aria-label="Supprimer le filtre">✕</button>
+        onmouseover="this.style.opacity='1';this.style.transform='scale(1.2)'"
+        onmouseout="this.style.opacity='0.7';this.style.transform='scale(1)'"
+        aria-label="Remove filter">✕</button>
     `;
 
     const container = document.querySelector('.news-container');
@@ -209,50 +316,39 @@ function removeFilterBadge() {
     if (badge) badge.remove();
 }
 
-// ==================== AFFICHAGE D'ERREUR ====================
+// ==================== ERROR STATE ====================
 
 function renderError() {
     const newsStack = document.getElementById('newsStack');
     newsStack.innerHTML = `
         <div style="
-            display: flex; flex-direction: column; align-items: center;
-            justify-content: center; height: 70vh; gap: 1.5vw;
-            text-align: center;
+            display:flex; flex-direction:column; align-items:center;
+            justify-content:center; height:70vh; gap:1.5vw; text-align:center;
         ">
-            <span style="font-size: 3vw;">📡</span>
-            <p style="color: rgba(255,255,255,0.6); font-size: 1.2vw;">
-                Impossible de charger les actualités.
-            </p>
-            <p style="color: rgba(255,255,255,0.3); font-size: 0.9vw;">
-                Vérifiez votre connexion ou réessayez plus tard.
-            </p>
+            <span style="font-size:3vw;">📡</span>
+            <p style="color:rgba(255,255,255,0.6);font-size:1.2vw;">Could not load the news feed.</p>
+            <p style="color:rgba(255,255,255,0.3);font-size:0.9vw;">Check your connection or try again later.</p>
             <button onclick="fetchNews()" style="
-                margin-top: 1vw; padding: 0.8vw 2vw;
-                background: rgba(230,201,19,0.1);
-                border: 1px solid rgba(230,201,19,0.4);
-                color: rgb(230,201,19); border-radius: 3vw;
-                cursor: pointer; font-size: 1vw;
-            ">
-                Réessayer
-            </button>
+                margin-top:1vw; padding:0.8vw 2vw;
+                background:rgba(230,201,19,0.1); border:1px solid rgba(230,201,19,0.4);
+                color:rgb(230,201,19); border-radius:3vw;
+                cursor:pointer; font-size:1vw; font-family:inherit;
+            ">Retry</button>
         </div>
     `;
 }
 
-// ==================== COULEUR FALLBACK IMAGE ====================
+// ==================== FALLBACK COLORS ====================
 
 function fallbackGradient(category) {
     const gradients = {
         album:     'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         interview: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
         festival:  'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-        divers : 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
+        divers:    'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
     };
     return gradients[category] || 'linear-gradient(135deg, #333 0%, #111 100%)';
 }
-
-
-// ==================== COULEUR SURVOL CATEGORY ====================
 
 function badgeColor(category) {
     const colors = {

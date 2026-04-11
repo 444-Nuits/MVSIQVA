@@ -18,7 +18,7 @@
 
 
 <body>
-    <!-- HEADER ET NAVBAR - Flottent au-dessus -->
+    <!-- HEADER & NAVBAR -->
     <header id="mainHeader">
         <nav id="mainNav">
             <a href="#" id="logoLink">
@@ -38,16 +38,16 @@
         </nav>
     </header>
 
-    <!-- MUSIC PLAYER - Flotte au-dessus -->
+    <!-- MUSIC PLAYER -->
     <div class="music-player" id="musicPlayer">
-        <!-- Pochette d'album -->
+        <!-- Album cover -->
         <div class="album-cover">
             <img src="media/cover/" alt="Album Cover" id="albumCover">
         </div>
 
-        <!-- Contenu du player -->
+        <!-- Player content -->
         <div class="player-content">
-            <!-- Barre de progression -->
+            <!-- Progress bar -->
             <div class="progress-container">
                 <span class="time-current">0:00</span>
                 <div class="progress-bar">
@@ -57,13 +57,13 @@
                 <span class="time-total">0:00</span>
             </div>
 
-            <!-- Titre et artiste -->
+            <!-- Track info -->
             <div class="track-info">
                 <div class="track-title">Sundance</div>
                 <div class="track-artist">Népal</div>
             </div>
 
-            <!-- Contrôles -->
+            <!-- Controls -->
             <div class="player-controls">
                 <button class="control-btn" id="prevBtn">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
@@ -112,29 +112,28 @@
         <div class="fond">
             <img class="micro" src="media/micro.jpg">
 
-            <p class="worldp10"> <b>Découvrez le classement des meilleurs titres de la semaine !</b></p>
-            <p class="worldp11"> Avec le nombre de musiques disponibles, ce n'est pas facile de savoir lesquelles
-                écouter...<br>
-                Alors voici les 10 meilleurs titres de la semaine, d'après le Billboard !<br> </p>
+            <p class="worldp10"> <b>Discover the top tracks of the week!</b></p>
+            <p class="worldp11"> With so many tracks out there, it's hard to know what to listen to...<br>
+                Here are the top 10 tracks of the week, according to the charts!<br> </p>
 
-            <button class="button1" id="worldChartsBtn"> le classement c'est ici !</button>
+            <button class="button1" id="worldChartsBtn"> See the charts →</button>
         </div>
     </section>
 
     <section id="chartsPage" class="page secondary-page charts-page">
 
-        <!-- En-tête -->
+        <!-- Header -->
         <div class="charts-header">
             <button class="charts-back-btn" id="chartsBackBtn">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M19 12H5M12 5l-7 7 7 7" />
                 </svg>
-                Retour
+                Back
             </button>
 
             <div class="charts-header-title">
                 <h1 class="charts-title">Charts</h1>
-                <span class="charts-subtitle">Propulsed by iTunes</span>
+                <span class="charts-subtitle">Powered by iTunes</span>
             </div>
 
             <div class="charts-search-wrap">
@@ -144,7 +143,7 @@
                         <circle cx="11" cy="11" r="8" />
                         <path d="M21 21l-4.35-4.35" />
                     </svg>
-                    <input type="text" id="chartsSearchInput" placeholder="Rechercher artiste, titre…"
+                    <input type="text" id="chartsSearchInput" placeholder="Search artist, track…"
                         class="charts-search-input" autocomplete="off">
                     <button class="charts-search-btn" id="chartsSearchBtn">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -156,7 +155,7 @@
             </div>
         </div>
 
-        <!-- Filtres genre -->
+        <!-- Genre filters -->
         <div class="charts-genres">
             <button class="genre-btn active" data-genre="hip-hop">Hip-Hop</button>
             <button class="genre-btn" data-genre="pop">Pop</button>
@@ -166,25 +165,25 @@
             <button class="genre-btn" data-genre="jazz">Jazz</button>
         </div>
 
-        <!-- Tableau -->
+        <!-- Table -->
         <div class="charts-body">
 
-            <!-- État vide / erreur -->
+            <!-- Empty state -->
             <div id="chartsEmpty" class="charts-empty" style="display:none;">
                 <span style="font-size:2.5vw;">🎵</span>
                 <p>No results.</p>
             </div>
 
-            <!-- Tableau Billboard -->
+            <!-- Charts table -->
             <div id="chartsTableWrap" class="charts-table-wrap">
                 <table class="charts-table">
                     <thead>
                         <tr>
                             <th class="th-rank">#</th>
                             <th class="th-cover"></th>
-                            <th class="th-info">Titre</th>
+                            <th class="th-info">Track</th>
                             <th class="th-album">Album</th>
-                            <th class="th-duration">Durée</th>
+                            <th class="th-duration">Duration</th>
                         </tr>
                     </thead>
                     <tbody id="chartsTableBody">
@@ -209,13 +208,13 @@
 
             <!-- CARD STACK RIGHT -->
             <div class="news-stack" id="newsStack">
-                <!-- AUTOMTICALLY CARDS GENEREATED WITH JSON -->
+                <!-- Cards dynamically generated from JSON -->
             </div>
         </div>
     </section>
 
 
-    <!------------------------------------------------------- PAGE SOCIAL --------------------------------------------------->
+    <!-- PAGE SOCIAL -->
 
     <section id="socialPage" class="page secondary-page">
     <div class="social-wrapper">
@@ -223,7 +222,7 @@
         <!-- HERO + SEARCH -->
         <div class="social-hero">
             <div class="social-hero-text">
-                <p class="social-eyebrow">Communauté</p>
+                <p class="social-eyebrow">Community</p>
                 <h1 class="social-title">Social</h1>
             </div>
 
@@ -235,28 +234,28 @@
                     type="text"
                     id="socialSearchInput"
                     class="social-search-input"
-                    placeholder="Rechercher un utilisateur…"
+                    placeholder="Search a user…"
                     autocomplete="off"
                 >
                 <button class="social-search-clear" id="socialSearchClear" style="display:none">✕</button>
             </div>
         </div>
 
-        <!-- CORPS PRINCIPAL : suggestions + abonnements -->
+        <!-- MAIN BODY: suggestions + following -->
         <div class="social-body" id="socialBody">
 
-            <!-- VUE SUGGESTIONS (défaut) -->
+            <!-- DEFAULT VIEW (suggestions) -->
             <div id="socialDefaultView">
 
-                <!-- Abonnements (rangée horizontale) -->
+                <!-- Following (horizontal row) -->
                 <div class="social-following-section" id="socialFollowingSection" style="display:none">
                     <h2 class="social-section-title">
                         <span class="social-section-line"></span>
-                        Vos abonnements
+                        Following
                         <span class="social-section-line"></span>
                     </h2>
                     <div class="social-following-row" id="socialFollowingRow">
-                        <!-- Avatars générés dynamiquement -->
+                        <!-- Dynamically generated avatars -->
                     </div>
                 </div>
 
@@ -264,34 +263,34 @@
                 <div class="social-suggestions-section">
                     <h2 class="social-section-title">
                         <span class="social-section-line"></span>
-                        Suggestions pour vous
+                        Suggested for you
                         <span class="social-section-line"></span>
                     </h2>
                     <div class="social-grid" id="socialSuggestionsGrid">
-                        <!-- Cartes générées dynamiquement -->
+                        <!-- Dynamically generated cards -->
                     </div>
                 </div>
 
             </div>
 
-            <!-- VUE RÉSULTATS RECHERCHE -->
+            <!-- SEARCH RESULTS VIEW -->
             <div id="socialResultsView" style="display:none">
                 <h2 class="social-section-title" id="socialResultsLabel">
                     <span class="social-section-line"></span>
-                    Résultats
+                    Results
                     <span class="social-section-line"></span>
                 </h2>
                 <div class="social-grid" id="socialResultsGrid"></div>
                 <div class="social-empty" id="socialResultsEmpty" style="display:none">
                     <span>🔍</span>
-                    <p>Aucun utilisateur trouvé</p>
+                    <p>No user found</p>
                 </div>
             </div>
 
         </div>
     </div>
 
-    <!-- PANNEAU PROFIL UTILISATEUR (latéral) -->
+    <!-- USER PROFILE PANEL (side panel) -->
     <div class="social-user-panel" id="socialUserPanel">
         <button class="social-panel-close" id="socialPanelClose">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -299,7 +298,7 @@
             </svg>
         </button>
         <div class="social-panel-content" id="socialPanelContent">
-            <!-- Contenu généré dynamiquement -->
+            <!-- Dynamically generated content -->
         </div>
     </div>
 
@@ -308,10 +307,10 @@
 
 
 
-    <!------------------------------------------------------- PAGE ABOUT --------------------------------------------------->
+    <!-- PAGE ABOUT -->
     <section id="aboutPage" class="page secondary-page">
 
-        <!-- Vidéo de fond (même que l'accueil) + voile noir 95% -->
+        <!-- Background video + dark overlay -->
         <div class="about-bg">
             <video autoplay muted loop preload="auto" class="about-bg-video">
                 <source src="media/5983038-uhd_3840_2160_24fps.mp4" type="video/mp4">
@@ -336,7 +335,7 @@
                 </div>
             </div>
 
-            <!-- 3 CARTES STYLE MAGAZINE -->
+            <!-- 3 MAGAZINE-STYLE CARDS -->
             <div class="about-section">
 
                 <div class="about-card">
@@ -366,7 +365,7 @@
                     <h2 class="about-card-title">Technologies</h2>
                     <div class="about-card-divider"></div>
                     <p class="about-card-text">
-                        HTML5, CSS3 et JavaScript vanilla, without framework.
+                        HTML5, CSS3 and vanilla JavaScript, no framework.
                         Data is managed via localStorage and calls to public APIs.
                         The project is hosted on GitHub Pages and versioned on GitHub.
                     </p>
@@ -374,7 +373,7 @@
 
             </div>
 
-            <!-- ÉQUIPE -->
+            <!-- TEAM -->
             <div class="about-contact-section">
                 <h2 class="about-section-title">
                     <span class="about-title-line"></span>
@@ -384,18 +383,18 @@
                 <p class="about-contact-intro">Some suggestions or questions ? We will be happy to answer you.</p>
                 <div class="about-team">
 
-                    <a href="mailto:victor.bosshard@etu.estia.fr" class="about-team-card">
+                    <a href="/cdn-cgi/l/email-protection#dbadb2b8afb4a9f5b9b4a8a8b3baa9bf9bbeafaef5bea8afb2baf5bda9" class="about-team-card">
                         <div class="about-team-avatar">V</div>
                         <p class="about-team-name">Victor Bosshard</p>
-                        <span class="about-team-email">victor.bosshard@etu.estia.fr</span>
+                        <span class="about-team-email"><span class="__cf_email__" data-cfemail="4d3b242e39223f632f223e3e252c3f290d28393863283e39242c632b3f">[email&#160;protected]</span></span>
                         <span class="about-team-cta">Send an email →</span>
                     </a>
 
-                    <a href="mailto:jules.duplantier@etu.estia.fr" class="about-team-card">
+                    <a href="/cdn-cgi/l/email-protection#c7adb2aba2b4e9a3b2b7aba6a9b3aea2b587a2b3b2e9a2b4b3aea6e9a1b5" class="about-team-card">
                         <div class="about-team-avatar">J</div>
                         <p class="about-team-name">Jules Duplantier</p>
-                        <span class="about-team-email">jules.duplantier@etu.estia.fr</span>
-                        <span class="about-team-cta">Send an mail →</span>
+                        <span class="about-team-email"><span class="__cf_email__" data-cfemail="b5dfc0d9d0c69bd1c0c5d9d4dbc1dcd0c7f5d0c1c09bd0c6c1dcd49bd3c7">[email&#160;protected]</span></span>
+                        <span class="about-team-cta">Send an email →</span>
                     </a>
 
                 </div>
@@ -446,9 +445,9 @@
 
     <section id="searchPage" class="page secondary-page search-page">
 
-        <!-- BARRE DE RECHERCHE PRINCIPALE -->
+        <!-- MAIN SEARCH BAR -->
         <div class="search-hero">
-            <h1 class="search-hero-title">Rechercher</h1>
+            <h1 class="search-hero-title">Search</h1>
             <div class="search-input-wrap">
                 <svg class="search-input-icon" width="22" height="22" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="1.5">
@@ -456,7 +455,7 @@
                     <path d="M21 21l-4.35-4.35" />
                 </svg>
                 <input type="text" id="searchMainInput" class="search-main-input"
-                    placeholder="Artistes, titres, albums…" autocomplete="off" spellcheck="false">
+                    placeholder="Artists, tracks, albums…" autocomplete="off" spellcheck="false">
                 <button class="search-clear-btn" id="searchClearBtn" style="display:none;">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M18 6L6 18M6 6l12 12" />
@@ -465,44 +464,44 @@
             </div>
         </div>
 
-        <!-- CORPS SCROLLABLE -->
+        <!-- SCROLLABLE BODY -->
         <div class="search-body">
 
-            <!-- VUE PAR DÉFAUT (tendances + historique) -->
+            <!-- DEFAULT VIEW (trends + history) -->
             <div id="searchDefaultView">
 
-                <!-- Historique -->
+                <!-- History -->
                 <div id="searchHistorySection" class="search-section" style="display:none;">
-                    <h2 class="search-section-title">Recherches récentes</h2>
+                    <h2 class="search-section-title">Recent searches</h2>
                     <div id="searchHistoryWrap" class="history-chips"></div>
                 </div>
 
-                <!-- Artistes tendance -->
+                <!-- Trending artists -->
                 <div class="search-section">
-                    <h2 class="search-section-title">Artistes tendance</h2>
+                    <h2 class="search-section-title">Trending artists</h2>
                     <div id="trendingArtistsWrap" class="artists-grid"></div>
                 </div>
 
-                <!-- Titres tendance -->
+                <!-- Trending tracks -->
                 <div class="search-section">
-                    <h2 class="search-section-title">Titres tendance</h2>
+                    <h2 class="search-section-title">Tracks tendance</h2>
                     <div id="trendingTracksWrap" class="tracks-list"></div>
                 </div>
 
             </div>
 
-            <!-- VUE RÉSULTATS -->
+            <!-- RESULTS VIEW -->
             <div id="searchResultsView" style="display:none;">
 
-                <!-- Artistes -->
+                <!-- Artists -->
                 <div id="searchArtistsSection" class="search-section">
                     <h2 class="search-section-title" id="searchArtistsLabel">Artistes</h2>
                     <div id="searchArtistsWrap" class="artists-grid"></div>
                 </div>
 
-                <!-- Titres -->
+                <!-- Tracks -->
                 <div id="searchTracksSection" class="search-section">
-                    <h2 class="search-section-title" id="searchTracksLabel">Titres</h2>
+                    <h2 class="search-section-title" id="searchTracksLabel">Tracks</h2>
                     <div id="searchTracksWrap" class="tracks-list"></div>
                 </div>
 
@@ -510,7 +509,7 @@
 
         </div>
 
-        <!-- PANNEAU FICHE ARTISTE (slide depuis la droite) -->
+        <!-- ARTIST PANEL (slides from right) -->
         <div id="artistPanel" class="artist-panel">
             <div class="artist-panel-header">
                 <button class="artist-panel-close" id="artistPanelClose">
@@ -529,7 +528,7 @@
     <section id="profilePage" class="page secondary-page">
         <div class="profile-wrapper">
 
-            <!-- BANNIÈRE -->
+            <!-- BANNER -->
             <div class="profile-banner-zone">
                 <div class="profile-banner" id="profileBannerBg"></div>
                 <div class="profile-banner-overlay"></div>
@@ -538,14 +537,14 @@
                 </div>
             </div>
 
-            <!-- IDENTITÉ -->
+            <!-- IDENTITY -->
             <div class="profile-identity">
                 <h1 class="profile-username" id="profileUsername">—</h1>
                 <p class="profile-bio" id="profileBioDisplay"></p>
                 <p class="profile-email-display" id="profileEmailDisplay"></p>
             </div>
 
-            <!-- CORPS : STATS + PARAMÈTRES -->
+            <!-- BODY: STATS + SETTINGS -->
             <div class="profile-body">
 
                 <!-- STATS -->
@@ -555,23 +554,23 @@
                             stroke-width="2">
                             <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
                         </svg>
-                        Statistiques du profil 2025
+                        Profile stats 2025
                     </div>
                     <div class="stats-grid">
                         <div class="stat-card">
                             <div class="stat-value" id="statMinutes">—</div>
-                            <div class="stat-label">minutes écoutées</div>
+                            <div class="stat-label">minutes listened</div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-value" id="statTracks">—</div>
-                            <div class="stat-label">titres joués</div>
+                            <div class="stat-label">tracks played</div>
                         </div>
                         <div class="stat-card stat-wide">
-                            <div class="stat-label">Titre le plus écouté</div>
+                            <div class="stat-label">Track le plus écouté</div>
                             <div class="stat-value stat-track" id="statFav">—</div>
                         </div>
                         <div class="stat-card stat-wide">
-                            <div class="stat-label">Artiste favori</div>
+                            <div class="stat-label">Favourite artist</div>
                             <div class="stat-value stat-track" id="statArtist">—</div>
                         </div>
                     </div>
@@ -583,7 +582,7 @@
                     </div>
                 </div>
 
-                <!-- PARAMÈTRES -->
+                <!-- SETTINGS -->
                 <div class="profile-settings-panel">
                     <div class="panel-title">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -592,36 +591,36 @@
                             <path
                                 d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
                         </svg>
-                        Paramètres du compte
+                        Account settings
                     </div>
 
                     <div class="settings-tabs">
-                        <button class="settings-tab active" data-tab="profil">Profil</button>
-                        <button class="settings-tab" data-tab="compte">Compte</button>
-                        <button class="settings-tab settings-tab-danger" data-tab="danger">Supprimer</button>
+                        <button class="settings-tab active" data-tab="profil">Profile</button>
+                        <button class="settings-tab" data-tab="compte">Account</button>
+                        <button class="settings-tab settings-tab-danger" data-tab="danger">Delete</button>
                     </div>
 
-                    <!-- Onglet PROFIL -->
+                    <!-- PROFILE tab -->
                     <div class="settings-content active" id="tabProfil">
                         <div class="setting-field">
-                            <label class="setting-label">Pseudo</label>
-                            <input type="text" class="setting-input" id="setPseudo" placeholder="Votre pseudo...">
+                            <label class="setting-label">Username</label>
+                            <input type="text" class="setting-input" id="setUsername" placeholder="Your username...">
                         </div>
                         <div class="setting-field">
-                            <label class="setting-label">Bio <span class="setting-optional">(optionnel)</span></label>
+                            <label class="setting-label">Bio <span class="setting-optional">(optional)</span></label>
                             <textarea class="setting-input setting-textarea" id="setBio"
-                                placeholder="Quelques mots sur vous..."></textarea>
+                                placeholder="A few words about you..."></textarea>
                         </div>
                         <div class="setting-field">
-                            <label class="setting-label">URL photo de profil</label>
+                            <label class="setting-label">Profile picture URL</label>
                             <input type="url" class="setting-input" id="setAvatar" placeholder="https://...">
                         </div>
                         <div class="setting-field">
-                            <label class="setting-label">URL bannière</label>
+                            <label class="setting-label">Banner URL</label>
                             <input type="url" class="setting-input" id="setBanner" placeholder="https://...">
                         </div>
                         <button class="setting-save-btn" id="saveProfileBtn">
-                            <span>Sauvegarder le profil</span>
+                            <span>Save profile</span>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2">
                                 <polyline points="20 6 9 17 4 12" />
@@ -629,31 +628,31 @@
                         </button>
                     </div>
 
-                    <!-- Onglet COMPTE -->
+                    <!-- ACCOUNT tab -->
                     <div class="settings-content" id="tabCompte">
                         <div class="setting-field">
-                            <label class="setting-label">Nouvel e-mail</label>
-                            <input type="email" class="setting-input" id="setEmail" placeholder="nouveau@email.com">
+                            <label class="setting-label">New email</label>
+                            <input type="email" class="setting-input" id="setEmail" placeholder="new@email.com">
                             <p class="setting-error" id="emailChangeError"></p>
                         </div>
                         <div class="setting-field">
-                            <label class="setting-label">Nouveau mot de passe</label>
+                            <label class="setting-label">New password</label>
                             <input type="password" class="setting-input" id="setPass1" placeholder="••••••••">
                         </div>
                         <div class="setting-field">
-                            <label class="setting-label">Confirmer le mot de passe</label>
+                            <label class="setting-label">Confirm password</label>
                             <input type="password" class="setting-input" id="setPass2" placeholder="••••••••">
                             <p class="setting-error" id="passChangeError"></p>
                         </div>
                         <div class="setting-field">
-                            <label class="setting-label">Mot de passe actuel <span
+                            <label class="setting-label">Current password <span
                                     class="setting-required">*</span></label>
                             <input type="password" class="setting-input" id="setCurrentPass"
-                                placeholder="Requis pour confirmer">
+                                placeholder="Required to confirm">
                             <p class="setting-error" id="currentPassError"></p>
                         </div>
                         <button class="setting-save-btn" id="saveAccountBtn">
-                            <span>Mettre à jour le compte</span>
+                            <span>Update account</span>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2">
                                 <polyline points="20 6 9 17 4 12" />
@@ -661,31 +660,30 @@
                         </button>
                     </div>
 
-                    <!-- Onglet DANGER -->
+                    <!-- DANGER tab -->
                     <div class="settings-content" id="tabDanger">
                         <div class="settings-group">
                             <h3 class="settings-group-title">Session</h3>
-                            <p class="danger-desc">Vous êtes connecté en tant que <span id="connectedEmailDisplay"
+                            <p class="danger-desc">You are logged in as <span id="connectedEmailDisplay"
                                     style="color:rgb(230,201,19)"></span></p>
                             <button class="settings-logout-btn" id="logoutBtn">
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                     stroke-width="2">
                                     <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" />
                                 </svg>
-                                Se déconnecter
+                                Log out
                             </button>
                         </div>
                         <div class="danger-zone">
                             <div class="danger-icon">⚠️</div>
-                            <p class="danger-text">Cette action est <strong>irréversible</strong>. Votre compte et
-                                toutes vos données seront définitivement supprimés.</p>
+                            <p class="danger-text">This action is <strong>irreversible</strong>. Your account and all your data will be permanently deleted.</p>
                             <div class="setting-field" style="width:100%">
-                                <label class="setting-label">Tapez votre e-mail pour confirmer</label>
+                                <label class="setting-label">Type your email to confirm</label>
                                 <input type="email" class="setting-input setting-input-danger" id="deleteConfirmEmail"
-                                    placeholder="votre@email.com">
+                                    placeholder="your@email.com">
                             </div>
                             <button class="setting-delete-btn" id="deleteAccountBtn">
-                                Supprimer définitivement mon compte
+                                Permanently delete my account
                             </button>
                         </div>
                     </div>
@@ -696,55 +694,55 @@
 
     <div id="authOverlay" class="auth-overlay">
 
-        <!-- Fond flouté cliquable pour fermer -->
+        <!-- Blurred backdrop to close -->
         <div class="auth-backdrop" id="authBackdrop"></div>
 
-        <!-- Modale -->
+        <!-- Modal -->
         <div class="auth-modal" id="authModal">
 
-            <!-- PANNEAU GAUCHE — Image -->
+            <!-- LEFT PANEL — Image -->
             <div class="auth-visual">
                 <div class="auth-visual-inner">
-                    <!-- Vinyle décoratif -->
+                    <!-- Decorative vinyl -->
                     <div class="vinyl-deco">
                         <img class="auth-picture" src="media/AuthPicture.jpg">
                     </div>
                 </div>
             </div>
 
-            <!-- PANNEAU DROIT — Formulaire -->
+            <!-- RIGHT PANEL — Form -->
             <div class="auth-form-panel">
 
-                <!-- Bouton fermer -->
+                <!-- Close button -->
                 <button class="auth-close" id="authClose">
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                         <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                     </svg>
                 </button>
 
-                <!-- ---- VUE CONNEXION ---- -->
+                <!-- ---- LOGIN VIEW ---- -->
                 <div class="auth-view" id="viewLogin">
                     <div class="auth-header">
-                        <h2 class="auth-title">Connexion</h2>
-                        <p class="auth-subtitle">Retrouvez votre univers musical</p>
+                        <h2 class="auth-title">Log in</h2>
+                        <p class="auth-subtitle">Find your musical universe</p>
                     </div>
 
                     <div class="auth-fields">
                         <div class="field-group">
-                            <label class="field-label">Adresse e-mail</label>
+                            <label class="field-label">Email address</label>
                             <div class="field-wrap">
                                 <svg class="field-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
                                     stroke="currentColor" stroke-width="1.5">
                                     <rect x="2" y="4" width="20" height="16" rx="2" />
                                     <path d="M2 7l10 7 10-7" />
                                 </svg>
-                                <input type="email" class="field-input" placeholder="vous@exemple.com"
+                                <input type="email" class="field-input" placeholder="you@example.com"
                                     autocomplete="email">
                             </div>
                         </div>
 
                         <div class="field-group">
-                            <label class="field-label">Mot de passe</label>
+                            <label class="field-label">Password</label>
                             <div class="field-wrap">
                                 <svg class="field-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
                                     stroke="currentColor" stroke-width="1.5">
@@ -753,7 +751,7 @@
                                 </svg>
                                 <input type="password" class="field-input" placeholder="••••••••"
                                     autocomplete="current-password">
-                                <button class="field-eye" type="button" aria-label="Afficher le mot de passe">
+                                <button class="field-eye" type="button" aria-label="Show password">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                         stroke-width="1.5">
                                         <path d="M1 12S5 5 12 5s11 7 11 7-4 7-11 7S1 12 1 12z" />
@@ -761,12 +759,12 @@
                                     </svg>
                                 </button>
                             </div>
-                            <a href="#" class="field-forgot">Mot de passe oublié ?</a>
+                            <a href="#" class="field-forgot">Password oublié ?</a>
                         </div>
                     </div>
 
                     <button class="auth-submit" type="button">
-                        <span>Se connecter</span>
+                        <span>Log in</span>
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2">
                             <path d="M5 12h14M12 5l7 7-7 7" />
@@ -774,48 +772,48 @@
                     </button>
 
                     <p class="auth-switch">
-                        Pas encore de compte ?
-                        <button type="button" class="auth-switch-btn" id="goToRegister">Créer un compte</button>
+                        No account yet?
+                        <button type="button" class="auth-switch-btn" id="goToRegister">Create an account</button>
                     </p>
                 </div>
 
-                <!-- ---- VUE INSCRIPTION ---- -->
+                <!-- ---- REGISTER VIEW ---- -->
                 <div class="auth-view hidden" id="viewRegister">
                     <div class="auth-header">
-                        <h2 class="auth-title2">Créer un compte</h2>
-                        <p class="auth-subtitle">Rejoignez la communauté MVSIQVA</p>
+                        <h2 class="auth-title2">Create an account</h2>
+                        <p class="auth-subtitle">Join the MVSIQVA community</p>
                     </div>
 
                     <div class="auth-fields">
                         <div class="field-group">
-                            <label class="field-label">Adresse e-mail</label>
+                            <label class="field-label">Email address</label>
                             <div class="field-wrap">
                                 <svg class="field-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
                                     stroke="currentColor" stroke-width="1.5">
                                     <rect x="2" y="4" width="20" height="16" rx="2" />
                                     <path d="M2 7l10 7 10-7" />
                                 </svg>
-                                <input type="email" class="field-input" id="regEmail1" placeholder="vous@exemple.com"
+                                <input type="email" class="field-input" id="regEmail1" placeholder="you@example.com"
                                     autocomplete="email">
                             </div>
                         </div>
 
                         <div class="field-group">
-                            <label class="field-label">Confirmer l'e-mail</label>
+                            <label class="field-label">Confirm email</label>
                             <div class="field-wrap">
                                 <svg class="field-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
                                     stroke="currentColor" stroke-width="1.5">
                                     <rect x="2" y="4" width="20" height="16" rx="2" />
                                     <path d="M2 7l10 7 10-7" />
                                 </svg>
-                                <input type="email" class="field-input" id="regEmail2" placeholder="vous@exemple.com"
+                                <input type="email" class="field-input" id="regEmail2" placeholder="you@example.com"
                                     autocomplete="email">
                             </div>
                             <p class="field-error" id="emailError"></p>
                         </div>
 
                         <div class="field-group">
-                            <label class="field-label">Mot de passe</label>
+                            <label class="field-label">Password</label>
                             <div class="field-wrap">
                                 <svg class="field-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
                                     stroke="currentColor" stroke-width="1.5">
@@ -841,7 +839,7 @@
                         </div>
 
                         <div class="field-group">
-                            <label class="field-label">Confirmer le mot de passe</label>
+                            <label class="field-label">Confirm password</label>
                             <div class="field-wrap">
                                 <svg class="field-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
                                     stroke="currentColor" stroke-width="1.5">
@@ -863,7 +861,7 @@
                     </div>
 
                     <button class="auth-submit" type="button">
-                        <span>Créer mon compte</span>
+                        <span>Create my account</span>
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2">
                             <path d="M5 12h14M12 5l7 7-7 7" />
@@ -871,24 +869,14 @@
                     </button>
 
                     <p class="auth-switch">
-                        Déjà un compte ?
-                        <button type="button" class="auth-switch-btn" id="goToLogin">Se connecter</button>
+                        Already have an account?
+                        <button type="button" class="auth-switch-btn" id="goToLogin">Log in</button>
                     </p>
                 </div>
 
             </div>
         </div>
     </div>
-
-
-
-
-
-
-
-
-
-
 
     <script src="player.js"></script>
     <script src="news.js"></script>

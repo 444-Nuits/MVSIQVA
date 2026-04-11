@@ -1,47 +1,77 @@
 [
     {
         "id": 1,
-        "date": "12 Février 2026",
+        "date": "February 12, 2026",
         "category": "album",
         "categoryLabel": "🎵 Album",
-        "title": "L'album surprise qui fait exploser les charts",
-        "description": "Une superstar mondiale vient de sortir un album complet sans aucune annonce préalable. Les fans sont en délire et les premières écoutes confirment : c'est un chef-d'œuvre.",
-        "image": "media/news/album1.jpg"
+        "title": "The surprise album blowing up the charts",
+        "description": "A global superstar just dropped a full album with zero prior announcement. Fans are losing their minds and early listens confirm it: this is a masterpiece.",
+        "image": "media/news/album1.jpg",
+        "author": "Jules",
+        "article": [
+            "No teaser. No single. No press release. Just an album — dropped without warning at midnight, straight onto every streaming platform on the planet. Within hours, the internet had already declared it the release of the year. Millions of streams flooded in before dawn, and by morning the artist had broken three platform records simultaneously.",
+            "What makes this album so special isn't just the surprise factor. It's the sheer range of it. Over 14 tracks, the artist moves effortlessly between introspective ballads, hard-hitting production and unexpected genre detours that nobody saw coming. Collaborators include some of the most sought-after names in the industry, all kept under tight wraps until release day.",
+            "Critics have been scrambling to keep up. Early reviews call it 'a bold reinvention' and 'the most cohesive body of work of the decade so far'. Whether or not the hype holds up over time, one thing is certain: the music world is talking about nothing else right now — and that's exactly how the artist wanted it."
+        ]
     },
     {
         "id": 2,
-        "date": "11 Février 2026",
+        "date": "February 11, 2026",
         "category": "interview",
         "categoryLabel": "🎤 Interview",
-        "title": "Rencontre avec le phénomène du moment",
-        "description": "Interview exclusive avec l'artiste qui cumule les records. Il nous parle de son processus créatif, ses inspirations et ses projets futurs.",
-        "image": "media/news/interview1.jpg"
+        "title": "Meet the phenomenon everyone is talking about",
+        "description": "An exclusive interview with the artist breaking every record in sight. They open up about their creative process, their influences, and what comes next.",
+        "image": "media/news/interview1.jpg",
+        "author": "Jules",
+        "article": [
+            "They arrived at the studio with no entourage, no stylist, and a cup of green tea. For someone whose face has been plastered across every major magazine this year, they carry a remarkable sense of calm. 'I try not to read the numbers,' they say, settling into a chair. 'The moment you start chasing streams, you lose the music.'",
+            "The conversation quickly turns to process. Unlike many of their peers, this artist writes alone — no co-writers, no A&R sitting in the corner. Every lyric, every melody starts life in a small home studio. 'I need silence to find honesty,' they explain. 'When there are too many people in the room, you start writing for them instead of for yourself.'",
+            "As for what comes next, they're deliberately vague — but there's a glint in their eye that suggests something is already in motion. A world tour has been hinted at, and rumours of a collaborative project with a legendary producer have been circulating for weeks. Whatever it is, the music world will be watching."
+        ]
     },
     {
         "id": 3,
-        "date": "10 Février 2026",
+        "date": "February 10, 2026",
         "category": "festival",
         "categoryLabel": "🎪 Festival",
-        "title": "Les festivals de l'été dévoilent leur programmation",
-        "description": "Les line-ups tant attendus sont enfin là ! Découvrez quels artistes performeront cet été dans les plus grands festivals européens.",
-        "image": "media/news/festival1.png"
+        "title": "Summer festivals reveal their 2026 lineups",
+        "description": "The long-awaited lineups are finally here. Find out which artists will be performing this summer at Europe's biggest festivals.",
+        "image": "media/news/festival1.png",
+        "author": "Jules",
+        "article": [
+            "After months of speculation, fan campaigns and leaked rumours, the summer festival season is officially taking shape. Three of Europe's most iconic events — spanning the UK, France and Germany — have dropped their 2026 lineups within days of each other, and the reaction has been immediate. Tickets for several headliner slots sold out within minutes of the announcements going live.",
+            "The headliners span genres in a way that feels genuinely ambitious. A legacy rock band making their first festival appearance in over a decade sits alongside a rising hyperpop collective and a veteran electronic act whose DJ sets have become the stuff of legend. It's a lineup that seems designed to please everyone — and somehow, it mostly works.",
+            "Beyond the headliners, it's the mid-tier slots that have fans most excited. Several artists who released breakout records in 2025 will be stepping up to main stage for the first time, and the buzz around those sets is already building. If the weather holds, summer 2026 could go down as one of the great festival years."
+        ]
     },
     {
         "id": 4,
-        "date": "9 Février 2026",
+        "date": "February 9, 2026",
         "category": "actualités",
-        "categoryLabel": "📊 Actualités",
-        "title": "Record historique : 100 milliards d'écoutes en un mois",
-        "description": "Le streaming musical atteint des sommets inégalés. Analyse des tendances et des artistes qui dominent les plateformes.",
-        "image": "media/news/streaming1.jpg"
+        "categoryLabel": "📊 News",
+        "title": "Historic record: 100 billion streams in a single month",
+        "description": "Music streaming has hit an all-time high. We break down the trends and the artists dominating the platforms right now.",
+        "image": "media/news/streaming1.jpg",
+        "author": "Jules",
+        "article": [
+            "The numbers are almost impossible to comprehend. In January 2026, global music streaming platforms collectively logged over 100 billion individual track plays — a figure that would have seemed like science fiction just five years ago. The milestone reflects not just the explosive growth of streaming as a format, but a fundamental shift in how people consume music on a daily basis.",
+            "The data reveals some interesting patterns. Catalogue music — older tracks from established artists — accounts for nearly 40% of all streams, suggesting that discovery algorithms are doing more than just pushing new releases. Meanwhile, playlist-driven listening continues to dominate, with the top editorial playlists now reaching audiences larger than most television broadcasts.",
+            "For artists, the picture is more complex. While the headline numbers are staggering, the per-stream payout remains a point of contention across the industry. Several major acts have spoken out this month about the disconnect between record-breaking stream counts and the actual revenue reaching musicians. The debate over streaming economics shows no sign of cooling down."
+        ]
     },
     {
         "id": 5,
-        "date": "8 Février 2026",
+        "date": "February 8, 2026",
         "category": "actualités",
-        "categoryLabel": "💿 Actualités",
-        "title": "Le retour inattendu du vinyle chez les jeunes",
-        "description": "Les ventes de vinyles explosent auprès de la génération Z. Pourquoi cet engouement pour le format analogique ?",
-        "image": "media/news/vinyl1.jpg"
+        "categoryLabel": "💿 News",
+        "title": "The unexpected vinyl comeback among young listeners",
+        "description": "Vinyl sales are surging among Gen Z. We explore why a generation raised on streaming is falling in love with analogue sound.",
+        "image": "media/news/vinyl1.jpg",
+        "author": "Jules",
+        "article": [
+            "Walk into any independent record shop on a Saturday afternoon and the average age of the customers might surprise you. Gen Z — the generation that grew up with Spotify playlists and algorithm-curated listening — is buying vinyl in numbers that nobody predicted. Sales figures for 2025 showed a 34% year-on-year increase among the 18-25 age bracket, outpacing every other demographic.",
+            "The reasons are layered. For some, it's about tangibility in a world that feels increasingly digital. Owning a physical object — artwork, liner notes, something you can hold — feels meaningful in a way that a playlist cannot. For others, it's the ritual: taking a record out of its sleeve, placing the needle down, committing to listening rather than scrolling.",
+            "Record labels have taken notice. Several major acts have started releasing vinyl editions alongside their digital drops, sometimes with exclusive tracks or alternate artwork. Whether the trend represents a lasting shift or a moment in time remains to be seen — but right now, the crackle of a needle on wax has never sounded so contemporary."
+        ]
     }
 ]
