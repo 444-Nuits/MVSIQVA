@@ -300,6 +300,18 @@ async function getArtistImageFromItunes(artistName) {
     return null;
 }
 
+// ── Debug route — remove after testing ──────────────────────────
+app.get('/api/debug/itunes', async function(req, res) {
+    try {
+        const url  = 'https://itunes.apple.com/search?term=Kanye+West&media=music&entity=musicTrack&limit=1';
+        const r    = await fetch(url);
+        const data = await r.json();
+        res.json({ status: r.status, results: data.results?.length, first: data.results?.[0] });
+    } catch (e) {
+        res.json({ error: e.message });
+    }
+});
+
 app.listen(PORT, function() {
     console.log('Server running on http://localhost:' + PORT);
 });
