@@ -383,8 +383,9 @@ searchBody.addEventListener('scroll', function () {
 // Fermer le panneau artiste en cliquant en dehors
 document.getElementById('searchPage').addEventListener('click', function(e) {
     const panel = document.getElementById('artistPanel');
-    if (panel.classList.contains('active') && 
-        !panel.contains(e.target)) {
+    if (panel.classList.contains('active') &&
+        !panel.contains(e.target) &&
+        !e.target.closest('.artist-card')) {
         closeArtistPanel();
     }
 });
