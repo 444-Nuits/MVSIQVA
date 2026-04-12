@@ -1,41 +1,63 @@
 // ============================================================
-// SEARCH.JS — Recherche artistes + titres, fiche artiste
-// Last.fm + iTunes + Wikipedia via backend
+// SEARCH.JS — Artist & track search, artist profile panel
+// Data sources: Last.fm + iTunes (via backend proxy)
+//
+// ARCHITECTURE
+// ┌─────────────────────────────────────────────────┐
+// │  DATA LAYER     openArtistPanel / loadDefaultView│
+// │                 → fetch() calls to backend API  │
+// ├─────────────────────────────────────────────────┤
+// │  LOGIC LAYER    doSearch / triggerSearch        │
+// │                 → state, search history, debounce│
+// ├─────────────────────────────────────────────────┤
+// │  UI LAYER       render* / show*View             │
+// │                 → DOM manipulation only         │
+// └─────────────────────────────────────────────────┘
 // ============================================================
 
 (function () {
 
+    // ============================================================
+    // DATA LAYER — API configuration & network calls
+    // ============================================================
+
     const API_BASE = 'https://mvsiqva-api.onrender.com';
 
-    // ==================== ÉTAT ====================
+    // ==================== STATE ====================
 
-    let isSearching     = false;
-    let previewAudio    = null;
-    let previewBtn      = null;
-    let searchDebounce  = null;
-    const HISTORY_KEY   = 'mvsiqva_search_history';
+    let isSearching    = false;     // Prevents concurrent searches (debounce guard)
+    let previewAudio   = null;      // The currently playing Audio object (null if nothing plays)
+    let previewBtn     = null;      // The DOM element of the currently playing row (for CSS class)
+    let searchDebounce = null;      // Holds the setTimeout ID so we can cancel it on new keystrokes
+    const HISTORY_KEY  = 'mvsiqva_search_history'; // localStorage key for search history
 
-    // ==================== OUVERTURE / FERMETURE ====================
+    // ==================== PAGE OPEN / CLOSE ====================
 
+    // Called by player.js when the user clicks "Search" in the navbar
     window.openSearchPage = function () {
-        window.navigateTo('search');
-        setTimeout(() => document.getElementById('searchMainInput').focus(), 400);
+        window.navigateTo('search'); // Switch to search page via the central router
+        setTimeout(() => document.getElementById('searchMainInput').focus(), 400); // Autofocus after CSS transition
+        // Only load trending data once — dataset.loaded flag prevents duplicate API calls
         if (!document.getElementById('searchDefaultView').dataset.loaded) {
             loadDefaultView();
         }
     };
 
-    // ==================== VUE PAR DÉFAUT (tendances + historique) ====================
+    // ============================================================
+    // UI LAYER — DOM rendering, skeletons, views
+    // ============================================================
+
+    // ==================== DEFAULT VIEW (trending + history) ====================
 
     async function loadDefaultView() {
         const view = document.getElementById('searchDefaultView');
-        view.dataset.loaded = '1';
+        view.dataset.loaded = '1'; // Mark as loaded so we don't fetch again on re-open
 
         renderHistory();
         renderDefaultSkeletons();
 
         try {
-            // Top artistes + top titres en parallèle
+            // Promise.all runs both fetches simultaneously — faster than sequential await
             const [artistsRes, tracksRes] = await Promise.all([
                 fetch(`${API_BASE}/api/search/trending/artists`),
                 fetch(`${API_BASE}/api/search/trending/tracks`),
@@ -113,7 +135,7 @@
     }
 
     function renderTrendingTracks(tracks) {
-        document.getElementById('trendingTracksWrap').innerHTML = tracks.map((t, i) => `
+        document.getElementById('trendingTracksWrap').innerHTML = tracks.map((t) => `
             <div class="search-track-row" onclick="playPreviewTrack('${escAttr(t.previewUrl || '')}', '${escAttr(t.title)}', '${escAttr(t.artist)}', this)">
                 <div class="search-track-cover" style="${t.cover ? `background-image:url('${escAttr(t.cover)}')` : ''}">
                     ${!t.cover ? `<span style="font-size:1.2vw;">🎵</span>` : ''}
@@ -129,7 +151,11 @@
             </div>`).join('');
     }
 
-    // ==================== RECHERCHE ====================
+    // ============================================================
+    // LOGIC LAYER — Search state, history, data processing
+    // ============================================================
+
+    // ==================== SEARCH ====================
 
     function triggerSearch(query) {
         const input = document.getElementById('searchMainInput');
@@ -138,7 +164,7 @@
     }
 
     async function doSearch(query) {
-        if (!query.trim() || isSearching) return;
+        if (!query.trim() || isSearching) return; // Ignore empty queries or if already searching
         isSearching = true;
 
         addHistory(query);
@@ -146,6 +172,7 @@
         renderSearchSkeletons();
 
         try {
+            // Both requests fire at the same time — results arrive together
             const [artistsRes, tracksRes] = await Promise.all([
                 fetch(`${API_BASE}/api/search/artists?q=${encodeURIComponent(query)}`),
                 fetch(`${API_BASE}/api/search/tracks?q=${encodeURIComponent(query)}`),
@@ -155,7 +182,7 @@
             renderSearchArtists(artistsData.artists || [], query);
             renderSearchTracks(tracksData.tracks   || [], query);
         } catch (e) {
-            console.error('Erreur recherche :', e);
+            console.error('Search error:', e);
         } finally {
             isSearching = false;
         }
@@ -182,8 +209,7 @@
     function renderSearchArtists(artists, query) {
         const section = document.getElementById('searchArtistsSection');
         const wrap    = document.getElementById('searchArtistsWrap');
-        document.getElementById('searchArtistsLabel').textContent =
-            `Artistes pour "${query}"`;
+        document.getElementById('searchArtistsLabel').textContent = `Artists for "${query}"`;
         if (!artists.length) { section.style.display = 'none'; return; }
         section.style.display = 'block';
         wrap.innerHTML = artists.map(a => `
@@ -199,8 +225,7 @@
     function renderSearchTracks(tracks, query) {
         const section = document.getElementById('searchTracksSection');
         const wrap    = document.getElementById('searchTracksWrap');
-        document.getElementById('searchTracksLabel').textContent =
-            `Titres pour "${query}"`;
+        document.getElementById('searchTracksLabel').textContent = `Tracks for "${query}"`;
         if (!tracks.length) { section.style.display = 'none'; return; }
         section.style.display = 'block';
         wrap.innerHTML = tracks.map(t => `
@@ -219,10 +244,11 @@
             </div>`).join('');
     }
 
-    // ==================== FICHE ARTISTE ====================
+    // ==================== ARTIST PANEL ====================
 
+    // Opens the artist panel sliding in from the right with biography and top 5 tracks
     window.openArtistPanel = async function (artistName) {
-        stopPreview();
+        stopPreview(); // Stop any playing preview before loading new content
         const panel = document.getElementById('artistPanel');
         panel.classList.add('active');
         renderArtistSkeleton();
@@ -232,7 +258,7 @@
             const data = await res.json();
             renderArtistPanel(data);
         } catch (e) {
-            console.error('Erreur fiche artiste :', e);
+            console.error('Artist panel error:', e);
         }
     };
 
@@ -243,12 +269,12 @@
     }
 
     window.closeSearchPage = function () {
-    stopPreview();
-    closeArtistPanel();
-    const page = document.getElementById('searchPage');
-    if (!page) return;
-    page.classList.remove('active');
-};
+        stopPreview();
+        closeArtistPanel();
+        const page = document.getElementById('searchPage');
+        if (!page) return;
+        page.classList.remove('active');
+    };
 
     function renderArtistSkeleton() {
         document.getElementById('artistPanelContent').innerHTML = `
@@ -279,11 +305,11 @@
                 </div>
                 <div class="artist-panel-meta">
                     <h2 class="artist-panel-name">${escHtml(name || '—')}</h2>
-                    ${listeners ? `<p class="artist-panel-listeners">${listeners} auditeurs</p>` : ''}
+                    ${listeners ? `<p class="artist-panel-listeners">${listeners} listeners</p>` : ''}
                 </div>
             </div>
             ${bio ? `<p class="artist-panel-bio">${escHtml(bio)}</p>` : ''}
-            <h3 class="artist-panel-section-title">Top 5 titres</h3>
+            <h3 class="artist-panel-section-title">Top 5 tracks</h3>
             <div class="artist-panel-tracks">
                 ${(tracks || []).map((t, i) => `
                     <div class="search-track-row" onclick="playPreviewTrack('${escAttr(t.previewUrl||'')}', '${escAttr(t.title)}', '${escAttr(name)}', this)">
@@ -303,11 +329,10 @@
             </div>`;
     }
 
-    // ==================== PREVIEW AUDIO ====================
+    // ==================== AUDIO PREVIEW ====================
 
     window.playPreviewTrack = function (url, title, artist, rowEl) {
         if (!url) return;
-
         if (previewBtn === rowEl) { stopPreview(); return; }
         stopPreview();
 
@@ -323,23 +348,23 @@
         if (previewBtn)   { previewBtn.classList.remove('playing'); previewBtn = null; }
     }
 
-    // ==================== VUES ====================
+    // ==================== VIEW SWITCHING ====================
 
     function showResultsView() {
-        document.getElementById('searchDefaultView').style.display  = 'none';
-        document.getElementById('searchResultsView').style.display  = 'block';
-        document.getElementById('searchClearBtn').style.display     = 'flex';
+        document.getElementById('searchDefaultView').style.display = 'none';
+        document.getElementById('searchResultsView').style.display = 'block';
+        document.getElementById('searchClearBtn').style.display    = 'flex';
     }
 
     function showDefaultView() {
-        document.getElementById('searchDefaultView').style.display  = 'block';
-        document.getElementById('searchResultsView').style.display  = 'none';
-        document.getElementById('searchClearBtn').style.display     = 'none';
-        document.getElementById('searchMainInput').value            = '';
+        document.getElementById('searchDefaultView').style.display = 'block';
+        document.getElementById('searchResultsView').style.display = 'none';
+        document.getElementById('searchClearBtn').style.display    = 'none';
+        document.getElementById('searchMainInput').value           = '';
         renderHistory();
     }
 
-    // ==================== HISTORIQUE ====================
+    // ==================== SEARCH HISTORY ====================
 
     function getHistory() {
         try { return JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; }
@@ -347,9 +372,9 @@
     }
 
     function addHistory(query) {
-        let h = getHistory().filter(q => q !== query);
-        h.unshift(query);
-        h = h.slice(0, 8);
+        let h = getHistory().filter(q => q !== query); // Remove duplicate if already in history
+        h.unshift(query); // Add the new query at the top of the list
+        h = h.slice(0, 8); // Keep only the 8 most recent searches
         localStorage.setItem(HISTORY_KEY, JSON.stringify(h));
     }
 
@@ -361,9 +386,12 @@
 
     // ==================== UTILS ====================
 
+    // Escape user-generated strings before inserting them into HTML
+    // Prevents XSS attacks (e.g. an artist name containing <script>)
     function escHtml(s) {
         return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
+    // escAttr is used inside HTML attribute values (e.g. onclick="openArtistPanel('...')")
     function escAttr(s) {
         return String(s).replace(/"/g,'&quot;');
     }
@@ -371,35 +399,36 @@
     // ==================== INIT ====================
 
     document.addEventListener('DOMContentLoaded', function () {
-        
-        // Effet sticky scroll — le titre disparaît quand on scrolle
-const searchBody = document.querySelector('.search-body');
-const searchHero = document.querySelector('.search-hero');
 
-searchBody.addEventListener('scroll', function () {
+        // Sticky scroll effect — hero title fades when scrolling down
+        const searchBody = document.querySelector('.search-body');
+        const searchHero = document.querySelector('.search-hero');
+        searchBody.addEventListener('scroll', function () {
             searchHero.classList.toggle('scrolled', this.scrollTop > 30);
         });
 
-// Fermer le panneau artiste en cliquant en dehors
-document.getElementById('searchPage').addEventListener('click', function(e) {
-    const panel = document.getElementById('artistPanel');
-    if (panel.classList.contains('active') &&
-        !panel.contains(e.target) &&
-        !e.target.closest('.artist-card')) {
-        closeArtistPanel();
-    }
-});
+        // Close artist panel when clicking outside of it
+        document.getElementById('searchPage').addEventListener('click', function(e) {
+            const panel = document.getElementById('artistPanel');
+            if (panel.classList.contains('active') &&
+                !panel.contains(e.target) &&
+                !e.target.closest('.artist-card')) {
+                closeArtistPanel();
+            }
+        });
 
-        // Bouton fermer fiche artiste
+        // Close button inside the artist panel
         document.getElementById('artistPanelClose').addEventListener('click', closeArtistPanel);
 
-        // Barre de recherche principale
+        // Main search bar
         const input    = document.getElementById('searchMainInput');
         const clearBtn = document.getElementById('searchClearBtn');
 
         input.addEventListener('input', function () {
             clearTimeout(searchDebounce);
             if (!this.value.trim()) { showDefaultView(); return; }
+            // Debounce: cancels and restarts the timer on every keystroke
+            // Only triggers doSearch() if the user stops typing for 500ms
             searchDebounce = setTimeout(() => doSearch(this.value.trim()), 500);
         });
 

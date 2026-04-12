@@ -1,28 +1,44 @@
 // ============================================================
-// SOCIAL.JS — Social page: search, suggestions, follow system
-// Seed users are loaded from users.json via fetch().
+// SOCIAL.JS — Social page — user suggestions, follow system, search
+// Seed users are loaded from data/users.json via fetch().
+//
+// ARCHITECTURE
+// ┌─────────────────────────────────────────────────┐
+// │  DATA LAYER     fetchUsers()                    │
+// │                 → fetch() on data/users.json (local mock data)   │
+// ├─────────────────────────────────────────────────┤
+// │  LOGIC LAYER    follow / unfollow / search      │
+// │                 → localStorage state, filtering   │
+// ├─────────────────────────────────────────────────┤
+// │  UI LAYER       render* / buildCard             │
+// │                 → DOM manipulation only   │
+// └─────────────────────────────────────────────────┘
 // ============================================================
 
 (function () {
 
     // ============================================================
+    // DATA LAYER — Keys & data loading
+    // ============================================================
+
+    // ============================================================
     // LOCALSTORAGE KEYS
     // ============================================================
 
-    const SESSION_KEY  = 'mvsiqva_session';
-    const FOLLOWS_KEY  = 'mvsiqva_follows';
-    const PROFILES_KEY = 'mvsiqva_profiles';
+    const SESSION_KEY  = 'mvsiqva_session';  // localStorage key: stores the logged-in user's email
+    const FOLLOWS_KEY  = 'mvsiqva_follows';  // localStorage key: maps email → list of followed emails
+    const PROFILES_KEY = 'mvsiqva_profiles'; // localStorage key: stores edited profile data
 
-    // In-memory cache — filled once by fetchUsers()
-    let _seedUsers   = [];
-    let _seedFollows = {};
+    // In-memory cache — populated once by fetchUsers()
+    let _seedUsers   = []; // In-memory cache of users from users.json
+    let _seedFollows = {}; // In-memory cache of follow relationships from users.json
 
     // ============================================================
     // LOAD users.json (fetch + memory cache)
     // ============================================================
 
     async function fetchUsers() {
-        if (_seedUsers.length > 0) return true; // already loaded
+        if (_seedUsers.length > 0) return true; // Already in memory — skip the network call
         try {
             const res = await fetch('data/users.json');
             if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -34,24 +50,31 @@
             console.error('[Social] Could not load users.json:', err);
             _seedUsers   = [];
             _seedFollows = {};
-            return false; // signals failure to caller
+            return false; // signals failure to the caller
         }
     }
+
+    // ============================================================
+    // LOGIC LAYER — Follow system, profiles, localStorage
+    // ============================================================
 
     // ============================================================
     // LOCALSTORAGE HELPERS
     // ============================================================
 
+    // Safe localStorage readers — try/catch handles corrupted or missing data gracefully
     function getSession()    { try { return JSON.parse(localStorage.getItem(SESSION_KEY));        } catch { return null; } }
     function getProfiles()   { try { return JSON.parse(localStorage.getItem(PROFILES_KEY)) || {}; } catch { return {}; } }
     function saveProfiles(p) { localStorage.setItem(PROFILES_KEY, JSON.stringify(p)); }
     function getFollows()    { try { return JSON.parse(localStorage.getItem(FOLLOWS_KEY)) || {};  } catch { return {}; } }
-    function saveFollows(f)  { localStorage.setItem(FOLLOWS_KEY, JSON.stringify(f)); }
+    function saveFollows(f)  { localStorage.setItem(FOLLOWS_KEY, JSON.stringify(f)); } // Persist follow data
 
+    // Merge seed follow data (from users.json) with locally stored follow actions
+    // Local data always overrides seed data (user's own choices take priority)
     function getMergedFollows() {
-        const merged = Object.assign({}, _seedFollows);
+        const merged = Object.assign({}, _seedFollows); // Start with seed data
         const local  = getFollows();
-        Object.keys(local).forEach(k => { merged[k] = local[k]; });
+        Object.keys(local).forEach(k => { merged[k] = local[k]; }); // Override with local changes
         return merged;
     }
 
@@ -65,9 +88,10 @@
         return getMyFollows().includes(targetEmail.toLowerCase());
     }
 
+    // Toggle follow/unfollow for a target user — returns true if now following, false if unfollowed
     function toggleFollow(targetEmail) {
         const session = getSession();
-        if (!session) { showSocialToast('Log in to follow users.', 'error'); return false; }
+        if (!session) { showSocialToast('Log in to follow users.', 'error'); return false; } // Must be logged in
 
         const follows    = getFollows();
         const myEmail    = session.email.toLowerCase();
@@ -75,13 +99,13 @@
         follows[myEmail] = follows[myEmail] || [];
 
         if (follows[myEmail].includes(target)) {
-            follows[myEmail] = follows[myEmail].filter(e => e !== target);
+            follows[myEmail] = follows[myEmail].filter(e => e !== target); // Remove from follow list
             saveFollows(follows);
-            return false;
+            return false; // Now unfollowing
         } else {
-            follows[myEmail].push(target);
+            follows[myEmail].push(target); // Add to follow list
             saveFollows(follows);
-            return true;
+            return true; // Now following
         }
     }
 
@@ -205,6 +229,10 @@
     }
 
     // ============================================================
+    // UI LAYER — DOM rendering, cards, skeletons, toasts
+    // ============================================================
+
+    // ============================================================
     // RENDER — DEFAULT VIEW
     // ============================================================
 
@@ -227,7 +255,7 @@
         renderFollowingRow();
     }
 
-    // Loading skeletons — shown while users.json is being fetched
+    // Show placeholder cards while the user data loads — same UX pattern as search/charts
     function renderSkeletons(grid) {
         grid.innerHTML = Array.from({ length: 6 }, () => `
             <div class="social-user-card" style="pointer-events:none;">
@@ -238,7 +266,7 @@
             </div>`).join('');
     }
 
-    // Visible error message shown when users.json fails to load
+    // Display a user-friendly error with a retry button if the data fetch fails
     function renderError(container, retryFn) {
         container.innerHTML = `
             <div style="
@@ -261,7 +289,7 @@
                 ">Retry</button>
             </div>`;
 
-        // Expose retry function globally so the inline onclick can reach it
+        // We need to expose this globally because the retry button's onclick is a string
         window._socialRetry = async function () {
             _seedUsers   = []; // reset cache so fetchUsers() tries again
             _seedFollows = {};

@@ -1,14 +1,31 @@
 // ============================================================
-// NEWS.JS — Fetch JSON + card stack + category filter + article modal
+// NEWS.JS — News feed — card stack, category filter, article modal
+//
+// ARCHITECTURE
+// ┌─────────────────────────────────────────────────┐
+// │  DATA LAYER     fetchNews()                     │
+// │                 → fetch() on data/news.json (local mock data)    │
+// ├─────────────────────────────────────────────────┤
+// │  LOGIC LAYER    initNewsPage / filter / scroll  │
+// │                 → state, filtering, card navigation    │
+// ├─────────────────────────────────────────────────┤
+// │  UI LAYER       renderNews / renderError        │
+// │                 → DOM manipulation only   │
+// └─────────────────────────────────────────────────┘
 // ============================================================
 
-let currentCardIndex = 0;
-let isScrolling      = false;
-let allArticles      = [];   // Cache of all fetched articles
-let activeFilter     = null; // Active category filter or null
+let currentCardIndex = 0;    // Index of the card currently shown at the front of the stack
+let isScrolling      = false; // Prevents multiple scroll events firing during a card transition
+let allArticles      = [];   // Full article list — kept in memory for filtering without re-fetching
+let activeFilter     = null; // Currently selected category (null = show all articles)
+
+// ============================================================
+// LOGIC LAYER — Entry point, global state
+// ============================================================
 
 // ==================== ENTRY POINT ====================
-// Called by player.js when the News page opens
+// Called by player.js every time the user navigates to the News page
+// Resets state so the feed starts fresh each visit
 
 function initNewsPage() {
     currentCardIndex = 0;
@@ -17,6 +34,10 @@ function initNewsPage() {
     fetchNews();
 }
 
+// ============================================================
+// DATA LAYER — Data loading (news.json local mock)
+// ============================================================
+
 // ==================== FETCH DATA ====================
 
 async function fetchNews() {
@@ -24,7 +45,8 @@ async function fetchNews() {
     const timelineDates = document.getElementById('timelineDates');
     if (!newsStack || !timelineDates) return;
 
-    // Loading skeleton — shown while news.json is being fetched
+    // Show a skeleton placeholder card while the real data loads
+    // This gives visual feedback immediately instead of a blank screen
     newsStack.innerHTML = `
         <div class="news-stack-card" style="pointer-events:none;">
             <div class="card-border"></div>
@@ -40,15 +62,20 @@ async function fetchNews() {
         </div>`;
 
     try {
+        // Fetch local JSON file — treated as a REST call (async, same fetch API as a real backend)
         const response = await fetch('data/news.json');
         if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
-        allArticles = await response.json();
-        renderNews(allArticles);
+        allArticles = await response.json(); // Parse JSON and store in memory
+        renderNews(allArticles); // Render all articles on first load
     } catch (error) {
         console.error('Could not load news:', error);
         renderError();
     }
 }
+
+// ============================================================
+// UI LAYER — DOM rendering, cards, article modal
+// ============================================================
 
 // ==================== RENDER CARDS ====================
 
@@ -95,7 +122,7 @@ function renderNews(articles) {
             </div>
         `;
 
-        // Click on category badge → filter
+        // Clicking a category badge filters the feed to show only that category
         const badge = card.querySelector('.card-category-filter');
         badge.style.cursor = 'pointer';
         badge.style.setProperty('--fill-color', badgeColor(article.category));
@@ -104,7 +131,7 @@ function renderNews(articles) {
             applyFilter(article.category, article.categoryLabel);
         });
 
-        // Click on "Read full article" → open modal
+        // Clicking "Read full article" opens a full-screen modal with the article content
         const readBtn = card.querySelector('.card-read-btn');
         if (article.article) {
             readBtn.addEventListener('click', (e) => {
@@ -115,7 +142,7 @@ function renderNews(articles) {
 
         newsStack.appendChild(card);
 
-        // --- Timeline date ---
+        // --- Timeline dot on the right side — clicking it jumps to that card ---
         const dateItem = document.createElement('div');
         dateItem.className = 'timeline-date-item';
         if (index === 0) dateItem.classList.add('active');
@@ -252,18 +279,20 @@ function closeArticleModal() {
 
 // ==================== FILTERING ====================
 
+// Filter the feed to show only articles matching the selected category
 function applyFilter(category, label) {
-    if (activeFilter === category) return;
+    if (activeFilter === category) return; // Don't re-apply the same filter
     activeFilter = category;
-    const filtered = allArticles.filter(a => a.category === category);
+    const filtered = allArticles.filter(a => a.category === category); // Filter in-memory, no re-fetch
     showFilterBadge(label, category);
     renderNews(filtered);
 }
 
+// Reset the filter and show all articles again
 function clearFilter() {
     activeFilter = null;
-    removeFilterBadge();
-    renderNews(allArticles);
+    removeFilterBadge(); // Remove the visual badge showing the active filter
+    renderNews(allArticles); // Re-render the full article list
 }
 
 // ==================== FILTER BADGE ====================
@@ -362,11 +391,13 @@ function badgeColor(category) {
 
 // ==================== SCROLL & NAVIGATION ====================
 
+// Re-attach the scroll handler each time the news feed is re-rendered
+// removeEventListener first to avoid duplicate handlers after filtering
 function attachScrollHandler() {
     const newsStack = document.getElementById('newsStack');
     if (!newsStack) return;
-    newsStack.removeEventListener('wheel', handleNewsScroll);
-    newsStack.addEventListener('wheel', handleNewsScroll, { passive: false });
+    newsStack.removeEventListener('wheel', handleNewsScroll); // Remove old handler if exists
+    newsStack.addEventListener('wheel', handleNewsScroll, { passive: false }); // passive:false allows preventDefault()
 }
 
 function handleNewsScroll(e) {
@@ -375,13 +406,15 @@ function handleNewsScroll(e) {
     const cards      = document.querySelectorAll('.news-stack-card');
     const totalCards = cards.length;
 
+    // Scrolling down → show next card
     if (e.deltaY > 0 && currentCardIndex < totalCards - 1) {
-        e.preventDefault();
+        e.preventDefault(); // Stop the page from scrolling normally
         isScrolling = true;
         currentCardIndex++;
         updateCardPositions();
-        setTimeout(() => isScrolling = false, 600);
+        setTimeout(() => isScrolling = false, 600); // Re-enable scrolling after transition completes
 
+    // Scrolling up → show previous card
     } else if (e.deltaY < 0 && currentCardIndex > 0) {
         e.preventDefault();
         isScrolling = true;
@@ -397,8 +430,8 @@ function updateCardPositions() {
 
     cards.forEach((card, index) => {
         const relativeIndex = index - currentCardIndex;
-        card.classList.toggle('scrolled-up', relativeIndex < 0);
-        card.setAttribute('data-index', relativeIndex);
+        card.classList.toggle('scrolled-up', relativeIndex < 0); // Cards above current get a "scrolled-up" class
+        card.setAttribute('data-index', relativeIndex); // CSS uses data-index to position cards in the stack
     });
 
     dateItems.forEach((item, index) => {

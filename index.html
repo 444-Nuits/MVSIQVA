@@ -109,15 +109,106 @@
 
     <!----------------------------------------------------- PAGE WORLD ---------------------------------------------------->
     <section id="worldPage" class="page secondary-page">
-        <div class="fond">
-            <img class="micro" src="media/micro.jpg">
+        <!-- ============================================================ -->
+<!-- WORLD PAGE ARTICLES — Add this block inside #worldPage,      -->
+<!-- right after the closing </div> of .fond                      -->
+<!-- ============================================================ -->
 
-            <p class="worldp10"> <b>Discover the top tracks of the week!</b></p>
-            <p class="worldp11"> With so many tracks out there, it's hard to know what to listen to...<br>
-                Here are the top 10 tracks of the week, according to the charts!<br> </p>
+<div class="world-articles">
 
-            <button class="button1" id="worldChartsBtn"> See the charts →</button>
+    <!-- ARTICLE 1 — Image LEFT (same layout as .fond) -->
+    <div class="wa-block">
+        <div class="wa-block-inner">
+            <img class="wa-img" src="media/world/article1.jpg" alt="Vinyl Records">
         </div>
+        <div class="wa-content">
+            <span class="wa-tag">Culture</span>
+            <p class="wa-title"><b>Discover the top tracks of the week!</b></p>
+            <p class="wa-desc">With so many tracks out there, it's hard to know what to listen to...
+                Here are the top 10 tracks of the week, according to the charts!</p>
+            <button class="button1" id="worldChartsBtn">See the charts →</button>
+        </div>
+    </div>
+
+    <!-- ARTICLE 2 — Image RIGHT (reversed) -->
+    <div class="wa-block wa-block--reverse">
+        <div class="wa-block-inner">
+            <img class="wa-img" src="media/world/article2.jpg" alt="Beatmakers">
+        </div>
+        <div class="wa-content">
+            <span class="wa-tag">Behind the scenes</span>
+            <p class="wa-title"><b>Inside the Mind of a Beatmaker</b></p>
+            <p class="wa-desc">They work in the shadows, yet their sound defines entire generations. From J Dilla's basement to today's bedroom producers, beat-making has become one of the most influential art forms in modern music. What separates a good beat from an unforgettable one?</p>
+            <button class="button1 ">Read more →</button>
+        </div>
+    </div>
+
+    <!-- ARTICLE 3 — Image LEFT -->
+    <div class="wa-block">
+        <div class="wa-block-inner">
+            <img class="wa-img" src="media/world/article3.jpg" alt="Music and the Brain">
+        </div>
+        <div class="wa-content">
+            <span class="wa-tag">Science</span>
+            <p class="wa-title"><b>Why Music Makes Us Feel Everything</b></p>
+            <p class="wa-desc">A single chord can trigger goosebumps. A forgotten song can bring back a memory from twenty years ago with perfect clarity. Neuroscientists are only beginning to understand the deep relationship between music and the human brain — and what they're finding is extraordinary.</p>
+            <button class="button1">Read more →</button>
+        </div>
+    </div>
+
+    <!-- ARTICLE 4 — Image RIGHT (reversed) -->
+    <div class="wa-block wa-block--reverse">
+        <div class="wa-block-inner">
+            <img class="wa-img" src="media/world/article4.jpg" alt="Underground Scenes">
+        </div>
+        <div class="wa-content">
+            <span class="wa-tag">Scenes</span>
+            <p class="wa-title"><b>The Underground Scenes Shaping Tomorrow's Sound</b></p>
+            <p class="wa-desc">Before artists sell out arenas, they play basement shows and underground clubs. From Chicago's footwork circles to London's grime estates — these intimate scenes are where musical revolutions begin. We spotlight four communities quietly building the sounds of tomorrow.</p>
+            <button class="button1 wa-btn">Read more →</button>
+        </div>
+    </div>
+    <!-- FOOTER -->
+            <footer class="about-footer-zone">
+                <div>
+                    <img class="about-LOGOfooter" src="media/LogoWhite.png" alt="Logo MVSIQVA">
+                    <div class="about-titrefooter">MVSIQVA</div>
+                    <div class="about-footer-content">
+                        <a href="#world">Navigation</a>
+                        <a class="about-fc2" href="#about">Contact</a>
+                        <p>This website was created by Victor Bosshard<br>and Jules Duplantier.<br>
+                            --------------------------<br>MVSIQVA® ©All rights reserved<br>--------------------------
+                        </p>
+                    </div>
+                    <div class="about-footer-content-l1">
+                        <a class="about-footer-c1" href="#world">World</a><br>
+                        <a class="about-footer-c1" href="#news">News</a><br>
+                        <a class="about-footer-c1" href="#social">Social</a><br>
+                        <a class="about-footer-c1" href="#about">About</a><br>
+                        <a class="about-footer-c1" href="#profile">Profile</a><br>
+                    </div>
+                    <div class="about-footer-content-l1">
+                        <a class="about-footer-c2" href="#about">Contact us</a><br>
+                        <a class="about-footer-c2" href="#about">Who are we ?</a><br>
+                    </div>
+                </div>
+                <div>
+                    <div class="about-newsletter-card">
+                        <div class="about-newsletter-header">
+                            <span class="about-newsletter-title">Subscribe !</span>
+                            <p class="about-newsletter-desc">Stay up-to-date with the latest releases from your favorite
+                                artists and never miss a thing by subscribing to our newsletter!</p>
+                        </div>
+                        <div class="about-newsletter-form">
+                            <input id="newsletterEmail" placeholder="Your Email" type="email"
+                                class="about-newsletter-input">
+                            <button class="about-newsletter-btn" id="newsletterBtn">Subscribe</button>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+
+</div>
     </section>
 
     <section id="chartsPage" class="page secondary-page charts-page">

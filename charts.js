@@ -1,24 +1,36 @@
 // ============================================================
-// CHARTS.JS — Classement Last.fm + pochettes iTunes via backend
+// CHARTS.JS — Music charts powered by Last.fm + iTunes
+//
+// ARCHITECTURE
+// ┌─────────────────────────────────────────────────┐
+// │  DATA LAYER     fetchGenre / fetchSearch        │
+// │                 → fetch() calls to backend API  │
+// ├─────────────────────────────────────────────────┤
+// │  LOGIC LAYER    loadTracks / togglePreview      │
+// │                 → state management, audio       │
+// ├─────────────────────────────────────────────────┤
+// │  UI LAYER       renderTracks / showSkeletons    │
+// │                 → DOM manipulation only         │
+// └─────────────────────────────────────────────────┘
 // ============================================================
 
 (function () {
 
-    // ==================== CONFIG ====================
+    // ============================================================
+    // DATA LAYER — API configuration & network calls
+    // ============================================================
 
-    // En local → http://localhost:3000
-    // Une fois déployé sur Railway → remplacer par l'URL Railway
-const API_BASE = 'https://mvsiqva-api.onrender.com';
+    const API_BASE = 'https://mvsiqva-api.onrender.com';
 
-    // ==================== ÉTAT ====================
+    // ==================== STATE ====================
 
-    let isLoading            = false;
-    let currentGenre         = 'hip-hop';
-    let currentQuery         = '';
-    let previewAudio         = null;
-    let currentlyPlayingBtn  = null;
+    let isLoading           = false; // Prevents duplicate fetch calls while data is loading
+    let currentGenre        = 'hip-hop'; // The currently selected genre filter (default on open)
+    let currentQuery        = '';        // Non-empty when a search query overrides the genre filter
+    let previewAudio        = null;      // Currently playing Audio object
+    let currentlyPlayingBtn = null;      // DOM button element of the playing row
 
-    // ==================== OUVERTURE / FERMETURE ====================
+    // ==================== PAGE OPEN / CLOSE ====================
 
     window.openChartsPage = function () {
         const page = document.getElementById('chartsPage');
@@ -26,39 +38,45 @@ const API_BASE = 'https://mvsiqva-api.onrender.com';
         page.classList.add('active');
         document.body.classList.add('page-open');
 
+        // Only load data on first open — children.length === 0 means no rows yet
         if (document.getElementById('chartsTableBody').children.length === 0) {
             fetchGenre(currentGenre);
         }
     };
 
     window.closeChartsPage = function () {
-    const page = document.getElementById('chartsPage');
-    if (!page) return;
-    stopPreview();
+        const page = document.getElementById('chartsPage');
+        if (!page) return;
+        stopPreview();
 
-    // Slide vers le bas avant de retirer active
-    page.style.transform = 'translateY(100vh)';
+        // Animate the page sliding down before removing it from the DOM flow
+        page.style.transform = 'translateY(100vh)';
+        setTimeout(function () {
+            page.classList.remove('active');
+            page.style.transform = '';
+        }, 800);
+    };
 
-    setTimeout(function () {
-        page.classList.remove('active');
-        page.style.transform = ''; // Réinitialise pour la prochaine ouverture
-    }, 800); // Correspond à la durée de transition de vos autres pages (0.8s)
-};
+    // ============================================================
+    // LOGIC LAYER — Data loading, state, audio preview
+    // ============================================================
 
-    // ==================== APPELS BACKEND ====================
+    // ==================== BACKEND CALLS ====================
 
+    // Fetch tracks for a specific genre and reset the search bar
     async function fetchGenre(genre) {
         currentGenre = genre;
-        currentQuery = '';
+        currentQuery = ''; // Clear any active search query
         document.getElementById('chartsSearchInput').value = '';
-        updateGenreButtons();
+        updateGenreButtons(); // Highlight the correct genre button
         await loadTracks(`${API_BASE}/api/charts/genre/${encodeURIComponent(genre)}?limit=25`);
     }
 
+    // Fetch tracks matching a search query (overrides the genre filter)
     async function fetchSearch(query) {
-        if (!query.trim()) return;
+        if (!query.trim()) return; // Ignore empty searches
         currentQuery = query;
-        updateGenreButtons();
+        updateGenreButtons(); // Deactivate all genre buttons while in search mode
         await loadTracks(`${API_BASE}/api/charts/search?q=${encodeURIComponent(query)}`);
     }
 
@@ -70,18 +88,22 @@ const API_BASE = 'https://mvsiqva-api.onrender.com';
 
         try {
             const res  = await fetch(url);
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`); // Treat non-200 responses as errors
             const data = await res.json();
             renderTracks(data.tracks || []);
         } catch (err) {
-            console.error('Erreur backend :', err);
+            console.error('Backend error:', err);
             renderError();
         } finally {
             isLoading = false;
         }
     }
 
-    // ==================== RENDU DU TABLEAU ====================
+    // ============================================================
+    // UI LAYER — DOM rendering, skeletons, visual states
+    // ============================================================
+
+    // ==================== TABLE RENDERING ====================
 
     function renderTracks(tracks) {
         const tbody     = document.getElementById('chartsTableBody');
@@ -115,7 +137,7 @@ const API_BASE = 'https://mvsiqva-api.onrender.com';
                             : `<div class="charts-cover-placeholder"></div>`
                         }
                         ${hasPreview ? `
-                        <button class="preview-btn" data-preview="${escAttr(t.previewUrl)}" title="Écouter 30s">
+                        <button class="preview-btn" data-preview="${escAttr(t.previewUrl)}" title="Listen 30s">
                             <svg class="icon-play"  width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
                             <svg class="icon-pause" width="12" height="12" viewBox="0 0 24 24" fill="white" style="display:none"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>
                         </button>` : ''}
@@ -129,19 +151,14 @@ const API_BASE = 'https://mvsiqva-api.onrender.com';
                     <div class="charts-album-name">${escHtml(t.album || '—')}</div>
                 </td>
                 <td class="charts-meta-cell">
-                    ${t.listeners
-                        ? `<div class="charts-listeners">${t.listeners} auditeurs</div>`
-                        : ''
-                    }
-                    ${t.duration
-                        ? `<div class="charts-duration">${t.duration}</div>`
-                        : ''
-                    }
+                    ${t.listeners ? `<div class="charts-listeners">${t.listeners} listeners</div>` : ''}
+                    ${t.duration  ? `<div class="charts-duration">${t.duration}</div>` : ''}
                 </td>
             </tr>`;
         }).join('');
 
-        // Événements preview
+        // Event listeners must be attached after innerHTML is set — they can't be inline
+        // because the buttons didn't exist in the DOM before renderTracks() ran
         tbody.querySelectorAll('.preview-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -150,9 +167,10 @@ const API_BASE = 'https://mvsiqva-api.onrender.com';
         });
     }
 
-    // ==================== PREVIEW AUDIO ====================
+    // ==================== AUDIO PREVIEW ====================
 
     function togglePreview(btn) {
+        // If clicking the same button again, stop playback instead of restarting
         if (currentlyPlayingBtn === btn) { stopPreview(); return; }
         stopPreview();
 
@@ -175,7 +193,7 @@ const API_BASE = 'https://mvsiqva-api.onrender.com';
         }
     }
 
-    // ==================== ÉTATS UI ====================
+    // ==================== UI STATES ====================
 
     function showSkeletons() {
         const tbody     = document.getElementById('chartsTableBody');
@@ -204,16 +222,17 @@ const API_BASE = 'https://mvsiqva-api.onrender.com';
         empty.innerHTML = `
             <span style="font-size:2.5vw;">📡</span>
             <p style="color:rgba(255,255,255,0.5);font-size:1.1vw;margin-top:1vw;">
-                Impossible de contacter le serveur.<br>
-                <span style="font-size:0.85vw;opacity:0.6;">Vérifiez que <code>node server.js</code> tourne.</span>
+                Could not reach the server.<br>
+                <span style="font-size:0.85vw;opacity:0.6;">Make sure the backend is running.</span>
             </p>
             <button onclick="fetchGenre('${currentGenre}')" style="
                 margin-top:1vw;padding:0.7vw 2vw;
                 background:rgba(230,201,19,0.1);border:1px solid rgba(230,201,19,0.4);
                 color:rgb(230,201,19);border-radius:3vw;cursor:pointer;
-                font-size:0.9vw;font-family:inherit;">Réessayer</button>`;
+                font-size:0.9vw;font-family:inherit;">Retry</button>`;
     }
 
+    // Highlight only the active genre button; deactivate all when a search query is active
     function updateGenreButtons() {
         document.querySelectorAll('.genre-btn').forEach(btn => {
             btn.classList.toggle('active', !currentQuery && btn.dataset.genre === currentGenre);
@@ -233,24 +252,24 @@ const API_BASE = 'https://mvsiqva-api.onrender.com';
 
     document.addEventListener('DOMContentLoaded', function () {
 
-        // Bouton retour
+        // Back button
         const backBtn = document.getElementById('chartsBackBtn');
         if (backBtn) backBtn.addEventListener('click', window.closeChartsPage);
 
-        // Boutons genre
+        // Genre filter buttons
         document.querySelectorAll('.genre-btn').forEach(btn => {
             btn.addEventListener('click', () => fetchGenre(btn.dataset.genre));
         });
 
-        // Recherche
+        // Search input with debounce
         const searchInput = document.getElementById('chartsSearchInput');
         const searchBtn   = document.getElementById('chartsSearchBtn');
-        let   debounce;
+        let   debounce; // Holds setTimeout ID for debouncing keystrokes
 
         searchInput.addEventListener('input', function () {
-            clearTimeout(debounce);
-            if (!this.value.trim()) { fetchGenre(currentGenre); return; }
-            debounce = setTimeout(() => fetchSearch(this.value.trim()), 600);
+            clearTimeout(debounce); // Cancel the previous timer on each keystroke
+            if (!this.value.trim()) { fetchGenre(currentGenre); return; } // Reset to genre on clear
+            debounce = setTimeout(() => fetchSearch(this.value.trim()), 600); // Wait 600ms before searching
         });
 
         searchInput.addEventListener('keydown', function (e) {
@@ -261,7 +280,7 @@ const API_BASE = 'https://mvsiqva-api.onrender.com';
             if (searchInput.value.trim()) fetchSearch(searchInput.value.trim());
         });
 
-        // Lien depuis worldPage
+        // Link from the World page
         const worldBtn = document.getElementById('worldChartsBtn');
         if (worldBtn) worldBtn.addEventListener('click', (e) => {
             e.preventDefault();
@@ -269,7 +288,7 @@ const API_BASE = 'https://mvsiqva-api.onrender.com';
         });
     });
 
-    // Exposer pour les boutons inline
+    // These are called from onclick attributes in renderError() HTML strings
     window.fetchGenre  = fetchGenre;
     window.fetchSearch = fetchSearch;
 
