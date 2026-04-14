@@ -462,46 +462,6 @@ body.page-open .music-player.expanded .track-info { display: flex; order: 3; }
     text-overflow: ellipsis;
 }
 
-
-
-
-
-
-/* PAGE WORLD */
-
-.fond {
-    background-color: black;
-    width: 100%;
-    height: 70vh;
-}
-
-.micro {
-    margin-top: 8vh;
-    margin-left: 0%;
-    height: 61vh;
-    z-index: 1;
-    position: absolute;
-}
-
-.worldp10 {
-    z-index: 1;
-    position: absolute;
-    color: white;
-    margin-top: 15%;
-    margin-left: 35%;
-    font-size: 3.7vh;
-}
-
-.worldp11 {
-    z-index: 1;
-    position: absolute;
-    color: white;
-    margin-top: 20%;
-    margin-left: 35%;
-    font-size: 2.3vh;
-}
-
-
 /* BOUTON  */
 .button1 {
     color: #e1e1e1;
@@ -660,26 +620,6 @@ body.page-open .music-player.expanded .track-info { display: flex; order: 3; }
     opacity: 1;
 }
 
-.news-stack-card[data-index="1"] {
-    z-index: 49;
-    transform: translateY(68vh) scale(0.98);
-    filter: blur(1px);
-    opacity: 0.8;
-}
-
-.news-stack-card[data-index="2"] {
-    z-index: 48;
-    transform: translateY(69vh) scale(0.96);
-    filter: blur(2px);
-    opacity: 0.6;
-}
-
-.news-stack-card[data-index="3"] {
-    z-index: 47;
-    transform: translateY(70vh) scale(0.94);
-    filter: blur(3px);
-    opacity: 0.4;
-}
 
 
 .news-stack-card[data-index="1"] {
@@ -711,32 +651,7 @@ body.page-open .music-player.expanded .track-info { display: flex; order: 3; }
 }
 
 
-.card-category-filter {
-    position: relative;
-    overflow: hidden;
-    z-index: 0;
-}
 
-.card-category-filter::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: var(--fill-color, rgba(230,201,19,0.8));
-    transform: translateX(-100%);
-    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: -1;
-    border-radius: inherit;
-}
-
-.card-category-filter:hover::before {
-    transform: translateX(0);
-}
-
-.card-category-filter:hover {
-    color: #000 !important;
-    transition: color 0.15s ease 0.15s;
-}
 
 
 
@@ -855,7 +770,6 @@ body.page-open .music-player.expanded .track-info { display: flex; order: 3; }
     border-color: rgba(240, 147, 251, 0.5);
 }
 
-/* .card-category.streaming/.vinyl — supprimées (catégories absentes de news.json) */
 
 .card-title {
     font-family: "Playfair Display", serif;
@@ -2378,11 +2292,7 @@ body.page-open .music-player.expanded .track-info { display: flex; order: 3; }
 }
 
 /* Skeletons */
-.skeleton-block {
-    background: rgba(255,255,255,0.06);
-    animation: skeleton-pulse 1.4s ease-in-out infinite;
-    display: block;
-}
+
 @keyframes skeleton-pulse {
     0%, 100% { opacity: 0.4; }
     50% { opacity: 0.9; }
@@ -3499,4 +3409,89 @@ body.page-open .music-player.expanded .track-info { display: flex; order: 3; }
     font-size: 1.9vh;
     line-height: 1.7;
     max-width: 90%;
+}
+/* ============================================================
+   CLASSES MANQUANTES — ajoutées après audit
+   ============================================================ */
+
+/* vinyl-deco : conteneur image auth (auth-visual) */
+.vinyl-deco {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+}
+
+/* artist-panel-meta : groupe nom + listeners dans le panel artiste */
+.artist-panel-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2vw;
+    min-width: 0;
+}
+
+/* th-info : colonne "Track" du tableau charts */
+.th-info {
+    width: auto;
+}
+
+/* settings-group : bloc de groupe dans les paramètres */
+.settings-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6vw;
+    padding: 1vw 0;
+    border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+/* settings-group-title : titre d'un groupe de paramètres */
+.settings-group-title {
+    font-size: clamp(0.7rem, 0.8vw, 0.9rem);
+    font-weight: 700;
+    color: rgba(255,255,255,0.35);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    position: static;
+}
+
+/* danger-desc : texte descriptif dans la danger zone */
+.danger-desc {
+    font-size: clamp(0.72rem, 0.8vw, 0.9rem);
+    color: rgba(255,255,255,0.4);
+    line-height: 1.6;
+    position: static;
+}
+
+/* social-suggestions-section : section suggestions (miroir de social-following-section) */
+.social-suggestions-section {
+    margin-bottom: 2.5vw;
+}
+
+/* card-category-filter : classe utilitaire pour querySelector (pas de style visuel propre) */
+.card-category-filter { /* styles portés par .card-category */ }
+
+/* charts-cover-cell : cellule td de la pochette */
+.charts-cover-cell {
+    width: 4vw;
+    padding: 0.7vw 1vw;
+    vertical-align: middle;
+}
+
+/* charts-info-cell : cellule td du titre/artiste */
+.charts-info-cell {
+    vertical-align: middle;
+    padding: 0.7vw 1vw;
+}
+
+/* charts-album-cell : cellule td de l'album */
+.charts-album-cell {
+    vertical-align: middle;
+    padding: 0.7vw 1vw;
+}
+
+/* charts-cover-placeholder : placeholder quand pas de pochette */
+.charts-cover-placeholder {
+    width: 3vw;
+    height: 3vw;
+    border-radius: 0.4vw;
+    background: rgba(255,255,255,0.06);
 }
