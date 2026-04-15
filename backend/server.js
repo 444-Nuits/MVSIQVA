@@ -370,6 +370,24 @@ async function getArtistImageFromItunes(artistName) {
     return null; // No image found — frontend will show a placeholder initial instead
 }
 
+// GET / — Health check route
+// Returns a simple JSON response to confirm the API is running
+app.get('/', (req, res) => {
+    res.json({
+        status: 'ok',
+        message: 'MVSIQVA API is running',
+        endpoints: [
+            'GET /api/charts/top',
+            'GET /api/charts/genre/:genre',
+            'GET /api/search/trending/tracks',
+            'GET /api/search/trending/artists',
+            'GET /api/search/artists?q=',
+            'GET /api/search/tracks?q=',
+            'GET /api/search/artist?name=',
+        ]
+    });
+});
+
 // Start the HTTP server and listen on the configured port
 app.listen(PORT, function() {
     console.log('Server running on http://localhost:' + PORT);
