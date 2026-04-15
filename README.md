@@ -2,14 +2,14 @@
 
 > A music discovery web application — explore trending tracks, search artists, browse charts by genre, and discover music news.
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-black?style=for-the-badge&logo=github)](https://444-nuits.github.io/MVSIQVA/)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-black?style=for-the-badge&logo=github)](https://netestia-my.sharepoint.com/:v:/r/personal/victor_bosshard_etu_estia_fr/Documents/Documents/COURS%20-%20ESTIA/ING%202A/Semestre%208%20-%20SAVIONIA%20-%20KUOPIO/COURS/Browser%20Programming/MVSIQVA.mp4?csf=1&web=1&e=2Le81J&nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJTdHJlYW1XZWJBcHAiLCJyZWZlcnJhbFZpZXciOiJTaGFyZURpYWxvZy1MaW5rIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXcifX0%3D)
 [![Backend](https://img.shields.io/badge/Backend-Render-46E3B7?style=for-the-badge&logo=render)](https://mvsiqva-api.onrender.com)
 
 ---
 
 ## Live Demo
 
-**→ [https://444-nuits.github.io/MVSIQVA/](https://444-nuits.github.io/MVSIQVA/)**
+**→ [https://444-nuits.github.io/MVSIQVA/](https://netestia-my.sharepoint.com/:v:/r/personal/victor_bosshard_etu_estia_fr/Documents/Documents/COURS%20-%20ESTIA/ING%202A/Semestre%208%20-%20SAVIONIA%20-%20KUOPIO/COURS/Browser%20Programming/MVSIQVA.mp4?csf=1&web=1&e=2Le81J&nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJTdHJlYW1XZWJBcHAiLCJyZWZlcnJhbFZpZXciOiJTaGFyZURpYWxvZy1MaW5rIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXcifX0%3D)**
 
 Backend API: `https://mvsiqva-api.onrender.com`
 
